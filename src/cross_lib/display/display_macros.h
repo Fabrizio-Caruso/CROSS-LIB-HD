@@ -52,10 +52,6 @@
 
 #include "standard_libs.h"
 
-#if !defined(_XL_NUMBER_OF_TILES)
-    #define _XL_NUMBER_OF_TILES 27
-#endif
-
 
 #if defined(__BUFFERED_GRAPHICS)
     extern uint8_t video_buffer[YSize+Y_OFFSET][XSize];

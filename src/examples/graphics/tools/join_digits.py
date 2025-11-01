@@ -1,9 +1,15 @@
 import sys
 
-if __name__ == "__main__":
-    iLhsFile = open(sys.argv[1])
 
+def join_digits(lhs,rhs):
     
+    lhs_file = "digit_" + str(lhs) + ".txt"
+    rhs_file = "digit_" + str(rhs) + ".txt"
+    
+    output_file = "shape_" + str(lhs) + str(rhs) + ".txt"
+    
+    iLhsFile = open(lhs_file)
+ 
     lhs = []
     lhsLength = 0
     for lhsLine in iLhsFile:
@@ -12,10 +18,8 @@ if __name__ == "__main__":
         lhsLength+=1
     
     iLhsFile.close()
-    # print(str(lhs))
 
-
-    iRhsFile = open(sys.argv[2])
+    iRhsFile = open(rhs_file)
 
     rhs = []
     rhsLength = 0
@@ -25,11 +29,21 @@ if __name__ == "__main__":
         rhsLength+=1
 
     iRhsFile.close()
-    # print(str(rhs))
     
-    oFile = open(sys.argv[3],'w')
+    oFile = open(output_file,'w')
 
     for counter in range(0,max(lhsLength,rhsLength)):
-        # print(counter)
         oFile.write(lhs[counter].strip()+rhs[counter])
-    oFile.close()
+    oFile.close() 
+
+
+if __name__ == "__main__":
+    start = int(sys.argv[1])
+    end   = int(sys.argv[2])
+    
+    for number in range(start,end+1):
+        lhs = number // 10
+        rhs = number % 10
+        print(f"lhs: {lhs}")
+        print(f"rhs: {rhs}")
+        join_digits(lhs,rhs)

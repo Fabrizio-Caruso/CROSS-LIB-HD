@@ -62,7 +62,7 @@
 
 // This may be different on each target
 #if !defined(_XL_NUMBER_OF_TILES)
-    #define _XL_NUMBER_OF_TILES 27
+    #define _XL_NUMBER_OF_TILES 91  
 #endif
 
 

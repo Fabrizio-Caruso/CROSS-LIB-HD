@@ -426,293 +426,151 @@ defb <tile_23>
 
 defb <tile_24> 
 
-	defb %"--------"
-	defb %"---###--"
-	defb %"--#---#-"
-	defb %"-####---"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"-######-"
-	defb %"--------"
+defb <tile_27>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"--###---"
-	defb %"-----#--"
-	defb %"--####--"
-	defb %"-#---#--"
-	defb %"--####--"
-	defb %"--------"
+defb <tile_28>
 
-	defb %"--------"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"--####--"
-	defb %"--#---#-"
-	defb %"--#---#-"
-	defb %"--####--"
-	defb %"--------"
+defb <tile_29>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"---###--"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"---###--"
-	defb %"--------"
+defb <tile_30>
 
-	defb %"--------"
-	defb %"-----#--"
-	defb %"-----#--"
-	defb %"--####--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--####--"
-	defb %"--------"
+defb <tile_31>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"--###---"
-	defb %"-#---#--"
-	defb %"-####---"
-	defb %"-#------"
-	defb %"--####--"
-	defb %"--------"
+defb <tile_32>
 
-	defb %"--------"
-	defb %"----##--"
-	defb %"---#----"
-	defb %"---##---"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"--------"
+defb <tile_33>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"--####--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--####--"
-	defb %"-----#--"
-	defb %"--###---"
+defb <tile_34>
 
-	defb %"--------"
-	defb %"-#------"
-	defb %"-#------"
-	defb %"-####---"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--------"
+defb <tile_35>
 
-	defb %"--------"
-	defb %"---#----"
-	defb %"--------"
-	defb %"--##----"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"--###---"
-	defb %"--------"
+defb <tile_36>
 
-	defb %"--------"
-	defb %"-----#--"
-	defb %"--------"
-	defb %"-----#--"
-	defb %"-----#--"
-	defb %"-----#--"
-	defb %"--#--#--"
-	defb %"---##---"
+defb <tile_37>
 
-	defb %"--------"
-	defb %"--#-----"
-	defb %"--#-#---"
-	defb %"--##----"
-	defb %"--##----"
-	defb %"--#-#---"
-	defb %"--#--#--"
-	defb %"--------"
+defb <tile_38>
 
-	defb %"--------"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"----##--"
-	defb %"--------"
+defb <tile_39>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-##-#---"
-	defb %"-#-#-#--"
-	defb %"-#-#-#--"
-	defb %"-#-#-#--"
-	defb %"-#-#-#--"
-	defb %"--------"
+defb <tile_40>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-####---"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--------"
+defb <tile_41>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"--###---"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--###---"
-	defb %"--------"
+defb <tile_42>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-####---"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-####---"
-	defb %"-#------"
-	defb %"-#------"
+defb <tile_43>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"--####--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--####--"
-	defb %"-----#--"
-	defb %"-----##-"
+defb <tile_44>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"---###--"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"--#-----"
-	defb %"--------"
+defb <tile_45>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"--###---"
-	defb %"-#------"
-	defb %"--###---"
-	defb %"-----#--"
-	defb %"-####---"
-	defb %"--------"
+defb <tile_46>
 
-	defb %"--------"
-	defb %"---#----"
-	defb %"--###---"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"----##--"
-	defb %"--------"
+defb <tile_47>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--###---"
-	defb %"--------"
+defb <tile_48>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--#-#---"
-	defb %"--#-#---"
-	defb %"---#----"
-	defb %"--------"
+defb <tile_49>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-#---#--"
-	defb %"-#-#-#--"
-	defb %"-#-#-#--"
-	defb %"-#-#-#--"
-	defb %"--#-#---"
-	defb %"--------"
+defb <tile_50>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-#---#--"
-	defb %"--#-#---"
-	defb %"---#----"
-	defb %"--#-#---"
-	defb %"-#---#--"
-	defb %"--------"
+defb <tile_51>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"-#---#--"
-	defb %"--####--"
-	defb %"-----#--"
-	defb %"--###---"
+defb <tile_52>
 
-	defb %"--------"
-	defb %"--------"
-	defb %"-#####--"
-	defb %"----#---"
-	defb %"---#----"
-	defb %"--#-----"
-	defb %"-#####--"
-	defb %"--------"
+defb <tile_53>
 
-	defb %"--------"
-	defb %"----###-"
-	defb %"----#---"
-	defb %"--##----"
-	defb %"----#---"
-	defb %"----#---"
-	defb %"----###-"
-	defb %"--------"
+defb <tile_54>
 
-	defb %"--------"
-	defb %"----#---"
-	defb %"----#---"
-	defb %"----#---"
-	defb %"----#---"
-	defb %"----#---"
-	defb %"----#---"
-	defb %"--------"
+defb <tile_55>
 
-	defb %"--------"
-	defb %"-###----"
-	defb %"---#----"
-	defb %"----##--"
-	defb %"---#----"
-	defb %"---#----"
-	defb %"-###----"
-	defb %"--------"
+defb <tile_56>
 
-	defb %"--------"
-	defb %"---#-#--"
-	defb %"--#-#---"
-	defb %"--------"
-	defb %"--------"
-	defb %"--------"
-	defb %"--------"
-	defb %"--------"
+defb <tile_57>
 
-	defb %"--####--"
-	defb %"-#----#-"
-	defb %"#--##--#"
-	defb %"#-#----#"
-	defb %"#-#----#"
-	defb %"#--##--#"
-	defb %"-#----#-"
-	defb %"--####--"
+defb <tile_58>
+
+defb <tile_59>
+
+defb <tile_60>
+
+defb <tile_61>
+
+defb <tile_62>
+
+defb <tile_63>
+
+defb <tile_64>
+
+defb <tile_65>
+
+defb <tile_66>
+
+defb <tile_67>
+
+defb <tile_68>
+
+defb <tile_69>
+
+defb <tile_70>
+
+defb <tile_71>
+
+defb <tile_72>
+
+defb <tile_73>
+
+defb <tile_74>
+
+defb <tile_75>
+
+defb <tile_76>
+
+defb <tile_77>
+
+defb <tile_78>
+
+defb <tile_79>
+
+defb <tile_80>
+
+defb <tile_81>
+
+defb <tile_82>
+
+defb <tile_83>
+
+defb <tile_84>
+
+defb <tile_85>
+
+defb <tile_86>
+
+defb <tile_87>
+
+defb <tile_88>
+
+defb <tile_89>
+
+defb <tile_90>
+
+; defb <tile_91>
+
+; defb <tile_92>
+
+; defb <tile_93>
+
+; defb <tile_94>
+
+; defb <tile_95>
+
+; defb <tile_96>
+
+; defb <tile_97>
+
+; defb <tile_98>
+
+; defb <tile_99>
 
 _udgs_end:
 
