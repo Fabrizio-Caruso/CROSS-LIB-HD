@@ -9,11 +9,7 @@
 #elif defined(__BBC__) && defined(__BBC_GRAPHICS)
     #include "bbc_graphics.h"
 #elif defined(__TERMINAL__) 
-    #include "terminal_graphics.h"
-#elif defined(__QUAD_MEMORY_MAPPED_GRAPHICS)
-	#include "quad_memory_mapped_graphics.h"
-#elif defined(__DUAL_MEMORY_MAPPED_GRAPHICS)
-	#include "dual_memory_mapped_graphics.h" 
+    #include "terminal_graphics.h" 
 #elif defined(__ATARI7800_COLOR_GRAPHICS)
 	#include "atari7800_color_graphics.h"
 #elif defined(__APPLE2_HGR_GRAPHICS)

@@ -87,7 +87,7 @@
 		|| defined(__OSIC1P__) \
 		|| defined(__MC1000__) \
 		|| defined(__M5__) \
-		|| (defined(__AQUARIUS__) && !defined(QUAD_MEMORY_MAP)) \
+		|| (defined(__AQUARIUS__) \
 		|| defined(__COLECO__) \
 		|| defined(__PV2000__) \
 		|| defined(__PV1000__) \
@@ -195,7 +195,7 @@
 		  || defined(__X1__) || defined(__ATMOS__) \
 		  || (defined(__CPC__) && defined(__CPCRSLIB_GRAPHICS)) || defined(__C16__) || defined(__PLUS4__) || defined(__C64__) \
 		  || (defined(__C128__) && !defined(__Z88DK_SPRITES_GRAPHICS) && !defined(C128_80COL_VIDEO_MODE)) \
-		  || (defined(__AQUARIUS__) && !defined(QUAD_MEMORY_MAP)) || (defined(__SVI__) && defined(MSX_MODE0)) \
+		  || (defined(__AQUARIUS__) || (defined(__SVI__) && defined(MSX_MODE0)) \
 		  || defined(__ENTERPRISE__) \
 		  || (defined(__ATARI__) && !defined(__ANTIC_MODE6_GRAPHICS)) \
 		  || defined(__CBM510__) \

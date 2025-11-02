@@ -10,14 +10,11 @@
 #elif defined(__C64__) && defined(__CONIO_GRAPHICS)
 	#include "c64_conio_settings.h"
 #elif defined(__C128__) && defined(__80COL_UDG)
-	// #include "c264_redefined_chars_settings.h" 23 24
 	#include "c128_settings.h"
 #elif defined(__ATARI7800_COLOR_GRAPHICS)
 	#include "atari7800_settings.h"
 #elif defined(__BBC_GRAPHICS) && !defined(_XL_NO_UDG)
     #include "bbc_settings.h"
-#elif defined(__QUAD_MEMORY_MAPPED_GRAPHICS)
-    #include "default_quad_graphics_settings.h"
 #elif defined(__CREATIVISION__) && defined(__VDP_MODE1_GRAPHICS) && !defined(_XL_NO_UDG)
     #include "vdp_mode1_settings.h"
 #elif defined(__TI99__) && !defined(_XL_NO_UDG)
@@ -38,9 +35,6 @@
 	#include "c264_redefined_chars_settings.h"
 #elif defined(__C16__) && !defined(_XL_NO_UDG)
 	#include "c264_link_time_redefined_chars_settings.h"
-// #elif defined(__CBM__) && defined(__MEMORY_MAPPED_GRAPHICS)
-// e.g., Bomber Vic 20 unexpanded no gfx
-// #include "petscii_memory_mapped_settings.h"
 #elif defined(__MO5__) || defined(__TO7__) || ( (defined(__COCO__) || defined(__DRAGON__)) && (defined(__BIT_MAPPED_GRAPHICS) || defined(__BIT_MAPPED_4_GRAPHICS)))
 	#include "udg_settings.h"
 #elif (defined(__COCO__) || defined(__DRAGON__)) && defined(__MEMORY_MAPPED_GRAPHICS)
@@ -74,10 +68,9 @@
 #elif defined(__COMX__) || defined(__PECOM__) || ((defined(__CIDELSA__) && !defined(_XL_NO_UDG)))
     #include "comx_settings.h"
 #elif defined(__MICRO__)
-	// #include "micro_settings.h"
+	// DO NO THING
 #elif defined(__ATARI_LYNX__) && defined(__LYNX_TGI_GRAPHICS)
     #include "tgi_gfx_settings.h"
-// #elif (defined(__SCCZ80) || defined(__SDCC)) && !defined(_XL_NO_UDG)
 #elif  defined(__Z88DK__) && !defined(_XL_NO_UDG)
 	#include "udg_settings.h"
 #elif defined(__PCE__) || ( defined(__GAMATE__) && !defined(_XL_NO_UDG))

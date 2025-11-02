@@ -15,7 +15,7 @@ extern uint8_t udgs[];
 void _XL_INIT_GRAPHICS(void)
 {
 	void *param = &udgs;
-	console_ioctl(IOCTL_GENCON_SET_FONT32, &param);
+	console_ioctl(IOCTL_GENCON_SET_UDGS, &param);
 	
 
     // Necessary to have .vz file correctly started on several emulators that do not load .vz as they should

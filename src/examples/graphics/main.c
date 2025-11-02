@@ -56,10 +56,11 @@ const uint8_t tiles[] = {
 		_TILE_76, _TILE_77, _TILE_78, _TILE_79,
 		_TILE_80, _TILE_81, _TILE_82, _TILE_83,
         _TILE_84, _TILE_85, _TILE_86, _TILE_87, 
-		_TILE_88, _TILE_89, _TILE_90, _TILE_91,
+		_TILE_88, _TILE_89, _TILE_90,
         #endif
         #if _XL_NUMBER_OF_TILES==99
-		_TILE_92, _TILE_93, _TILE_94, _TILE_95,
+                                      _TILE_91,
+        _TILE_92, _TILE_93, _TILE_94, _TILE_95,
         _TILE_96, _TILE_97, _TILE_98, _TILE_99,
         #endif
 		};

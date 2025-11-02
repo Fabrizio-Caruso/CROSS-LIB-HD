@@ -93,7 +93,7 @@ def write_shapes(option_config, project, shapes, xsize,ysize):
         os.makedirs(path)
     for tile_number, shape in shapes.items():
         # path_to_shape = path+"shape"+tile_number+".txt"
-        path_to_shape = path+"shape_"+format(tile_number,"02d") + ".txt"
+        path_to_shape = path+"shape_"+format(int(tile_number),"02d") + ".txt"
 
         if verbose:
             print("Path to shape file: " + path_to_shape)

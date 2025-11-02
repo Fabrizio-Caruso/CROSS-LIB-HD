@@ -1,12 +1,6 @@
 
 #if !defined(__Z88DK_SPRITES_GRAPHICS)
-    #if defined(__QUAD_MEMORY_MAPPED_GRAPHICS)
-        #include "quad_memory_mapped_graphics.h"
-    #elif defined(__DUAL_MEMORY_MAPPED_GRAPHICS)
-        #include "dual_memory_mapped_graphics.h"
-    #else
         #include "memory_mapped_graphics.h"
-    #endif
 #endif
 
 
@@ -36,12 +30,8 @@
             return ch;
         }
 	}
-    
-#elif defined(__QUAD_MEMORY_MAPPED_GRAPHICS)
-	char screenCode(char ch)
-	{
-        return ch-(uint8_t) 32u;
-	}  
+     
+     
 #elif defined(CBM_SCREEN_CODES) || defined(__SUPERVISION__)
 	char screenCode(char ch)
 	{
@@ -344,12 +334,6 @@
                 _XL_DRAW(x,y,ch,_XL_WHITE);
             }
         }
-#elif defined(__QUAD_MEMORY_MAPPED_GRAPHICS) || defined(__DUAL_MEMORY_MAPPED_GRAPHICS)
-    void _DISPLAY(uint8_t x, uint8_t y, uint8_t ch)
-        {
-            _XL_DRAW(x,y,ch-32,_XL_WHITE);
-        }
-
 #elif defined(__ATARI7800__)
     void _DISPLAY(uint8_t x, uint8_t y, uint8_t ch)
         {
@@ -387,7 +371,7 @@ void _XL_PRINT(uint8_t x, uint8_t y, const char * str)
             || ((defined(__APPLE2__) || defined(__APPLE2ENH__)) && defined(__APPLE2_HGR_GRAPHICS)) \
             || defined(__C64__) \
             || (defined(__VIC20__) && !defined(__VIC20_UNEXPANDED)) \
-            || defined(__QUAD_MEMORY_MAPPED_GRAPHICS) || defined(__TERMINAL__)
+            || defined(__TERMINAL__)
 			_DISPLAY(x+i,y, screenCode(str[i]));
 		#else
 			_DISPLAY(x+i,y, str[i]);
@@ -413,10 +397,6 @@ void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
         _DISPLAY(x+length-1-i,y, (uint8_t) (digit+(uint8_t) 1u));
         #elif ((defined(__COCO__) || defined(__DRAGON__))&&!defined(__BIT_MAPPED_GRAPHICS))
         _DISPLAY(x+length-1-i,y, (uint8_t) (digit+(uint8_t) 48u + 64u));
-        // #elif defined(__QUAD_MEMORY_MAPPED_GRAPHICS)
-        // DRAW_QUAD_CHAR(x+length-1-i,y,(digit+(uint8_t) 48u),_XL_WHITE);
-        #elif defined(__QUAD_MEMORY_MAPPED_GRAPHICS)
-		_DISPLAY(x+length-1-i,y, (uint8_t) (digit+(uint8_t) 48u-32u));
         #else
 		_DISPLAY(x+length-1-i,y, (uint8_t) (digit+(uint8_t) 48u));
         #endif
