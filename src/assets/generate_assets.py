@@ -31,7 +31,7 @@ def read_tiles_from_dir(dir_name):
     tile = []
     for i in range(MAX_NUMBER_OF_TILES):
         
-        file_to_open = "../"+parent_dir+"/"+game_dir+"/tiles/"+dir_name+"/tile_"+format(i,"02d")+".txt"
+        file_to_open = "../"+parent_dir+"/"+game_dir+"/tiles/"+dir_name+"/tile_"+format(i,"03d")+".txt"
         print("tile file to open: " + file_to_open)
         if os.path.exists(file_to_open):
             with open(file_to_open, 'r') as myfile:

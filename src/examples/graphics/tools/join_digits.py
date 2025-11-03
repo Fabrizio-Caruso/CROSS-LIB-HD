@@ -3,10 +3,10 @@ import sys
 
 def join_digits(lhs,rhs):
     
-    lhs_file = "digit_" + str(lhs) + ".txt"
-    rhs_file = "digit_" + str(rhs) + ".txt"
+    lhs_file = "./digits/digit_" + str(lhs) + ".txt"
+    rhs_file = "./digits/digit_" + str(rhs) + ".txt"
     
-    output_file = "shape_" + str(lhs) + str(rhs) + ".txt"
+    output_file = "./shapes/shape_0" + str(lhs) + str(rhs) + ".txt"
     
     iLhsFile = open(lhs_file)
  
@@ -30,7 +30,7 @@ def join_digits(lhs,rhs):
 
     iRhsFile.close()
     
-    oFile = open(output_file,'w')
+    oFile = open(output_file,'w+')
 
     for counter in range(0,max(lhsLength,rhsLength)):
         oFile.write(lhs[counter].strip()+rhs[counter])
@@ -45,5 +45,5 @@ if __name__ == "__main__":
         lhs = number // 10
         rhs = number % 10
         print(f"lhs: {lhs}")
-        print(f"rhs: {rhs}")
+        print(f"rhs: {rhs}\n")
         join_digits(lhs,rhs)
