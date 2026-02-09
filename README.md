@@ -7,6 +7,7 @@ For most targets the goal is to have 128 total tiles including 37 fixed tiles (2
 This is still a working process.
 
 **SOME CURRENTLY WORKING TARGETS**
+- Agon Light
 - Amstrad CPC
 - Commodore 128 Z80 40 column
 - GameGear
