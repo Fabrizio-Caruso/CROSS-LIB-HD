@@ -1303,6 +1303,7 @@ laser500_joy: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D__BIT_BANG_SOUND  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_LASER500_SLOWDOWN) \
 	-D__CONIO_GRAPHICS \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-lndos \
 	$(FULL_FILES) \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
@@ -1313,13 +1314,12 @@ laser500_joy: $(ASSETS_PATH)/z88dk_xchase.asm
 laser500_keyboard: $(ASSETS_PATH)/z88dk_xchase.asm 
 	$(Z88DK_PATH)$(MYZ88DK) +laser500 $(SCCZ80_OPTS) -vn -Cz--audio \
 	-create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
-	$(INCLUDE_OPTS) -D_XL_NO_JOYSTICK \
+	$(INCLUDE_OPTS) -D_XL_NO_JOYSTICK  \
 	-D__LASER500__  -DXSize=40 -DYSize=22 -D__SCREEN_MODE=2 \
 	-D__BIT_BANG_SOUND  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_LASER500_SLOWDOWN) \
 	-D__CONIO_GRAPHICS \
-	 \
-	 \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-lndos \
 	$(FULL_FILES) \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
