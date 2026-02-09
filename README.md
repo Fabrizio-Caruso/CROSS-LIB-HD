@@ -8,5 +8,7 @@ This is still a working process.
 
 **SOME CURRENTLY WORKING TARGETS**
 - Amstrad CPC
+- GameGear
 - MSX 1/2
+- Sega Master System
 - Vtech Laser 500
