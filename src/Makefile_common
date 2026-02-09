@@ -988,7 +988,7 @@ c128_40col_zsdcc: c128_z80_40col_zsdcc
 
 c128_40col: c128_z80_40col
 
-c128_z80_40col: $(ASSETS_PATH)/z88dk_xchase.asm 
+c128_z80_40col: $(ASSETS_PATH)/z88dk_xchase.asm  $(TOOLS_PATH)/generic/CC1541/cc1541$(COMPILEDEXT)
 	$(Z88DK_PATH)$(MYZ88DK) +c128 $(SCCZ80_OPTS)  \
 	$(INCLUDE_OPTS) \
 	-lndos -subtype=disk -clib=gencon \
@@ -1001,17 +1001,12 @@ c128_z80_40col: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(ASSETS_PATH)/z88dk_xchase.asm \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
 	-create-app -o"a40.bin"
-ifdef USE_TOOLS
-	$(C1541) -format "crosschase,0" d64 FULL_$@.d64
-	$(C1541) -attach FULL_$@.d64 -write a40.ldr
-	$(C1541) -attach FULL_$@.d64 -write a40
-	mv FULL_$@.d64 $(BUILD_PATH)/X$(GAME_NAME)_$@.d64
-	rm a40.bin
-else
-	mv a40.bin $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
-endif
-	rm a40.ldr
-	rm a40
+	../tools/generic/CC1541/cc1541 -f a40.ldr -w a40.ldr X$(GAME_NAME)_$@.d64
+	../tools/generic/CC1541/cc1541 -f a40 -w a40 X$(GAME_NAME)_$@.d64
+	mv X$(GAME_NAME)_$@.d64 $(BUILD_PATH)/
+	rm -rf a40.bin
+	rm -rf a40.ldr
+	rm -rf a40
 
 c128_80col: c128_8502_80col
 
