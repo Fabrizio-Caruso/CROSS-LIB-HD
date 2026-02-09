@@ -1,2 +1,12 @@
 # CROSS-LIB-HD
-CROSS-LIB HD: Cross-Lib with a higher number of tiles
+CROSS-LIB-HD is just Cross-Lib with a higher number of tiles.
+In the future a few extra features may be added but the highest priority goes to the number of tiles.
+For most targets the goal is to have 128 total tiles including 37 fixed tiles (26 letters, 10 digits and 1 empty tile), i.e., 91 redefinable tiles.
+
+**REMARK**
+This is still a working process.
+
+**SOME CURRENTLY WORKING TARGETS**
+- Amstrad CPC
+- MSX 1/2
+- Vtech Laser 500
