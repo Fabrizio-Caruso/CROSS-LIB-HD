@@ -6,6 +6,7 @@ For most targets the goal is to have 128 total tiles including 37 fixed tiles (2
 **REMARK**
 This is still a working process.
 
-**SOME CURRENTLY TARGETS**
+**SOME CURRENTLY WORKING TARGETS**
 - Amstrad CPC
 - MSX 1/2
+- Vtech Laser 500
