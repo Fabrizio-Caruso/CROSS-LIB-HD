@@ -159,7 +159,7 @@ int main(void)
 
             #if YSize>=16
             _XL_SET_TEXT_COLOR(FIRST_COLOR);
-            _XL_PRINT(COL_OFFSET,YSize-4, _PRESS);
+            _XL_PRINT(COL_OFFSET,YSize-2, _PRESS);
             #endif
 
             for(i=0;i<_XL_NUMBER_OF_TILES;++i)
