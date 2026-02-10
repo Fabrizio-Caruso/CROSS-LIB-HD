@@ -1,0 +1,27 @@
+CREDITS
+
+I have been helped by people who are involved in the cross compilers Z88Dk, CC65, CMOC, ACK, LCC1802, GCC for TI99 development.
+
+In particular I must thank:
+- Alex Thissen for his support on the docker release and on the Atari Lynx target
+
+- Stefano Bodrato for lots of help on all Z80 targets including development on the Z88Dk to support my library and games.
+
+- Bill Rowe for improving LCC1802 and supporting my library
+
+- Antonino Porcino for providing his online emulators and helping me test my games.
+
+- Marcen van Tongeren: for implementing the dev-kit in LCC1802 and supporting CrossLib
+
+- Christian Groessler: has helped me to improve the Makefile and fix an issue on the Atari 8-bit color version.
+
+- Simon Jonassen: Help on getting a good routine for the keyboard input for all CoCo and Dragon models.
+
+- Tursi (from AtariAge) for his Classic99 emulator, his support with libti99 and general help on the TI99/4A
+
+- Asmusr (from AtariAge) for his JS99er JavaScript emulator, support on the cartUrl parameter, and the generation of cartridge images from EA5 files
+
+- Mark Burkley for his great work and support on GCC for the TI compiler
+
+- *Hamlet* for the logo.
+

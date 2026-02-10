@@ -993,7 +993,6 @@ c128_z80_40col: $(ASSETS_PATH)/z88dk_xchase.asm  $(TOOLS_PATH)/generic/CC1541/cc
 	$(INCLUDE_OPTS) \
 	-lndos -subtype=disk -clib=gencon \
 	-D__C128_Z80__ -DXSize=40 \
-	 \
 	-D__BIT_BANG_SOUND   \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_C128_Z80_40COL_SLOWDOWN) \
 	-D__CONIO_GRAPHICS  \
