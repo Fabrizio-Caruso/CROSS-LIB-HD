@@ -15,3 +15,4 @@ This is still a working process.
 - MSX 1/2
 - Sega Master System
 - Vtech Laser 500
+- Vtech VZ200
