@@ -9,6 +9,7 @@ This is still a working process.
 **SOME CURRENTLY WORKING TARGETS**
 - Agon Light
 - Amstrad CPC
+- Camputers Lynx
 - Commodore 128 Z80 40 column
 - GameGear
 - MSX 1/2
