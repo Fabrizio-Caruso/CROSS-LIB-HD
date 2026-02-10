@@ -1690,16 +1690,16 @@ pc88: $(ASSETS_PATH)/z88dk_xchase.asm
 samcoupe: sam
 
 sam: $(ASSETS_PATH)/z88dk_xchase.asm
-	$(Z88DK_PATH)$(MYZ88DK) +sam $(SCCZ80_OPTS) $(INCLUDE_OPTS) -create-app \
+	$(Z88DK_PATH)$(MYZ88DK) +sam $(SCCZ80_OPTS) $(INCLUDE_OPTS) -create-app -m \
 	-D__SAM__ -D_XL_NO_JOYSTICK  \
 	-D__CONIO_GRAPHICS  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_SAMCOUPE_SLOWDOWN) \
-	-clib=ansi -pragma-define:ansicolumns=32 -vn \
+	--generic-console -pragma-define:ansicolumns=32 -vn \
 	-D__BIT_BANG_SOUND -o $(BUILD_PATH)/FULL_samcoupe_$(GAME_NAME).bin -lndos \
 	$(FULL_FILES) \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
 	$(ASSETS_PATH)/z88dk_xchase.asm
-	rm $(BUILD_PATH)/FULL_samcoupe_$(GAME_NAME).bin
+	# rm $(BUILD_PATH)/FULL_samcoupe_$(GAME_NAME).bin
 	mv $(BUILD_PATH)/FULL_samcoupe_$(GAME_NAME).mgt $(BUILD_PATH)/X$(GAME_NAME)_$@.mgt
 
 #################################################################
@@ -1928,6 +1928,7 @@ vz200_24k: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D__CONIO_GRAPHICS \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
 	$(ASSETS_PATH)/z88dk_xchase.asm \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-lndos \
 	-create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.vz \
 	$(FULL_FILES)
