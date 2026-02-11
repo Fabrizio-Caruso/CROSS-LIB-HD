@@ -17,6 +17,8 @@ This is still a work process.
 - NEC PC8801
 - Sam Coupé
 - Sega Master System
+- Sega SC 3000
+- Sega SG 1000
 - Vtech Laser 500
 - Vtech VZ200
 - ZX Spectrum 16/48/128
