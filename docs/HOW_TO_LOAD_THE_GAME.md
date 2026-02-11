@@ -1264,14 +1264,15 @@ Use the M88 emulator: https://illusioncity.net/PC88/m88eng.rar
 
 BIOS: https://archive.org/details/m-88.7z
 
+For the disk:
+Insert disk image into Drive 1 and reset
+
+For the tape:
 Type:
 
 MON
-
 R
-
 Select the tape file
-
 G8A00 to start
 
 -----------------------------------------------------------

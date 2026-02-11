@@ -1659,6 +1659,7 @@ pc88: $(ASSETS_PATH)/z88dk_xchase.asm
 	 -D__PC88__  -subtype=disk  \
 	-lndos -DXSize=80 -DYSize=25 -D_XL_NO_JOYSTICK \
 	-clib=default -pragma-redirect:fputc_cons=fputc_cons_generic \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-D__CONIO_GRAPHICS -D__BIT_BANG_SOUND -D__DEFAULT_CLEAR_SCREEN \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_PC88_SLOWDOWN) \
 	$(FULL_FILES) \
@@ -1669,11 +1670,14 @@ pc88: $(ASSETS_PATH)/z88dk_xchase.asm
 	rm $(BUILD_PATH)/X$(GAME_NAME)_$@
 	# mv FULL_pc88.d88 $(BUILD_PATH)/X$(GAME_NAME)_$@.d88
 	rm $(BUILD_PATH)/X$(GAME_NAME)_$@_BOOTSTRAP.bin
+
+pc88_tape:
 	$(Z88DK_PATH)$(MYZ88DK) +pc88 $(SCCZ80_OPTS)  -Cz--audio $(INCLUDE_OPTS) -vn \
 	 -D__PC88__    \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_PC88_SLOWDOWN) \
 	-lndos -DXSize=80 -DYSize=25 \
 	-clib=default -pragma-redirect:fputc_cons=fputc_cons_generic \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-D__CONIO_GRAPHICS -D__BIT_BANG_SOUND -D__DEFAULT_CLEAR_SCREEN \
 	$(FULL_FILES) \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
