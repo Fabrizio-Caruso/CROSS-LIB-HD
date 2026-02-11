@@ -17,3 +17,4 @@ This is still a working process.
 - Sega Master System
 - Vtech Laser 500
 - Vtech VZ200
+- ZX Spectrum 16/48/128
