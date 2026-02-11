@@ -10,6 +10,7 @@ This is still a work process.
 - Agon Light
 - Amstrad CPC
 - Camputers Lynx
+- CCE MC-1000
 - Commodore 128 Z80 40 column
 - Coleco Vision
 - GameGear
