@@ -11,6 +11,7 @@ This is still a working process.
 - Amstrad CPC
 - Camputers Lynx
 - Commodore 128 Z80 40 column
+- Coleco Vision
 - GameGear
 - MSX 1/2
 - NEC PC8801
