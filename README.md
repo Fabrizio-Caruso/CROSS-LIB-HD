@@ -4,7 +4,7 @@ In the future a few extra features may be added but the highest priority goes to
 For most targets the goal is to have 128 total tiles including 37 fixed tiles (26 letters, 10 digits and 1 empty tile), i.e., 91 redefinable tiles.
 
 **REMARK**
-This is still a working process.
+This is still a work process.
 
 **SOME CURRENTLY WORKING TARGETS**
 - Agon Light
