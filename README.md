@@ -13,6 +13,7 @@ This is still a working process.
 - Commodore 128 Z80 40 column
 - GameGear
 - MSX 1/2
+- NEC PC8801
 - Sam Coupé
 - Sega Master System
 - Vtech Laser 500
