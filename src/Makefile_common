@@ -1422,6 +1422,7 @@ mc1000_mono: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D__MC1000__ -D_XL_NO_JOYSTICK  \
 	-D__CONIO_GRAPHICS \
 	-vn  -lndos -Cz--audio \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
 	-clib=default -pragma-redirect:fputc_cons=fputc_cons_generic \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
@@ -1441,6 +1442,7 @@ mc1000: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D__SCREEN_MODE=2 -DXSize=16  -D__NO_SCREEN_COLOR_INIT \
 	-D__MC1000__ -D_XL_NO_JOYSTICK  \
 	-D__CONIO_GRAPHICS \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-vn  -lndos -Cz--audio \
 	-create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
 	-clib=default -pragma-redirect:fputc_cons=fputc_cons_generic \
