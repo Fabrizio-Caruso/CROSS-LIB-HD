@@ -34,7 +34,8 @@ In the future a few extra features may be added but the highest priority goes to
 - GameGear
 - Hector HR
 - MSX 1/2
-- NEC PC8801
+- NEC PC-6001
+- NEC PC-8801
 - Sam Coupé
 - Samsung SPC-1000
 - Sanyo PHC-25
