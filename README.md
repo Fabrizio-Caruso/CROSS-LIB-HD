@@ -39,6 +39,7 @@ In the future a few extra features may be added but the highest priority goes to
 - Sega Master System
 - Sega SC 3000
 - Sega SG 1000
+- Spectravideo SVI
 - VG 5000
 - Vtech Laser 500
 - Vtech VZ200
