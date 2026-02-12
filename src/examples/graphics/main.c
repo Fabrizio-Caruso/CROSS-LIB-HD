@@ -99,7 +99,7 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
                                 };
 
 
-#if XSize<20
+#if YSize<16
     #define COL_OFFSET 0
 #else
     #define COL_OFFSET 2
@@ -112,14 +112,14 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
     #define ROW_OFFSET 2
 #endif
 
-#if XSize<=20
+#if XSize<=16
     #define CHAR_SKIP 1
 #else
     #define CHAR_SKIP 2
 #endif    
 
 
-#if YSize<=16
+#if YSize<=25
     #define LINE_SKIP 1
 #else
     #define LINE_SKIP 2
