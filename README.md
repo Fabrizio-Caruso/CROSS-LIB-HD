@@ -22,8 +22,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 In the future a few extra features may be added but the highest priority goes to the number of tiles.
 
 
-
-**SOME CURRENTLY WORKING TARGETS**
+## CURRENTLY TESTED WORKING TARGETS
 - Agon Light
 - Amstrad CPC
 - Camputers Lynx
