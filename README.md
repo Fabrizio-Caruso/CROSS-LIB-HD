@@ -1,10 +1,27 @@
 # CROSS-LIB-HD
-CROSS-LIB-HD is just Cross-Lib with a higher number of tiles.
-In the future a few extra features may be added but the highest priority goes to the number of tiles.
-For most targets the goal is to have 128 total tiles including 37 fixed tiles (26 letters, 10 digits and 1 empty tile), i.e., 91 redefinable tiles.
+CROSS-LIB-HD is Cross-Lib with a higher number of tiles.
 
 **REMARK**
 This is still a work process.
+
+## CROSS-LIB-HD vs CROSS-LIB
+The main difference is the number of redefinable tiles supported.
+
+- **CROSS-LIB-HD**: at least 128 total tiles: 37 fixed tiles (26 letters, 10 digits and 1 empty tile) + 91 redefinable tiles,
+- **CROSS-LIB**: only supports 64 total tiles: 37 fixed tiles + 27 redefinable tiles.
+
+
+
+
+## Compatible with CROSS-LIB
+Source code of games and programs written with CROSS-LIB should be compatible with CROSS-LIB-HD.
+
+More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-LIB
+
+## More features?
+In the future a few extra features may be added but the highest priority goes to the number of tiles.
+
+
 
 **SOME CURRENTLY WORKING TARGETS**
 - Agon Light
