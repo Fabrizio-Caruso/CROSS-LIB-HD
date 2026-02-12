@@ -102,14 +102,14 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
 #if XSize<20
     #define COL_OFFSET 0
 #else
-    #define COL_OFFSET ((XSize/3)-4)
+    #define COL_OFFSET 2
 #endif
 
 #if YSize<12
     #define ROW_OFFSET 1
 #else
     
-    #define ROW_OFFSET (YSize/7)
+    #define ROW_OFFSET 2
 #endif
 
 #if XSize<=20
@@ -119,7 +119,7 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
 #endif    
 
 
-#if YSize<=25
+#if YSize<=16
     #define LINE_SKIP 1
 #else
     #define LINE_SKIP 2
@@ -153,13 +153,13 @@ int main(void)
             
             _XL_SET_TEXT_COLOR(tile_color[j]);
             
-            _XL_PRINT(COL_OFFSET, 0, (char *) color_name[j]);
+            _XL_PRINT(0, 0, (char *) color_name[j]);
             
             _XL_WAIT_FOR_INPUT();
 
             #if YSize>=16
             _XL_SET_TEXT_COLOR(FIRST_COLOR);
-            _XL_PRINT(COL_OFFSET,YSize-2, _PRESS);
+            _XL_PRINT(COL_OFFSET,YSize-1, _PRESS);
             #endif
 
             for(i=0;i<_XL_NUMBER_OF_TILES;++i)
