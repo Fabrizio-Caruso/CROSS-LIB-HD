@@ -31,6 +31,7 @@ In the future a few extra features may be added but the highest priority goes to
 - Commodore 128 Z80 40 column
 - Coleco Vision
 - GameGear
+- Hector HR
 - MSX 1/2
 - NEC PC8801
 - Sam Coupé
