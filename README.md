@@ -27,6 +27,7 @@ In the future a few extra features may be added but the highest priority goes to
 - Agon Light
 - Amstrad CPC
 - Camputers Lynx
+- Casio FP-1100
 - CCE MC-1000
 - Commodore 128 Z80 40 column
 - Coleco Vision
