@@ -20,6 +20,7 @@ This is still a work process.
 - Sega Master System
 - Sega SC 3000
 - Sega SG 1000
+- VG 5000
 - Vtech Laser 500
 - Vtech VZ200
 - ZX Spectrum 16/48/128
