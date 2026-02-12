@@ -36,6 +36,7 @@ In the future a few extra features may be added but the highest priority goes to
 - MSX 1/2
 - NEC PC8801
 - Sam Coupé
+- Samsung SPC-1000
 - Sanyo PHC-25
 - Sega Master System
 - Sega SC 3000
