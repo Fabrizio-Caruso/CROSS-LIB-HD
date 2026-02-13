@@ -27,8 +27,10 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 ## CURRENTLY TESTED WORKING TARGETS
 - Agon Light
 - Amstrad CPC
+- Bandai RX78
 - Camputers Lynx
 - Casio FP-1100
+- Casio PV-2000
 - CCE MC-1000
 - Commodore 128 Z80 40 column
 - Coleco Vision
@@ -44,11 +46,13 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Sega Master System
 - Sega SC 3000
 - Sega SG 1000
+- Sony SMC-777
 - Sord M5
 - Spectravideo SVI
 - VG 5000
 - Vtech Laser 500
 - Vtech VZ200
+- Z80 TV GAME
 - ZX Spectrum 16/48/128
 
 ## More features?
