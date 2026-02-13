@@ -16,7 +16,7 @@ CORVETTE
 EINSTEIN
 GL6000SL
 LM80C
-MYVISION
+
 ONDRA
 PENCIL2
 PRIMO
@@ -35,8 +35,10 @@ Z80TVGAME  OK
 
 MTX500     OK
 MTX512     OK
+MYVISION   OK
 
 ---------------
+
 
 
 
@@ -53,6 +55,7 @@ MTX512     OK
     Hector HR
     Memotech MTX 500
     Memotech MTX 512
+    Myvision
     MSX 1/2
     NEC PC-6001
     NEC PC-8801
@@ -71,3 +74,4 @@ MTX512     OK
     Vtech VZ200
     Z80 TV GAME
     ZX Spectrum 16/48/128
+
