@@ -1,0 +1,73 @@
+ACE KO maybe not enough UDGs
+PMD85 KO (6x8 fonts) sort of OK
+
+EG2K KO
+
+Z9001_KRT_GFX KO?
+MULTI8 KO (stuck at Z88DK boot strapping)
+
+
+GALPLUS
+NABU
+TRS80_GFX
+BIT90(_KEYBOARD)
+BONDWELL2
+CORVETTE
+EINSTEIN
+GL6000SL
+LM80C
+MYVISION
+ONDRA
+PENCIL2
+PRIMO
+RADIO86
+SRR
+TIM011
+SUPER80_GFX_NO_COL
+
+LVIV Missing Makefile
+
+
+PV2000     OK
+RX78       OK
+SMC777     OK
+Z80TVGAME  OK
+
+MTX500     OK
+MTX512     OK
+
+---------------
+
+
+
+    Agon Light
+    Amstrad CPC
+    Bandai RX78
+    Camputers Lynx
+    Casio FP-1100
+    Casio PV-2000
+    CCE MC-1000
+    Commodore 128 Z80 40 column
+    Coleco Vision
+    GameGear
+    Hector HR
+    Memotech MTX 500
+    Memotech MTX 512
+    MSX 1/2
+    NEC PC-6001
+    NEC PC-8801
+    Robotron KC-85/2/3/4
+    Sam Coupé
+    Samsung SPC-1000
+    Sanyo PHC-25
+    Sega Master System
+    Sega SC 3000
+    Sega SG 1000
+    Sony SMC-777
+    Sord M5
+    Spectravideo SVI
+    VG 5000
+    Vtech Laser 500
+    Vtech VZ200
+    Z80 TV GAME
+    ZX Spectrum 16/48/128
