@@ -36,6 +36,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Coleco Vision
 - GameGear
 - Hector HR
+- Memotech MTX 512
 - MSX 1/2
 - NEC PC-6001
 - NEC PC-8801
