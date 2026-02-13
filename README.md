@@ -37,6 +37,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - MSX 1/2
 - NEC PC-6001
 - NEC PC-8801
+- Robotron KC-85/2/3/4
 - Sam Coupé
 - Samsung SPC-1000
 - Sanyo PHC-25
