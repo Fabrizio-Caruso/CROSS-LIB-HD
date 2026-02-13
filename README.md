@@ -10,16 +10,15 @@ The main difference is the number of redefinable tiles supported.
 - **CROSS-LIB-HD**: at least 128 total tiles: 37 fixed tiles (26 letters, 10 digits and 1 empty tile) + 91 redefinable tiles,
 - **CROSS-LIB**: only supports 64 total tiles: 37 fixed tiles + 27 redefinable tiles.
 
-
-
+### Same targets as CROSS-LIB
+In principle it is possible to support the same set of targets as CROSS-LIB.
+When a given target cannot have 91 redefinable tiles for each available color in CROSS-LIB, it may be possible to have those tiles with fewer color variations or in a different screen mode.
+If there were a target with graphics that cannot have 91 redefinable monochromatic tiles, the target can still use 91 ASCII characters (no UDG mode).
 
 ## Compatible with CROSS-LIB
-Source code of games and programs written with CROSS-LIB should be compatible with CROSS-LIB-HD.
+Source code of games and programs written with CROSS-LIB are compatible with CROSS-LIB-HD.
 
 More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-LIB
-
-## More features?
-In the future a few extra features may be added but the highest priority goes to the number of tiles.
 
 
 ## CURRENTLY TESTED WORKING TARGETS
@@ -46,3 +45,8 @@ In the future a few extra features may be added but the highest priority goes to
 - Vtech Laser 500
 - Vtech VZ200
 - ZX Spectrum 16/48/128
+
+## More features?
+In the future a few extra features may be added but the highest priority goes to the number of tiles.
+
+
