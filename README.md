@@ -43,6 +43,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Sega Master System
 - Sega SC 3000
 - Sega SG 1000
+- Sord M5
 - Spectravideo SVI
 - VG 5000
 - Vtech Laser 500
