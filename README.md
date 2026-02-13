@@ -11,9 +11,12 @@ The main difference is the number of redefinable tiles supported.
 - **CROSS-LIB**: only supports 64 total tiles: 37 fixed tiles + 27 redefinable tiles.
 
 ### Same targets as CROSS-LIB
-In principle it is possible to support the same set of targets as CROSS-LIB.
-When a given target cannot have 91 redefinable tiles for each available color in CROSS-LIB, it may be possible to have those tiles with fewer color variations or in a different screen mode.
-If there were a target with graphics that cannot have 91 redefinable monochromatic tiles, the target can still use 91 ASCII characters (no UDG mode).
+In principle it is possible to support the same set of targets as CROSS-LIB even for targets that cannot have 91 redefinable tiles in the same colors and video modes as the ones used by CROSS-LIB
+
+We can use:
+
+- __fewer colors__ -> When a given target cannot have 91 redefinable tiles for each available color in CROSS-LIB, it may be possible to have those tiles with fewer color variations or in a different screen mode.
+- __ASCII tiles__ -> If there were a target with graphics that cannot have 91 redefinable monochromatic tiles, the target can still use 91 ASCII characters (no UDG mode).
 
 ## Compatible with CROSS-LIB
 Source code of games and programs written with CROSS-LIB are compatible with CROSS-LIB-HD.
