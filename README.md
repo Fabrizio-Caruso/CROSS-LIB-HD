@@ -50,6 +50,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Sega Master System
 - Sega SC 3000
 - Sega SG 1000
+- Super-80r (VDUEB)
 - Sony SMC-777
 - Sord M5
 - Spectravideo SVI
