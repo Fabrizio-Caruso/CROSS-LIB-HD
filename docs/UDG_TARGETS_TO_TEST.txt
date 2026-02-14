@@ -6,8 +6,9 @@ EG2K KO
 Z9001_KRT_GFX KO?
 MULTI8 KO (stuck at Z88DK boot strapping)
 
+ONDRA KO (no UDG with JOndra and play stuck in Mame)
 
-GALPLUS
+
 NABU
 TRS80_GFX
 BIT90(_KEYBOARD)
@@ -16,8 +17,6 @@ CORVETTE
 EINSTEIN
 GL6000SL
 LM80C
-
-ONDRA
 PENCIL2
 PRIMO
 RADIO86
@@ -25,7 +24,6 @@ SRR
 TIM011
 SUPER80_GFX_NO_COL
 
-LVIV Missing Makefile
 
 
 PV2000     OK
@@ -36,6 +34,11 @@ Z80TVGAME  OK
 MTX500     OK
 MTX512     OK
 MYVISION   OK
+GAL_PLUS   OK
+---
+
+LVIV Missing Makefile
+
 
 ---------------
 
