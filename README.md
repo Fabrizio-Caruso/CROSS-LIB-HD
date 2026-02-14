@@ -39,6 +39,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Hector HR
 - Memotech MTX 500
 - Memotech MTX 512
+- Microkey Primo
 - Myvision
 - MSX 1/2
 - NEC PC-6001
