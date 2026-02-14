@@ -1,11 +1,8 @@
 ACE KO maybe not enough UDGs
 PMD85 KO (6x8 fonts) sort of OK
-
 EG2K KO
-
 Z9001_KRT_GFX KO?
 MULTI8 KO (stuck at Z88DK boot strapping)
-
 ONDRA KO (no UDG with JOndra and play stuck in Mame)
 
 
