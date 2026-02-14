@@ -35,6 +35,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Commodore 128 Z80 40 column
 - Coleco Vision
 - GameGear
+- Galaksija Plus
 - Hector HR
 - Memotech MTX 500
 - Memotech MTX 512
