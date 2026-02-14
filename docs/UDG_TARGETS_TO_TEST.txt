@@ -6,6 +6,10 @@ MULTI8 KO (stuck at Z88DK boot strapping)
 ONDRA KO (no UDG with JOndra and play stuck in Mame)
 
 
+----
+
+To check:
+
 NABU
 TRS80_GFX
 BONDWELL2
@@ -13,14 +17,14 @@ CORVETTE
 EINSTEIN
 GL6000SL
 LM80C
-PRIMO
 RADIO86
 SRR
 TIM011
 
 
-
-
+----
+Done:
+----
 PV2000     OK
 RX78       OK
 SMC777     OK
@@ -33,6 +37,7 @@ GAL_PLUS   OK
 SUPER80R   OK
 BIT90      OK
 PENCIL2    OK
+PRIMO      OK
 
 ---
 
@@ -40,44 +45,5 @@ LVIV Missing Makefile
 
 
 ---------------
-
-
-
-Supported files as of 2026/02/14, 
-    Agon Light
-    Amstrad CPC
-    Bandai RX78
-    Camputers Lynx
-    Casio FP-1100
-    Casio PV-2000
-    CCE MC-1000
-    Commodore 128 Z80 40 column
-    Coleco Vision
-    GameGear
-    Galaksija Plus
-    Hector HR
-    Memotech MTX 500
-    Memotech MTX 512
-    Myvision
-    MSX 1/2
-    NEC PC-6001
-    NEC PC-8801
-    Hanimex Pencil II
-    Robotron KC-85/2/3/4
-    Sam Coupé
-    Samsung SPC-1000
-    Sanyo PHC-25
-    Sega Master System
-    Sega SC 3000
-    Sega SG 1000
-    Super-80r (VDUEB)
-    Sony SMC-777
-    Sord M5
-    Spectravideo SVI
-    VG 5000
-    Vtech Laser 500
-    Vtech VZ200
-    Z80 TV GAME
-    ZX Spectrum 16/48/128
 
 
