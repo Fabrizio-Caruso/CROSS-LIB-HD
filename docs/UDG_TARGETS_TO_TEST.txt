@@ -11,13 +11,11 @@ ONDRA KO (no UDG with JOndra and play stuck in Mame)
 
 NABU
 TRS80_GFX
-BIT90(_KEYBOARD)
 BONDWELL2
 CORVETTE
 EINSTEIN
 GL6000SL
 LM80C
-PENCIL2
 PRIMO
 RADIO86
 SRR
@@ -36,6 +34,9 @@ MTX512     OK
 MYVISION   OK
 GAL_PLUS   OK
 SUPER80R   OK
+BIT90      OK
+PENCIL2    OK
+
 ---
 
 LVIV Missing Makefile
@@ -45,7 +46,7 @@ LVIV Missing Makefile
 
 
 
-
+Supported files as of 2026/02/14, 
     Agon Light
     Amstrad CPC
     Bandai RX78
@@ -56,6 +57,7 @@ LVIV Missing Makefile
     Commodore 128 Z80 40 column
     Coleco Vision
     GameGear
+    Galaksija Plus
     Hector HR
     Memotech MTX 500
     Memotech MTX 512
@@ -63,6 +65,7 @@ LVIV Missing Makefile
     MSX 1/2
     NEC PC-6001
     NEC PC-8801
+    Hanimex Pencil II
     Robotron KC-85/2/3/4
     Sam Coupé
     Samsung SPC-1000
@@ -70,6 +73,7 @@ LVIV Missing Makefile
     Sega Master System
     Sega SC 3000
     Sega SG 1000
+    Super-80r (VDUEB)
     Sony SMC-777
     Sord M5
     Spectravideo SVI
@@ -78,4 +82,5 @@ LVIV Missing Makefile
     Vtech VZ200
     Z80 TV GAME
     ZX Spectrum 16/48/128
+
 
