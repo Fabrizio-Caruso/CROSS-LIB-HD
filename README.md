@@ -34,6 +34,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - CCE MC-1000
 - Commodore 128 Z80 40 column
 - Coleco Vision
+- Exidy Sorcerer
 - GameGear
 - Galaksija Plus
 - Hector HR
