@@ -4,22 +4,27 @@ EG2K KO
 Z9001_KRT_GFX KO?
 MULTI8 KO (stuck at Z88DK boot strapping)
 ONDRA KO (no UDG with JOndra and play stuck in Mame)
-
-
+TRS80_GFX KO (glitches and 6x8?)
+SRR undefined cputc/gotoxy
+CORVETTE NO UDG
+RADIO86 NOP UDG
+TIM011 wrong disk ?
 ----
 
 To check:
 
-NABU
-TRS80_GFX
-BONDWELL2
-CORVETTE
-EINSTEIN
+
+
+BONDWELL2 may need cp/m disk
+EINSTEIN need dos80.dsk
+
+NABU may be hard to configure 
+LM80C may need exact firmware
+
+
 GL6000SL
-LM80C
-RADIO86
-SRR
-TIM011
+
+
 
 
 ----
@@ -42,7 +47,7 @@ PRIMO      OK
 ---
 
 LVIV Missing Makefile
-
+TRS-80 Model 2 
 
 ---------------
 

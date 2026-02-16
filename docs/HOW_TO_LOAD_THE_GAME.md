@@ -495,7 +495,7 @@ Run the binary in B: with its plain name (no extension)
 
 -----------------------------------------------------------
 
-### EXIDY SORCERER
+### EXIDY SORCERER (SRR)
 
 Use Mess emulator.
 

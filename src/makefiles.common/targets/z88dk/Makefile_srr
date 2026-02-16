@@ -3,7 +3,7 @@
 
 srr: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +srr $(SCCZ80_OPTS) $(INCLUDE_OPTS) -pragma-redirect:fputc_cons=fputc_cons_generic \
-	-D__SRR__ -vn \
+	-D__SRR__ -vn --generic-console \
 	-D__NO_WAIT -D__NO_SCREEN_COLOR_INIT \
 	-D__VT52 \
 	-D__CONIO_GRAPHICS \
