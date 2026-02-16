@@ -5,7 +5,6 @@ Z9001_KRT_GFX KO?
 MULTI8 KO (stuck at Z88DK boot strapping)
 ONDRA KO (no UDG with JOndra and play stuck in Mame)
 TRS80_GFX KO (glitches and 6x8?)
-SRR undefined cputc/gotoxy
 CORVETTE NO UDG
 RADIO86 NOP UDG
 TIM011 wrong disk ?
@@ -26,7 +25,6 @@ GL6000SL
 
 
 
-
 ----
 Done:
 ----
@@ -43,6 +41,7 @@ SUPER80R   OK
 BIT90      OK
 PENCIL2    OK
 PRIMO      OK
+SRR        OK
 
 ---
 
