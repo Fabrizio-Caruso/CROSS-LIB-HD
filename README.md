@@ -27,6 +27,8 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 ## CURRENTLY TESTED WORKING TARGETS
 - Agon Light
 - Amstrad CPC
+- Amstrad NC100/NC150
+- Amstrad NC200
 - Bandai RX78
 - Bondwell 2
 - Camputers Lynx
