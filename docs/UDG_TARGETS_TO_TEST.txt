@@ -20,8 +20,7 @@ LM80C may need exact firmware - may work because it is similar to msx
 
 
 
-NC100
-NC200
+
 SV800 (4K)
 Z88
 EXCALIBUR64
@@ -61,6 +60,10 @@ GL6000SL   OK
 Z9001 KRT  OK
 LVIV       OK
 Z1013      OK
+NC100      OK
+NC200      OK
+
+
 ---
 
 TRS-80 Model 2 

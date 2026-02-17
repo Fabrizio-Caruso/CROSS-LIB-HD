@@ -1372,8 +1372,15 @@ Use J1013 emulator (http://www.jens-mueller.org/j1013/download.html):
 
 3. Press Starten
 
+For KRT use the JKCEMU emulator.
 
+Click on "Extra" tab.
 
+Choose "Einstellungen"
+
+Select K1013 and KRT
+
+Load file with "Datei" -> "Laden" -> Select File -> "Starten"
 
 ---------------------------------------------------------
 
