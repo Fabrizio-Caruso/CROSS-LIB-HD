@@ -28,6 +28,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Agon Light
 - Amstrad CPC
 - Bandai RX78
+- Bondwell 2
 - Camputers Lynx
 - Casio FP-1100
 - Casio PV-2000
