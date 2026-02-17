@@ -28,7 +28,7 @@ EXCALIBUR64
 GEMINI
 
 TS2068
-TIKI100
+
 ZXN
 
 
@@ -63,6 +63,9 @@ SHARP X1   OK
 HGMC       OK
 VECTOR06C  OK
 V1050      OK
+TIKI100    OK
+
+
 ---
 
 TRS-80 Model 2 

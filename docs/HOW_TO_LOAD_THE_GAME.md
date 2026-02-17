@@ -2022,13 +2022,19 @@ Example: DSK1.XCHASE1 -> loads Cross Chase
 
 ### TIKI-100
 
+Use MAME
+Select KP/M for drive A
+Insert generated disk image in drive B
+
+or
+
 Use TIKI-100_emul (http://www.djupdal.org/tiki/emulator/)
 
 Attach the image and type: 
 
 a 
 
-folowed by enter.
+followed by enter.
 
 
 ----------------------------------------------------------

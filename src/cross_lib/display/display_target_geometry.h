@@ -37,13 +37,13 @@
 #endif
 
 		
-	#ifndef __SPRITE_X_STEP
-		#define __SPRITE_X_STEP SPRITE_X_SIZE
-	#endif
-	
-	#ifndef __SPRITE_Y_STEP
-		#define __SPRITE_Y_STEP SPRITE_Y_SIZE
-	#endif
+#ifndef __SPRITE_X_STEP
+    #define __SPRITE_X_STEP SPRITE_X_SIZE
+#endif
+
+#ifndef __SPRITE_Y_STEP
+    #define __SPRITE_Y_STEP SPRITE_Y_SIZE
+#endif
 #endif
 
 
@@ -132,7 +132,7 @@
 		#define YSize ((64/__SPRITE_Y_STEP)+1)
 	#elif (defined(__OSBORNE1__) && defined(__Z88DK_SPRITES_GRAPHICS))
 		#define YSize ((48/__SPRITE_Y_STEP)-1)
-	#elif defined(__TIKI100__)
+	#elif defined(__TIKI100__) && defined(__Z88DK_SPRITES_GRAPHICS)
 		#define YSize ((256/__SPRITE_Y_STEP)-Y_OFFSET)
 	#elif (defined(__NC100__) && defined(__Z88DK_SPRITES_GRAPHICS)) 
 		#define YSize ((64/__SPRITE_Y_STEP)+1)
@@ -172,7 +172,7 @@
 		#define XSize 64
 	#elif defined(__PCE__) || (defined(__PX4__) && defined(Z88DK_PUTC4X6))
 		 #define XSize 60
-	#elif defined(__TIKI100__)
+	#elif defined(__TIKI100__) && defined(__Z88DK_SPRITES_GRAPHICS)
 		#define XSize (1024/__SPRITE_X_STEP)
 	#elif ((defined(__NC100__) || defined(__NC200__)) && defined(__Z88DK_SPRITES_GRAPHICS))
 		#define XSize (480/__SPRITE_X_STEP)

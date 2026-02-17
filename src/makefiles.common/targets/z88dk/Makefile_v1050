@@ -4,7 +4,7 @@ v1050: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +cpm -subtype=v1050 $(SCCZ80_OPTS) \
 	$(INCLUDE_OPTS) \
 	-D__V1050__ \
-	-D__VT52 -DXSize=80 -DYSize=37  \
+	-D__VT52 -DXSize=80 -DYSize=25  \
 	-D__CONIO_GRAPHICS \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_V1050_SLOWDOWN) \
 	-lndos -D_XL_NO_JOYSTICK \
