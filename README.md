@@ -49,6 +49,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Hanimex Pencil II
 - Robotron KC-85/2/3/4
 - Tatung Einstein
+- Tesla Ondra
 - Sam Coupé
 - Samsung SPC-1000
 - Sanyo PHC-25
