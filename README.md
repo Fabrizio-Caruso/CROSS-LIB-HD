@@ -38,6 +38,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Exidy Sorcerer
 - GameGear
 - Galaksija Plus
+- Genius Leader GL6000SL
 - Hector HR
 - Memotech MTX 500
 - Memotech MTX 512
