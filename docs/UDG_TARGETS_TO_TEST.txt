@@ -1,30 +1,39 @@
 ACE KO maybe not enough UDGs
+
 PMD85 KO (6x8 fonts) sort of OK
-EG2K KO
-Z9001_KRT_GFX KO?
-ONDRA KO (no UDG with JOndra and play stuck in Mame)
 TRS80_GFX KO (glitches and 6x8?)
 
 TIM011 wrong disk ?
+EG2K KO no UDGs shown - sound on -> shows the UDGs
 
 MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
+EINSTEIN256 KO??
 
-CORVETTE NO UDG
-RADIO86 NOP UDG
 ----
 
 To check:
 
 MULTI8 should be fixed in Z88DK but needs to be checked
 
-EINSTEIN need dos80.dsk
-
 NABU may be hard to configure 
 LM80C may need exact firmware - may work because it is similar to msx
 
 
-GL6000SL
 
+NC100
+NC200
+SV800 (4K)
+Z88
+EXCALIBUR64
+GEMINI
+HGMC
+GAMEBOY
+VECTOR06C
+V1050
+TS2068
+TIKI100
+SHARP X1
+ZXN
 
 
 ----
@@ -46,10 +55,14 @@ PRIMO      OK
 SRR        OK
 
 BONDWELL2  OK
-
+EINSTEIN   OK
+ONDRA      OK
+GL6000SL   OK
+Z9001 KRT  OK
+LVIV       OK
+Z1013      OK
 ---
 
-LVIV Missing Makefile
 TRS-80 Model 2 
 
 ---------------
