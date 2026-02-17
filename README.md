@@ -68,6 +68,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Sony SMC-777
 - Sord M5
 - Spectravideo SVI
+- Vector-06C
 - VG 5000
 - Vtech Laser 500
 - Vtech VZ200
