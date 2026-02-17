@@ -50,6 +50,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Hanimex Pencil II
 - PK-01 LVIV/LVOV
 - Robotron KC-85/2/3/4
+- Robotron Z1013 with KRT
 - Robotron Z9001 with KRT
 - Tatung Einstein
 - Tesla Ondra
