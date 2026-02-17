@@ -25,6 +25,10 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 
 
 ## CURRENTLY TESTED WORKING TARGETS
+
+All 91 redefined tiles have been tested on the following targets.
+
+### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
 - Agon Light
 - Amstrad CPC
 - Amstrad NC100/NC150
