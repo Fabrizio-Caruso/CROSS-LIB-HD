@@ -49,6 +49,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - NEC PC-8801
 - Hanimex Pencil II
 - Robotron KC-85/2/3/4
+- Robotron Z9001 with KRT
 - Tatung Einstein
 - Tesla Ondra
 - Sam Coupé
