@@ -2116,7 +2116,13 @@ Load the .cas file with "CAS direkt betoeltese"
 
 Type "run" to start
 
+----------------------------------------------------------
 
+### VISUAL 1050
+
+Use MAME
+Select CP/M 3.0 firmware 1.1 and not 2.0
+Insert generated .img disk in second drive
 
 -----------------------------------------------------------
 

@@ -9,6 +9,11 @@ EG2K KO no UDGs shown - sound on -> shows the UDGs
 MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
 EINSTEIN256 KO??
 
+GAMEBOY uses a different asset file
+SV800 (4K)
+
+Z88 special init
+
 ----
 
 To check:
@@ -19,19 +24,11 @@ NABU may be hard to configure
 LM80C may need exact firmware - may work because it is similar to msx
 
 
-
-
-SV800 (4K)
-Z88
 EXCALIBUR64
 GEMINI
-HGMC
-GAMEBOY
-VECTOR06C
-V1050
+
 TS2068
 TIKI100
-SHARP X1
 ZXN
 
 
@@ -62,8 +59,10 @@ LVIV       OK
 Z1013      OK
 NC100      OK
 NC200      OK
-
-
+SHARP X1   OK
+HGMC       OK
+VECTOR06C  OK
+V1050      OK
 ---
 
 TRS-80 Model 2 
