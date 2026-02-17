@@ -42,6 +42,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Galaksija Plus
 - Genius Leader GL6000SL
 - Hector HR
+- Hübler Grafik-MC
 - Memotech MTX 500
 - Memotech MTX 512
 - Microkey Primo
