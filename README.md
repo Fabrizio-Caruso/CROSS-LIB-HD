@@ -5,10 +5,10 @@ CROSS-LIB-HD is Cross-Lib with a higher number of tiles.
 This is still a work process.
 
 ## CROSS-LIB-HD vs CROSS-LIB
-The main difference is the number of redefinable tiles supported.
+Both CROSS-LIB and CROSS-LIB-HD have 37 fixed (26 letters, 10 digits and 1 empty tile). The main difference is the total number of supported tiles (fixed and redefinable).
 
-- **CROSS-LIB-HD**: at least 128 total tiles: 37 fixed tiles (26 letters, 10 digits and 1 empty tile) + 91 redefinable tiles,
-- **CROSS-LIB**: only supports 64 total tiles: 37 fixed tiles + 27 redefinable tiles.
+- **CROSS-LIB-HD**: at least 128 total tiles, i.e., 91 redefinable tiles,
+- **CROSS-LIB**: supports at most 64 total tiles: i.e.,  27 redefinable tiles.
 
 ### Same targets as CROSS-LIB
 In principle it is possible to support the same set of targets as CROSS-LIB even for targets that cannot have 91 redefinable tiles in the same colors and video modes as the ones used by CROSS-LIB
