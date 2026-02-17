@@ -70,6 +70,7 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 - Spectravideo SVI
 - Vector-06C
 - VG 5000
+- Visual 1050
 - Vtech Laser 500
 - Vtech VZ200
 - Z80 TV GAME
