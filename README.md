@@ -73,6 +73,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Sord M5
 - Spectravideo SVI
 - TIKI-100
+- Timex TS2068
 - Vector-06C
 - VG 5000
 - Visual 1050
