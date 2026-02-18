@@ -3,45 +3,29 @@
 
 
 #if !defined(_XL_NO_COLOR)
-
-    // #if defined(__FP1100__)
-    
-        // #define _XL_DRAW(x,y,tile,color) \
-        // do \
-        // { \
-            // gotoxy((X_OFFSET+(x)),(Y_OFFSET+(y))); \
-            // _XL_SET_TEXT_COLOR(color); \
-            // cputc(tile); \
-            // gotoxy((X_OFFSET+((XSize))),(Y_OFFSET+((YSize)))); \
-            // cputc(' '); \
-        // } \
-        // while(0)
-            
-    // #else
-        #if defined(__NO_BOTTOM)
-            #define _XL_DRAW(x,y,tile,color) \
-            do \
-            { \
-                if(y<YSize-1) \
-                { \
-                    gotoxy((X_OFFSET+(x)),(Y_OFFSET+(y))); \
-                    _XL_SET_TEXT_COLOR(color); \
-                    cputc(tile); \
-                } \
-            } \
-            while(0)
-        #else
-            #define _XL_DRAW(x,y,tile,color) \
-            do \
+    #if defined(__NO_BOTTOM)
+        #define _XL_DRAW(x,y,tile,color) \
+        do \
+        { \
+            if(y<YSize-1) \
             { \
                 gotoxy((X_OFFSET+(x)),(Y_OFFSET+(y))); \
                 _XL_SET_TEXT_COLOR(color); \
                 cputc(tile); \
             } \
-            while(0)
-            
-        #endif
-    // #endif
+        } \
+        while(0)
+    #else
+        #define _XL_DRAW(x,y,tile,color) \
+        do \
+        { \
+            gotoxy((X_OFFSET+(x)),(Y_OFFSET+(y))); \
+            _XL_SET_TEXT_COLOR(color); \
+            cputc(tile); \
+        } \
+        while(0)
+        
+    #endif
 
 #elif defined(__KIM1__) || defined(__SYM1__)
 
