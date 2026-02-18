@@ -41,6 +41,7 @@ All 91 redefined tiles have been tested on the following targets.
 - CCE MC-1000
 - Commodore 128 Z80 40 column
 - Coleco Vision
+- Excalibur 64
 - Exidy Sorcerer
 - GameGear
 - Galaksija Plus
