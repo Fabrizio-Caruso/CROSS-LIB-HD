@@ -26,9 +26,6 @@ LM80C may need exact firmware - may work because it is similar to msx
 
 EXCALIBUR64
 GEMINI
-
-TS2068
-
 ZXN
 
 
@@ -64,7 +61,7 @@ HGMC       OK
 VECTOR06C  OK
 V1050      OK
 TIKI100    OK
-
+TS2068     OK
 
 ---
 

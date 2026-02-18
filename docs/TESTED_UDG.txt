@@ -1,0 +1,50 @@
+    Agon Light
+    Amstrad CPC
+    Amstrad NC100/NC150
+    Amstrad NC200
+    Bandai RX78
+    Bondwell 2
+    Camputers Lynx
+    Casio FP-1100
+    Casio PV-2000
+    CCE MC-1000
+    Commodore 128 Z80 40 column
+    Coleco Vision
+    Exidy Sorcerer
+    GameGear
+    Galaksija Plus
+    Genius Leader GL6000SL
+    Hector HR
+    Hübler Grafik-MC
+    Memotech MTX 500
+    Memotech MTX 512
+    Microkey Primo
+    Myvision
+    MSX 1/2
+    NEC PC-6001
+    NEC PC-8801
+    Hanimex Pencil II
+    PK-01 LVIV/LVOV
+    Robotron KC-85/2/3/4
+    Robotron Z1013 with KRT
+    Robotron Z9001 with KRT
+    Tatung Einstein
+    Tesla Ondra
+    Tiki-100
+    Sam Coupé
+    Samsung SPC-1000
+    Sanyo PHC-25
+    Sega Master System
+    Sega SC 3000
+    Sega SG 1000
+    Sharp X1
+    Super-80r (VDUEB)
+    Sony SMC-777
+    Sord M5
+    Spectravideo SVI
+    Vector-06C
+    VG 5000
+    Vtech Laser 500
+    Vtech VZ200
+    Z80 TV GAME
+    ZX Spectrum 16/48/128
