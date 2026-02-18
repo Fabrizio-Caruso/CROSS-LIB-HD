@@ -10,6 +10,7 @@
     CCE MC-1000
     Commodore 128 Z80 40 column
     Coleco Vision
+    Excalibur 64
     Exidy Sorcerer
     GameGear
     Galaksija Plus
@@ -30,7 +31,6 @@
     Robotron Z9001 with KRT
     Tatung Einstein
     Tesla Ondra
-    Tiki-100
     Sam Coupé
     Samsung SPC-1000
     Sanyo PHC-25
@@ -42,9 +42,13 @@
     Sony SMC-777
     Sord M5
     Spectravideo SVI
+    TIKI-100
+    Timex TS2068
     Vector-06C
     VG 5000
+    Visual 1050
     Vtech Laser 500
     Vtech VZ200
     Z80 TV GAME
     ZX Spectrum 16/48/128
+

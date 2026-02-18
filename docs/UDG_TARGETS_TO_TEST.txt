@@ -10,7 +10,7 @@ MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
 EINSTEIN256 KO??
 
 GAMEBOY uses a different asset file
-SV800 (4K)
+SV800 (4K) only 23 tiles (inverted and no fonts)
 
 Z88 special init
 
@@ -20,48 +20,49 @@ To check:
 
 MULTI8 should be fixed in Z88DK but needs to be checked
 
-NABU may be hard to configure 
+NABU may be hard to configure / no cp/m boot disk found
 LM80C may need exact firmware - may work because it is similar to msx
 
 
-EXCALIBUR64
-GEMINI
-ZXN
+GEMINI      160x75 hard to test/missing Windows emulator
+ZXN         black screen when using UDGs
 
 
 ----
 Done:
 ----
-PV2000     OK
-RX78       OK
-SMC777     OK
-Z80TVGAME  OK
+PV2000      OK
+RX78        OK
+SMC777      OK
+Z80TVGAME   OK
 
-MTX500     OK
-MTX512     OK
-MYVISION   OK
-GAL_PLUS   OK
-SUPER80R   OK
-BIT90      OK
-PENCIL2    OK
-PRIMO      OK
-SRR        OK
+MTX500      OK
+MTX512      OK
+MYVISION    OK
+GAL_PLUS    OK
+SUPER80R    OK
+BIT90       OK
+PENCIL2     OK
+PRIMO       OK
+SRR         OK
 
-BONDWELL2  OK
-EINSTEIN   OK
-ONDRA      OK
-GL6000SL   OK
-Z9001 KRT  OK
-LVIV       OK
-Z1013      OK
-NC100      OK
-NC200      OK
-SHARP X1   OK
-HGMC       OK
-VECTOR06C  OK
-V1050      OK
-TIKI100    OK
-TS2068     OK
+BONDWELL2   OK
+EINSTEIN    OK
+ONDRA       OK
+GL6000SL    OK
+Z9001 KRT   OK
+LVIV        OK
+Z1013       OK
+NC100       OK
+NC200       OK
+SHARP X1    OK
+HGMC        OK
+VECTOR06C   OK
+V1050       OK
+TIKI100     OK
+TS2068      OK
+EXCALIBUR64 OK
+
 
 ---
 

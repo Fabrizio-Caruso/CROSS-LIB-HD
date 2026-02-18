@@ -105,18 +105,20 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
     #define COL_OFFSET 2
 #endif
 
-#if YSize<12
+#if YSize<=16
     #define ROW_OFFSET 1
+    #define CHAR_SKIP  1
 #else
     
     #define ROW_OFFSET 2
+    #if XSize<=16
+        #define CHAR_SKIP 1
+    #else
+        #define CHAR_SKIP 2
+    #endif    
 #endif
 
-#if XSize<=16
-    #define CHAR_SKIP 1
-#else
-    #define CHAR_SKIP 2
-#endif    
+
 
 
 #if YSize<=25
@@ -162,12 +164,19 @@ int main(void)
             _XL_PRINT(COL_OFFSET,YSize-1, _PRESS);
             #endif
 
+            #if YSize<=16
+            for(i=0;i<_XL_NUMBER_OF_TILES;++i)
+            {
+                _XL_DRAW((i&15)*CHAR_SKIP+COL_OFFSET,(i/16)*LINE_SKIP+ROW_OFFSET,tiles[i],tile_color[j]);
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            }
+            #else
             for(i=0;i<_XL_NUMBER_OF_TILES;++i)
             {
                 _XL_DRAW((i&7)*CHAR_SKIP+COL_OFFSET,(i/8)*LINE_SKIP+ROW_OFFSET,tiles[i],tile_color[j]);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
-            
+            #endif
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             
             _XL_WAIT_FOR_INPUT();
