@@ -12,6 +12,19 @@ SV800 (4K) only 23 tiles (inverted and no fonts)
 
 EINSTEIN256 KO??
 
+---
+bee
+coleco_adam
+einstein256
+z80retro
+aquarius+
+bit90
+hector1
+msx2
+map1010
+specialist
+
+
 ----
 
 MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
@@ -65,6 +78,8 @@ TIKI100     OK
 TS2068      OK
 EXCALIBUR64 OK
 GAME BOY    OK
+
+SVI-318     OK
 
 ---
 

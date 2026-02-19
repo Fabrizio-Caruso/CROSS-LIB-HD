@@ -43,6 +43,7 @@
     Sony SMC-777
     Sord M5
     Spectravideo SVI
+    Spectravideo SVI-318
     TIKI-100
     Timex TS2068
     Vector-06C
