@@ -8,20 +8,19 @@ TRS80_GFX KO (glitches and 6x8?)
 TIM011 wrong disk ?
 EG2K KO no UDGs shown - sound on -> shows the UDGs
 
-SV800 (4K) only 23 tiles (inverted and no fonts)
+SV8000 (4K) only 23 tiles (inverted and no fonts)
 
 EINSTEIN256 KO??
 
 ---
 bee
 coleco_adam
-einstein256
 z80retro
-aquarius+
+aquarius+ -> caq cannot be loaded in emulator, rom freezes
 bit90
 hector1
-msx2
-map1010
+msx2 -> how to set screen modes?
+map1010 - needs castool to be tested
 specialist
 
 
