@@ -1,4 +1,6 @@
 ACE KO maybe not enough UDGs
+GAMEBOY uses a different asset file
+Z88 special init
 
 PMD85 KO (6x8 fonts) sort of OK
 TRS80_GFX KO (glitches and 6x8?)
@@ -6,13 +8,13 @@ TRS80_GFX KO (glitches and 6x8?)
 TIM011 wrong disk ?
 EG2K KO no UDGs shown - sound on -> shows the UDGs
 
-MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
-EINSTEIN256 KO??
-
-GAMEBOY uses a different asset file
 SV800 (4K) only 23 tiles (inverted and no fonts)
 
-Z88 special init
+EINSTEIN256 KO??
+
+----
+
+MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
 
 ----
 
