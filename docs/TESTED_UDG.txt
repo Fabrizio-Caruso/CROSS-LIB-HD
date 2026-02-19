@@ -13,6 +13,7 @@
     Excalibur 64
     Exidy Sorcerer
     GameGear
+    Game Boy
     Galaksija Plus
     Genius Leader GL6000SL
     Hector HR
@@ -51,4 +52,4 @@
     Vtech VZ200
     Z80 TV GAME
     ZX Spectrum 16/48/128
-
+    

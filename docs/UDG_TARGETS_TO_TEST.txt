@@ -1,5 +1,5 @@
 ACE KO maybe not enough UDGs
-GAMEBOY uses a different asset file
+
 Z88 special init
 
 PMD85 KO (6x8 fonts) sort of OK
@@ -64,7 +64,7 @@ V1050       OK
 TIKI100     OK
 TS2068      OK
 EXCALIBUR64 OK
-
+GAME BOY    OK
 
 ---
 
