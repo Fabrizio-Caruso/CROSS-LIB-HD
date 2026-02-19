@@ -49,6 +49,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Exidy Sorcerer
 - GameGear
 - Galaksija Plus
+- Game Boy
 - Genius Leader GL6000SL
 - Hector HR
 - Hübler Grafik-MC
