@@ -1542,7 +1542,9 @@ msx_16k: $(ASSETS_PATH)/z88dk_xchase.asm
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_DATA.bin
 
 
-msx2: $(ASSETS_PATH)/z88dk_xchase.asm   
+msx2: msx2_mode6
+
+msx2_mode6: $(ASSETS_PATH)/z88dk_xchase.asm   
 	$(Z88DK_PATH)$(MYZ88DK) +msx -lmsx2 $(SCCZ80_OPTS) $(INCLUDE_OPTS) \
 	-pragma-redirect:fputc_cons=fputc_cons_generic \
 	-vn   -D__MSX__ -D__SCREEN_MODE=6 \

@@ -1511,6 +1511,11 @@ Press F2
 
 Select .nex binary to load and start it
 
+---
+
+CSpect.exe -tv -s14 -w2 -zxnext -mmc=.\ .\file.nex
+
+
 -------------------------------------------------------------
 
 ### Sinclair QL
