@@ -970,13 +970,20 @@ mame.exe canonv20 -window -uimodekey DEL -cart1 c:\Retro\CROSS-LIB\build\Xhorde_
 
 -----------------------------------------------------------
 
-### NICHIBUTSU MY VISION
+### NABU PC-6001
 
-Use Mame emulator
+Use MAME with NABU_leo.img boot disk in disk A:
 
-e.g., mame64.exe myvision -window  -uimodekey DEL
+Insert generated image in disk B:
 
-Attach the .rom image file as a cartridge
+Press a key to boot
+
+B:
+
+dir
+
+type the name of the binary without the extension
+
 
 -----------------------------------------------------------
 
@@ -1004,6 +1011,15 @@ Select cassette image
 
 Type "run"
 
+-----------------------------------------------------------
+
+### NICHIBUTSU MY VISION
+
+Use Mame emulator
+
+e.g., mame64.exe myvision -window  -uimodekey DEL
+
+Attach the .rom image file as a cartridge
 
 ---------------------------------------------------------
 ### Nintendo NES / Famicom 

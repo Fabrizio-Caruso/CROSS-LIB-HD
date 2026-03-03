@@ -29,6 +29,7 @@ coleco_adam KO (crash at startup)
 z80retro how to load?
 
 aquarius+ -> caq cannot be loaded in emulator, rom freezes
+
 hector1
 
 msx2 -> how to set screen modes? 6 gets us 512x212 in black and green shades
@@ -41,8 +42,10 @@ specialist -> classic/input/in_GetKey.asm:29: error: undefined symbol: in_Inkey
 
 Should already be OK 
 
-MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now
-map1010 - needs castool to be tested
+MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now -> still stuck
+
+
+MAP1010 - needs castool to be tested
 
 ----
 
