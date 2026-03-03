@@ -58,7 +58,8 @@ All 91 redefined tiles have been tested on the following targets.
 - Memotech MTX 512
 - Microkey Primo
 - Myvision
-- MSX 1/2
+- MSX 1
+- NABU PC
 - NEC PC-6001
 - NEC PC-8801
 - Hanimex Pencil II

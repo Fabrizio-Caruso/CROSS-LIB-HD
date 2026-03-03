@@ -13,8 +13,19 @@ SV8000 (4K) only 23 tiles (inverted and no fonts)
 EINSTEIN256 KO??
 
 ---
-bee
-coleco_adam
+bee ~OK
+  white OK
+  red is shown as dark blue
+  cyan is shown as yellow
+  green OK
+  yellow is shown as purple
+  blue is shown as red
+  magenta OK
+  
+------
+
+coleco_adam KO (crash at startup)
+
 z80retro how to load?
 
 aquarius+ -> caq cannot be loaded in emulator, rom freezes
@@ -39,7 +50,6 @@ To check:
 
 MULTI8 should be fixed in Z88DK but needs to be checked
 
-NABU may be hard to configure / no cp/m boot disk found
 LM80C may need exact firmware - may work because it is similar to msx
 
 
@@ -85,6 +95,11 @@ GAME BOY    OK
 
 SVI-318     OK
 BIT90       OK
+
+NABU        OK
+
+
+BEE         OK ~ colors KO
 ---
 
 TRS-80 Model 2 
