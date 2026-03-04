@@ -37,6 +37,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Amstrad CPC
 - Amstrad NC100/NC150
 - Amstrad NC200
+- Aquarius Plus
 - Bandai RX78
 - Bit Corporation Bit90
 - Bondwell 2
