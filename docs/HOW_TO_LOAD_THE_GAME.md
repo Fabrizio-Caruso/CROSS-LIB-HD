@@ -1097,7 +1097,7 @@ run
 ### Senio MAP-1010
 You need to convert the phc file to a wav file.
 In order to do this you can use castool:
-castool convert phc [phc file] [wav output file]
+castool convert phc25 [phc file] [wav output file]
 
 Use TAKEDA emulator
 CLOAD

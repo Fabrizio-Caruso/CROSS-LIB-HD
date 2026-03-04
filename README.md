@@ -61,6 +61,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Microkey Primo
 - Myvision
 - MSX 1
+- MSX 2
 - NABU PC
 - NEC PC-6001
 - NEC PC-8801
@@ -77,6 +78,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Sega Master System
 - Sega SC 3000
 - Sega SG 1000
+- Seiko MAP-1010
 - Sharp X1
 - Super-80r (VDUEB)
 - Sony SMC-777
