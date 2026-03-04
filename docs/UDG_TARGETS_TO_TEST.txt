@@ -36,6 +36,7 @@ msx2 -> how to set screen modes? 6 gets us 512x212 in black and green shades
 
 Bug?
 specialist -> classic/input/in_GetKey.asm:29: error: undefined symbol: in_Inkey
+ONLY TURN-BASED
 
 
 ----
@@ -102,7 +103,9 @@ BIT90       OK
 NABU        OK
 
 
-BEE         OK ~ colors KO
+BEE         OK
+BEE PREMIUM OK
+
 ---
 
 TRS-80 Model 2 

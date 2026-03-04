@@ -56,6 +56,8 @@ All 91 redefined tiles have been tested on the following targets.
 - Hübler Grafik-MC
 - Memotech MTX 500
 - Memotech MTX 512
+- MicroBee
+- MicroBee Premium
 - Microkey Primo
 - Myvision
 - MSX 1
