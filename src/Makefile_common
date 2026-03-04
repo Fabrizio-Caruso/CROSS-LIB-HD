@@ -953,8 +953,8 @@ aquarius_rom:
 
 aquarius_plus_caq: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +aquarius $(SCCZ80_OPTS) -clib=aqplus $(INCLUDE_OPTS) -vn \
-	 -D__AQUARIUS__ \
-	-lndos -D_XL_NO_JOYSTICK \
+	 -D__AQUARIUS__ --generic-console -D__SCREEN_MODE=1 \
+	-lndos -D_XL_NO_JOYSTICK -DY_OFFSET=1 -DYSize=23 \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_AQUARIUS_SLOWDOWN) \
 	-D__CONIO_GRAPHICS \
 	$(FULL_FILES) \
@@ -967,10 +967,11 @@ aquarius_plus_caq: $(ASSETS_PATH)/z88dk_xchase.asm
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_DATA.bin 
 
 
+# aqx 
 aquarius_plus: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +aquarius $(SCCZ80_OPTS) -clib=aqplus -subtype=aqx $(INCLUDE_OPTS) -vn \
-	 -D__AQUARIUS__ \
-	-lndos -D_XL_NO_JOYSTICK \
+	 -D__AQUARIUS__ --generic-console -D__SCREEN_MODE=1 \
+	-lndos -D_XL_NO_JOYSTICK -DY_OFFSET=1 -DYSize=23 \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_AQUARIUS_SLOWDOWN) \
 	-D__CONIO_GRAPHICS \
 	$(FULL_FILES) \
@@ -985,8 +986,8 @@ aquarius_plus: $(ASSETS_PATH)/z88dk_xchase.asm
 
 aquarius_plus_rom: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +aquarius $(SCCZ80_OPTS) -clib=aqplus -subtype=rom $(INCLUDE_OPTS) -vn \
-	 -D__AQUARIUS__ \
-	-lndos -D_XL_NO_JOYSTICK \
+	 -D__AQUARIUS__ --generic-console -D__SCREEN_MODE=1 \
+	-lndos -D_XL_NO_JOYSTICK -DY_OFFSET=1 -DYSize=23 \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_AQUARIUS_SLOWDOWN) \
 	-D__CONIO_GRAPHICS \
 	$(FULL_FILES) \
