@@ -46,6 +46,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Casio PV-2000
 - CCE MC-1000
 - Commodore 128 Z80 40 column
+- Coleco Adam
 - Coleco Vision
 - Excalibur 64
 - Exidy Sorcerer
@@ -59,6 +60,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Memotech MTX 512
 - MicroBee
 - MicroBee Premium
+- MicroData Multi-8
 - Microkey Primo
 - Myvision
 - MSX 1
@@ -86,6 +88,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Sord M5
 - Spectravideo SVI
 - TIKI-100
+- TIM-011
 - Timex TS2068
 - Vector-06C
 - VG 5000

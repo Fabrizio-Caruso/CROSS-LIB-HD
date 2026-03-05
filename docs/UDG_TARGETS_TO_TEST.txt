@@ -1,65 +1,57 @@
-ACE KO maybe not enough UDGs
+-----------------------------
+Special APIs
 
-Z88 special init
+- ACE KO maybe not enough UDGs
+- Z88 special init
+-----------------------------
 
-PMD85 KO (6x8 fonts) sort of OK
-TRS80_GFX KO (glitches and 6x8?)
+-----------------------------
+Special code to select the PALETTE
 
-TIM011 wrong disk ?
-EG2K KO no UDGs shown - sound on -> shows the UDGs
-
-SV8000 (4K) only 23 tiles (inverted and no fonts)
-
-EINSTEIN256 KO??
-
----
-bee ~OK
-  white OK
-  red is shown as dark blue
-  cyan is shown as yellow
-  green OK
-  yellow is shown as purple
-  blue is shown as red
-  magenta OK
-  
-------
-
-coleco_adam KO (crash at startup)
-
-z80retro how to load?
-
-aquarius+ -> caq cannot be loaded in emulator, rom freezes
-
-hector1
-
-msx2 -> how to set screen modes? 6 gets us 512x212 in black and green shades
-
-Bug?
-specialist -> classic/input/in_GetKey.asm:29: error: undefined symbol: in_Inkey
-ONLY TURN-BASED
+- MSX2 -> how to set screen modes? 6 gets us 512x212 in black and green shades
+-----------------------------
 
 
-----
-
-Should already be OK 
-
-MULTI8 KO (stuck at Z88DK boot strapping) - maybe fixed now -> still stuck
-
-
-MAP1010 - needs castool to be tested
-
-----
-
-To check:
-
-MULTI8 should be fixed in Z88DK but needs to be checked
-
-LM80C may need exact firmware - may work because it is similar to msx
+-----------------------------
+6x8
+- PMD85 KO (6x8 fonts) sort of OK
+- TRS80_GFX KO (glitches and 6x8?)
+-----------------------------
 
 
-GEMINI      160x75 hard to test/missing Windows emulator
-ZXN         black screen when using UDGs
+-----------------------------
+Too little memory
 
+- SV8000 (4K) only 23 tiles (inverted and no fonts)
+- HECTOR1 too little memory
+-----------------------------
+
+-----------------------------
+Only turn-based:
+
+- SPECIALIST -> classic/input/in_GetKey.asm:29: error: undefined symbol: in_Inkey -> ONLY TURN-BASED
+-----------------------------
+
+-----------------------------
+KO
+
+- EG2K KO no UDGs shown - sound on -> shows the UDGs
+- EINSTEIN256 KO??
+-----------------------------
+
+-----------------------------
+HOW TO CHECK
+
+
+- LM80C     may need exact firmware - may work because it is similar to msx
+- GEMINI    160x75 hard to test/missing Windows emulator
+- Z80RETRO  how to load?
+
+-----------------------------
+To understand:
+
+- ZXN         How to have 8x8 UDGs?
+-----------------------------
 
 ----
 Done:
@@ -105,6 +97,11 @@ NABU        OK
 
 BEE         OK
 BEE PREMIUM OK
+AQUARIUS+   OK
+MAP1010     OK
+TIM011      OK
+MULTI8      OK
+COLECO_ADAM OK
 
 ---
 

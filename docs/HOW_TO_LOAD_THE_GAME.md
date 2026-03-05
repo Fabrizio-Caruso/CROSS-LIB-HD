@@ -2040,6 +2040,19 @@ Example: DSK1.XCHASE1 -> loads Cross Chase
 
 -----------------------------------------------------------
 
+### TIM-011
+
+Use Mame
+
+Use tim011pcw.img as boot disk
+
+Insert generated disk into drive A:
+Remove TAB character
+DIR
+Type binary name without extension
+
+-----------------------------------------------------------
+
 
 ### TIKI-100
 
