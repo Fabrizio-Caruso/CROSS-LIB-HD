@@ -75,7 +75,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Robotron KC-85/2/3/4
 - Robotron Z1013 with KRT
 - Robotron Z9001 with KRT
-- Tatung Einstein
+- Tatung Einstein TC-01
 - Tesla Ondra
 - Sam Coupé
 - Samsung SPC-1000
