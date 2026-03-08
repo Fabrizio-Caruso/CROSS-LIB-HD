@@ -235,7 +235,74 @@ lcc1802_targets: \
     _lcc1802_ascii_targets \
     clean_combo_files
 
-
+udg_test: \
+    terminal \
+    msdos \
+    agon \
+    cpc \
+    nc100 \
+    nc200 \
+    aquarius_plus \
+    rx78 \
+    bit90 \
+    bondwell2 \
+    camputers_lynx \
+    fp1100 \
+    pv2000 \
+    mc1000 \
+    c128 \
+    coleco_adam \
+    coleco \
+    excalibur64 \
+    srr \
+    gamegear \
+    gal_plus \
+    gb \
+    gl6000sl \
+    hectorhr \
+    hgmc \
+    mtx500 \
+    mtx512 \
+    bee \
+    bee_premium \
+    multi8 \
+    primo \
+    myvision \
+    msx \
+    msx2 \
+    nabu \
+    pc6001 \
+    pc88 \
+    pencil2 \
+    lviv \
+    kc \
+    z1013_krt \
+    z9001_krt \
+    einstein \
+    einstein256 \
+    ondra \
+    samcoupe \
+    spc1000 \
+    phc25 \
+    sms \
+    sc3000 \
+    sg1000 \
+    map1010 \
+    x1 \
+    super80r \
+    smc777 \
+    m5 \
+    svi \
+    tiki100 \
+    tim011 \
+    ts2068 \
+    vector06c \
+    vg5k \
+    v1050 \
+    laser500 \
+    vz200 \
+    z80tvgame \
+    spectrum
 
 #################################################################
 # CC65
@@ -1541,10 +1608,26 @@ msx_16k: $(ASSETS_PATH)/z88dk_xchase.asm
 
 msx2: msx2_mono
 
-msx2_color: $(ASSETS_PATH)/z88dk_xchase.asm   
+
+# msx2_color: $(ASSETS_PATH)/z88dk_xchase.asm   
+	# $(Z88DK_PATH)$(MYZ88DK) +msx -lmsx2 $(SCCZ80_OPTS) $(INCLUDE_OPTS) \
+	# -pragma-redirect:fputc_cons=fputc_cons_generic \
+	# $(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/msx2_palette.asm \
+	# -vn   -D__MSX__ -D__SCREEN_MODE=6 -D__MSX2_COLOR -pragma-define:CLIB_CONIO_NATIVE_COLOUR=1 \
+	# -lndos -subtype=rom \
+	# -create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom \
+	# -D__CONIO_GRAPHICS   -DXSize=64 -DYSize=24 \
+	# -D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_MSX_SLOWDOWN)*4 \
+	# $(ASSETS_PATH)/z88dk_xchase.asm \
+	# $(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
+	# $(CROSS_LIB_PATH)/sound/z88dk/psg/ay-3-8910_psg_sounds.c \
+	# $(FULL_FILES)
+	# rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_BSS.bin
+	# rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_DATA.bin
+
+msx2_mono: $(ASSETS_PATH)/z88dk_xchase.asm   
 	$(Z88DK_PATH)$(MYZ88DK) +msx -lmsx2 $(SCCZ80_OPTS) $(INCLUDE_OPTS) \
-	-pragma-redirect:fputc_cons=fputc_cons_generic \
-	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/msx2_palette.asm \
+	-pragma-redirect:fputc_cons=fputc_cons_generic -D_XL_NO_COLOR \
 	-vn   -D__MSX__ -D__SCREEN_MODE=6 \
 	-lndos -subtype=rom \
 	-create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom \
@@ -1557,10 +1640,12 @@ msx2_color: $(ASSETS_PATH)/z88dk_xchase.asm
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_BSS.bin
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_DATA.bin
 
-msx2_mono: $(ASSETS_PATH)/z88dk_xchase.asm   
+msx2_color: msx2_mode7
+
+msx2_mode7: $(ASSETS_PATH)/z88dk_xchase.asm   
 	$(Z88DK_PATH)$(MYZ88DK) +msx -lmsx2 $(SCCZ80_OPTS) $(INCLUDE_OPTS) \
-	-pragma-redirect:fputc_cons=fputc_cons_generic -D_XL_NO_COLOR \
-	-vn   -D__MSX__ -D__SCREEN_MODE=6 \
+	-pragma-redirect:fputc_cons=fputc_cons_generic \
+	-vn   -D__MSX__ -D__SCREEN_MODE=7 \
 	-lndos -subtype=rom \
 	-create-app -o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom \
 	-D__CONIO_GRAPHICS   -DXSize=64 -DYSize=24 \
@@ -1947,13 +2032,69 @@ trs80:
 	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
 	-pragma-redirect:getk=getk_inkey \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
-	-D__VT52 \
+	--generic-console \
 	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
 	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
 	$(FULL_FILES)
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
 
 
+trs80_model2:
+	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=lifeboat -subtype=cmd \
+	$(INCLUDE_OPTS) \
+	-lm -create-app \
+	-D__TRS80__ \
+	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
+	-pragma-redirect:getk=getk_inkey \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
+	--generic-console \
+	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
+	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
+	$(FULL_FILES)
+	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
+
+
+trs80_model2_lifeboat:
+	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=lifeboat -subtype=cmd \
+	$(INCLUDE_OPTS) \
+	-lm -create-app \
+	-D__TRS80__ \
+	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
+	-pragma-redirect:getk=getk_inkey \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
+	--generic-console \
+	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
+	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
+	$(FULL_FILES)
+	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
+
+trs80_model2_ptcpm:
+	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=ptcpm -subtype=cmd \
+	$(INCLUDE_OPTS) \
+	-lm -create-app \
+	-D__TRS80__ \
+	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
+	-pragma-redirect:getk=getk_inkey \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
+	--generic-console \
+	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
+	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
+	$(FULL_FILES)
+	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
+
+trs80_model2_fmgcpm:
+	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=fmgcpm -subtype=cmd \
+	$(INCLUDE_OPTS) \
+	-lm -create-app \
+	-D__TRS80__ \
+	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
+	-pragma-redirect:getk=getk_inkey \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
+	--generic-console \
+	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
+	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
+	$(FULL_FILES)
+	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
 
 #################################################################
 

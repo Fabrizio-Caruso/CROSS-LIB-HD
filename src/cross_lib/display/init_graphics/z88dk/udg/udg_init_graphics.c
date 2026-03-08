@@ -9,6 +9,10 @@
         #include <arch/hector.h>
 #endif 
 
+#if defined(__MSX2_COLOR)
+    #include<video/v9938.h>
+#endif
+
 extern uint8_t udgs[];
 
 
@@ -34,6 +38,12 @@ void _XL_INIT_GRAPHICS(void)
 	#endif
 		
 	console_ioctl(IOCTL_GENCON_SET_MODE, &mode); 
+    
+    #if defined(__MSX2_COLOR)
+    vdp_set_palette_entry(1, PAL_MSX1_DARK_BLUE);
+    vdp_set_palette_entry(2, PAL_MSX1_MEDIUM_RED);
+    vdp_set_palette_entry(3, PAL_MSX1_LIGHT_YELLOW);
+    #endif
     
     // TODO: remove the Spectrum special case
 	#if defined(__SPECTRUM__)

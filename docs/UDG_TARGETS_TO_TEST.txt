@@ -36,16 +36,23 @@ Only turn-based:
 KO
 
 - EG2K KO no UDGs shown - sound on -> shows the UDGs
-- EINSTEIN256 KO??
 -----------------------------
 
 -----------------------------
 HOW TO CHECK
 
 
-- LM80C     may need exact firmware - may work because it is similar to msx
 - GEMINI    160x75 hard to test/missing Windows emulator
 - Z80RETRO  how to load?
+
+-----------------------------
+
+-----------------------------
+Target to implement
+
+- TRS-80 Model 2 
+-----------------------------
+
 
 -----------------------------
 To understand:
@@ -102,11 +109,8 @@ MAP1010     OK
 TIM011      OK
 MULTI8      OK
 COLECO_ADAM OK
+LM-80C      OK
+EINSTEIN256 OK
 
 ---
-
-TRS-80 Model 2 
-
----------------
-
 

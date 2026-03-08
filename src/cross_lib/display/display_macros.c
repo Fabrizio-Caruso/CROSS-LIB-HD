@@ -123,10 +123,10 @@ void _XL_SET_TEXT_COLOR(uint8_t c)
             SV_VIDEO[++base]  = second_map_one_to_four(udg)&color;
             SV_VIDEO[++base]  = third_map_one_to_four(udg)&color;
             SV_VIDEO[++base]  = fourth_map_one_to_four(udg)&color;
-            // SV_VIDEO[base+delta]    = 0xFF;
-            // SV_VIDEO[base+delta+1]  = 0xFF;
-            // SV_VIDEO[base+delta+2]  = 0xFF;
-            // SV_VIDEO[base+delta+3]  = 0xFF;			
+            // SV_VIDEO[base]    = 0xFF;
+            // SV_VIDEO[++base]  = 0xFF;
+            // SV_VIDEO[++base]  = 0xFF;
+            // SV_VIDEO[++base]  = 0xFF;	
             base+=BYTES_PER_LINE-3;
         }
     }
@@ -147,7 +147,6 @@ void _XL_SET_TEXT_COLOR(uint8_t c)
         }
     }
 #endif 
-
 
 #if defined(__MC10__)
     void mc10_display_poke(uint16_t addr, uint8_t val)
@@ -179,6 +178,11 @@ void _XL_SET_TEXT_COLOR(uint8_t c)
 
 #if (defined(__VDP_MODE1_GRAPHICS) || defined(__MEMORY_MAPPED_GRAPHICS) || defined(__ORIC_COLOR_GRAPHICS) || defined(__ANTIC_MODE6_GRAPHICS) || defined(__ATARI7800_COLOR_GRAPHICS))
     
+	
+
+    #define X_MULT 1
+    #define Y_MULT 1
+
     uint16_t loc(uint8_t x, uint8_t y)
     {
         #if !defined(__CIDELSA__)
@@ -442,10 +446,8 @@ lda $a7c0
     void __draw_ch(uint8_t x, uint8_t y, uint8_t ch)
     {
         _XL_DELETE(x,y); 
-        // if(ch)
-        // {
-            putsprite(spr_or,x*(__SPRITE_X_STEP),y*(__SPRITE_Y_STEP),sprites + ((ch-32U)*(2+SPRITE_Y_SIZE)));
-        // }
+
+        putsprite(spr_or,x*(__SPRITE_X_STEP),y*(__SPRITE_Y_STEP),sprites + ((ch-32U)*(2+SPRITE_Y_SIZE)));
     }
 #endif
 
@@ -463,12 +465,12 @@ lda $a7c0
             for(j=0;j<YSize+Y_OFFSET;++j)
             {
                 _XL_DELETE(i,j);
-				// _XL_SLEEP(1);
             }
         }
     }
     
 #endif
+
 
 
 #if defined(__MEMORY_MAPPED_GRAPHICS)
@@ -494,7 +496,6 @@ lda $a7c0
 
 #if defined(__BBC_GRAPHICS)
 
-    // #include <stdio.h>
     #include <stdint.h>
     void osputc(__reg("a") char)="\tjsr\t0xffee";
 
@@ -517,7 +518,6 @@ lda $a7c0
             _gotoxy(x,y);
             _select_color(color);
             osputc(tile);
-            // putchar('\n');
         }
     
     #else
@@ -525,7 +525,6 @@ lda $a7c0
         {
             _gotoxy(x,y);
             osputc(tile);
-            // putchar('\n');
         }
     
     #endif
@@ -534,7 +533,6 @@ lda $a7c0
     {
         _gotoxy(x,y);
         putchar(' ');
-        // putchar('\n');
     }
 #endif
 
@@ -575,10 +573,13 @@ lda $a7c0
     
     #define _gotoxy(x,y) do { move(y,x); } while(0)
     #define _cputc(c) do { addch(c);  } while(0)
-    // #define _XL_SET_TEXT_COLOR(c) attron(COLOR_PAIR(c))
 
-    #include <ncurses.h>
-    
+    #if defined(WIN32)
+        #include <ncurses/curses.h>
+    #else
+        #include <ncurses.h>
+    #endif    
+
     extern uint8_t _tiles[_XL_NUMBER_OF_TILES][_XL_TILE_Y_SIZE];
     
     void _terminal_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
@@ -671,7 +672,6 @@ lda $a7c0
         uint8_t i = 0;
         
         _gotoxy(X_OFFSET+x,Y_OFFSET+y);
-        // printf(str);
         while(str[i]!='\0')
         {
             osputc(str[i++]);
@@ -682,7 +682,6 @@ lda $a7c0
     {
         _gotoxy(x+X_OFFSET,Y_OFFSET+y);
         osputc(ch);
-        // putchar('\n');
     }
 
 #include <stdio.h>
@@ -725,12 +724,6 @@ void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
         gotoxy(X_OFFSET+x,Y_OFFSET+y);
         cprintf(str);
     }
-
-    // void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
-    // {
-        // gotoxy(x+X_OFFSET,Y_OFFSET+y);
-        // cprintf("%0" #length "u", val);
-    // }
 
     void _XL_CHAR(uint8_t x, uint8_t y, char ch)
     {

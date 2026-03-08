@@ -56,6 +56,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Genius Leader GL6000SL
 - Hector HR
 - Hübler Grafik-MC
+- LM-80C
 - Memotech MTX 500
 - Memotech MTX 512
 - MicroBee
@@ -73,7 +74,8 @@ All 91 redefined tiles have been tested on the following targets.
 - Robotron KC-85/2/3/4
 - Robotron Z1013 with KRT
 - Robotron Z9001 with KRT
-- Tatung Einstein
+- Tatung Einstein TC-01
+- Tatung Einstein 256
 - Tesla Ondra
 - Sam Coupé
 - Samsung SPC-1000
