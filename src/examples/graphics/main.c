@@ -157,8 +157,6 @@ int main(void)
             
             _XL_PRINT(0, 0, (char *) color_name[j]);
             
-            _XL_WAIT_FOR_INPUT();
-
             #if YSize>=16
             _XL_SET_TEXT_COLOR(FIRST_COLOR);
             _XL_PRINT(COL_OFFSET,YSize-1, _PRESS);

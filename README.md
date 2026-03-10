@@ -37,6 +37,7 @@ All 91 redefined tiles have been tested on the following targets.
 ### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
 - Agon Light
 - Amstrad CPC
+- Amstrad GX4000
 - Amstrad NC100/NC150
 - Amstrad NC200
 - Aquarius Plus

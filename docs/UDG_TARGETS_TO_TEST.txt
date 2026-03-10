@@ -42,7 +42,7 @@ KO
 HOW TO CHECK
 
 
-- GEMINI    160x75 hard to test/missing Windows emulator
+- GEMINI    160x75 hard to test/missing Windows emulator -> Linux emulate fails to compile -> maybe we need to use Docker
 - Z80RETRO  how to load?
 
 -----------------------------
@@ -111,6 +111,7 @@ MULTI8      OK
 COLECO_ADAM OK
 LM-80C      OK
 EINSTEIN256 OK
+GX4000      OK
 
 ---
 

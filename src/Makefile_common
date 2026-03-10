@@ -1233,6 +1233,8 @@ coleco: $(ASSETS_PATH)/z88dk_xchase.asm
 
 #################################################################
 
+gx4000: cpc
+
 cpc: cpc_mode0
 
 ifdef USE_TOOLS
@@ -1606,7 +1608,7 @@ msx_16k: $(ASSETS_PATH)/z88dk_xchase.asm
 # TODO: BROKEN with only green
 # msx2_color: msx2_mode6
 
-msx2: msx2_mono
+msx2: msx2_color
 
 
 # msx2_color: $(ASSETS_PATH)/z88dk_xchase.asm   
@@ -2040,14 +2042,12 @@ trs80:
 
 
 trs80_model2:
-	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=lifeboat -subtype=cmd \
+	$(Z88DK_PATH)$(MYZ88DK) +cpm $(SCCZ80_OPTS) -lndos -subtype=lifeboat \
 	$(INCLUDE_OPTS) \
 	-lm -create-app \
 	-D__TRS80__ \
 	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
-	-pragma-redirect:getk=getk_inkey \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
-	--generic-console \
 	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
 	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
 	$(FULL_FILES)
@@ -2055,21 +2055,19 @@ trs80_model2:
 
 
 trs80_model2_lifeboat:
-	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=lifeboat -subtype=cmd \
+	$(Z88DK_PATH)$(MYZ88DK) +cpm $(SCCZ80_OPTS) -lndos -subtype=lifeboat -subtype=cmd \
 	$(INCLUDE_OPTS) \
 	-lm -create-app \
 	-D__TRS80__ \
-	-D_XL_NO_JOYSTICK -D_XL_NO_UDG \
-	-pragma-redirect:getk=getk_inkey \
+	-D_XL_NO_UDG \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_TRS80_SLOWDOWN) \
-	--generic-console \
 	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS  -D__BIT_BANG_SOUND \
 	-o$(BUILD_PATH)/X$(GAME_NAME)_$@.bin \
 	$(FULL_FILES)
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
 
 trs80_model2_ptcpm:
-	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=ptcpm -subtype=cmd \
+	$(Z88DK_PATH)$(MYZ88DK) +cpm $(SCCZ80_OPTS) -lndos -subtype=ptcpm -subtype=cmd \
 	$(INCLUDE_OPTS) \
 	-lm -create-app \
 	-D__TRS80__ \
@@ -2083,7 +2081,7 @@ trs80_model2_ptcpm:
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
 
 trs80_model2_fmgcpm:
-	$(Z88DK_PATH)$(MYZ88DK) +trs80 $(SCCZ80_OPTS) -lndos -subtype=fmgcpm -subtype=cmd \
+	$(Z88DK_PATH)$(MYZ88DK) +cpm $(SCCZ80_OPTS) -lndos -subtype=fmgcpm -subtype=cmd \
 	$(INCLUDE_OPTS) \
 	-lm -create-app \
 	-D__TRS80__ \
