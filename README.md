@@ -104,6 +104,6 @@ All 91 redefined tiles have been tested on the following targets.
 - ZX Spectrum 16/48/128
 
 ## More features?
-In the future a few extra features may be added but the highest priority goes to the number of tiles.
+In the future a few extra features may be added but the highest priority goes to the increased number of tiles.
 
 
