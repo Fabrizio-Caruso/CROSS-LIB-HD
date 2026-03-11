@@ -19,7 +19,21 @@ if len(sys.argv)<3:
 else:
     parent_dir = sys.argv[2]
 
-MAX_NUMBER_OF_TILES = 91        
+# TODO: Maybe we should have more
+MAX_NUMBER_OF_TILES = 91
+
+
+ATARI7800_FILE = "cc65_udc_atari7800_160A.s"
+ATARI7800_HEADER = \
+    ".export _conio_font\n" \
+    ".rodata\n" \
+    ".align 256\n" \
+    "_conio_font:\n\n"
+
+
+PMD85_FILE = "z88dk_6x8_pmd85.asm"
+
+VERBOSE = False
 
 tile=[]
 
@@ -33,13 +47,16 @@ def read_tiles_from_dir(dir_name):
         file_to_open = "../"+parent_dir+"/"+game_dir+"/tiles/"+dir_name+"/tile"+str(i)+".txt"
         if not os.path.exists(file_to_open):
             file_to_open = "../"+parent_dir+"/"+game_dir+"/tiles/"+dir_name+"/tile_"+format(i,"03d")+".txt"
-        print("tile file to open: " + file_to_open)
+        if VERBOSE:
+            print("tile file to open: " + file_to_open)
         if os.path.exists(file_to_open):
             with open(file_to_open, 'r') as myfile:
-                print("Opening file tile"+file_to_open)
+                if VERBOSE:
+                    print("Opening file tile"+file_to_open)
                 tile.append(myfile.read().replace('\n',''))
         else:
-            print("Tile file NOT found")
+            if VERBOSE:
+                print("Tile file NOT found")
             y = int(dir_name[2])
             zerolist = str([0]*y)
             tile.append(zerolist[1:len(zerolist)-1])
@@ -155,13 +172,6 @@ def generate_160A_asset(two_bit_assets):
    return two_bit_160A_asset
        
 
-ATARI7800_FILE = "cc65_udc_atari7800_160A.s"
-ATARI7800_HEADER = \
-    ".export _conio_font\n" \
-    ".rodata\n" \
-    ".align 256\n" \
-    "_conio_font:\n\n"
-
 
 def process_a7800_160A_file():
     
@@ -179,14 +189,12 @@ def process_a7800_160A_file():
             word = word.strip()
             if word != '' and  word != "\n" and word != "\t\n" and word != "\r\n" and word != "\r":
                 trimmed_word = word.replace("\n","").replace(" ","").replace("$","0x")
-                print(trimmed_word)
+                # print(trimmed_word)
                 source.append(trimmed_word)
                 base = 16 if trimmed_word.startswith("0x") else 10
                 res.append(int(trimmed_word, base))
     fin.close()
-    print(res)
-    # while(1):
-        # pass
+    # print(res)
     
     if len(res)==512:
         print("Asset has correct length (512 bytes)")
@@ -195,9 +203,8 @@ def process_a7800_160A_file():
         
     two_bit_assets = generate_two_bit_asset(res)
     
-    print("two_bit_assets: \n" + str(two_bit_assets))
-    # while(1):
-        # pass
+    # print("two_bit_assets: \n" + str(two_bit_assets))
+
     a7800_assets = generate_160A_asset(two_bit_assets)
     
     print("length of a7800_assets: " + str(len(a7800_assets)))
@@ -205,7 +212,7 @@ def process_a7800_160A_file():
     formatted_assets = ATARI7800_HEADER + format_asset(a7800_assets)
     
     
-    print(formatted_assets)
+    # print(formatted_assets)
     
     return formatted_assets
     # while(1):
@@ -267,7 +274,15 @@ def generate_asset_from_template(dir_name, stripped_template_file_name):
     for line in fin:
         newline = line
         for i in range(len(tile)):
-            if stripped_template_file_name.startswith("cmoc"):
+            if stripped_template_file_name==PMD85_FILE:
+                digits_string = tile[i].split(",")
+                normalized_digits_string = ""
+                for digit_string in digits_string:
+                    normalized_digit_string = str(int(digit_string)*4)
+                    normalized_digits_string += normalized_digit_string + ","
+                normalized_digits_string = normalized_digits_string[:-1]
+                tile_data=normalized_digits_string
+            elif stripped_template_file_name.startswith("cmoc"):
                 tile_data = tile[i].replace(","," \n    FCB ")
             else:
                 if stripped_template_file_name.endswith(".h"):
@@ -280,11 +295,13 @@ def generate_asset_from_template(dir_name, stripped_template_file_name):
         fout.write(newline)
         if line != newline:
             matches = matches+1
-            print("Changing \n"+line+"with\n"+newline)
+            if VERBOSE:
+                print("Changing \n"+line+"with\n"+newline)
             
-    print("Number of tiles found: "+str(matches)) 
-    print("")
-    print("")
+    if VERBOSE:
+        print("Number of tiles found: "+str(matches)) 
+        print("")
+        print("")
     #close input and output files
     fin.close()
     fout.close()
@@ -294,8 +311,7 @@ def generate_asset_from_template(dir_name, stripped_template_file_name):
         fout = open(dest_path+"/formatted_"+ATARI7800_FILE, "wt")
         fout.write(formatted_assets)
         fout.close()
-    # process_a7800_160A_file()
-
+    
 
 
 def generate_assets_from_dir(dir_name):

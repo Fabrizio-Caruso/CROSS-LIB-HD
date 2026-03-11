@@ -1342,7 +1342,7 @@ Run
 
 MGLD 00
 
-Press the flash button.
+Press the green play (arrow) button.
 
 Click on the play button.
 

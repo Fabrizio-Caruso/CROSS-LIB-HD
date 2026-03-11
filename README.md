@@ -80,6 +80,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Tatung Einstein TC-01
 - Tatung Einstein 256
 - Tesla Ondra
+- Tesla PMD 85
 - Sam Coupé
 - Samsung SPC-1000
 - Sanyo PHC-25
