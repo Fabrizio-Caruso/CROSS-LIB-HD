@@ -5,7 +5,7 @@
 
 #include "display_target_geometry.h"
 
-
+// || defined(__TRS80__)
 #if defined(__GAL__) \
     || (defined(__PC6001__) && !(__SCREEN_MODE==2)) \
     || (defined(__ATARI5200__) && !defined(__ANTIC_MODE6_GRAPHICS)) \
@@ -17,7 +17,7 @@
     || (defined(__ATARI__) && !defined(__ANTIC_MODE6_GRAPHICS)) \
     || defined(__PET__) || defined(__CBM610__) || ((defined(__APPLE2__) || defined(__APPLE2ENH__)) && !defined(__APPLE2_HGR_GRAPHICS)) \
     || defined(__ZX81__) || defined(__ZX80__) || defined(__ACE__) \
-    || defined(__TRS80__) || defined(__PX8__) || defined(__PX4__) \
+    || defined(__PX8__) || defined(__PX4__) \
     || defined(__ABC80__) || defined(__ABC800__) || defined(__SRR__) \
     || defined(__KC__) || (defined(__ATMOS__) && !defined(__ORIC_COLOR_GRAPHICS)) \
     || defined(__VECTREX__) || defined(__GB__) \

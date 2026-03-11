@@ -29,10 +29,6 @@ Only turn-based:
 -----------------------------
 
 -----------------------------
-KO
-
-- EG2K KO no UDGs shown - sound on -> shows the UDGs
------------------------------
 
 -----------------------------
 HOW TO CHECK
@@ -110,5 +106,7 @@ EINSTEIN256 OK
 GX4000      OK
 
 PMD85       OK
+EG2K        OK
+
 ---
 

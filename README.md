@@ -51,6 +51,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Commodore 128 Z80 40 column
 - Coleco Adam
 - Coleco Vision
+- EACA Colour Genie EG2000
 - Excalibur 64
 - Exidy Sorcerer
 - GameGear
