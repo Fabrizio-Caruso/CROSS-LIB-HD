@@ -19,7 +19,7 @@ zxn_no_gfx:
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
 	rm -rf $(BUILD_PATH)/X$(GAME_NAME)_$@_UNASSIGNED.bin
 
-zxn: zxn_mode2
+zxn: zxn_mode64
 
 zxn_mode0: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +zxn $(SCCZ80_OPTS) -clib=classic -subtype=nex $(INCLUDE_OPTS) \
@@ -94,8 +94,8 @@ zxn_mode6: $(ASSETS_PATH)/z88dk_xchase.asm
 zxn_mode64: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +zxn $(SCCZ80_OPTS) -clib=classic -subtype=nex $(INCLUDE_OPTS) \
 	-D__ZXN__ --generic-console \
-	-DXSize=32 \
-	-DYSize=24 -D__SCREEN_MODE=64 \
+	-DXSize=40 \
+	-DYSize=32 -D__SCREEN_MODE=64 \
 	-D__NO_SCREEN_COLOR_INIT -D_XL_NO_JOYSTICK \
 	-D__CONIO_GRAPHICS  -D__PSG_SOUND \
 	-lndos \
