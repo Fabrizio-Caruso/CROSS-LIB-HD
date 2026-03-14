@@ -180,3 +180,7 @@ tools/ti99/ea5split.exe
 tools/ti99/ea5split.out
 logs/*.log
 **/*.sym
+src/examples/graphics/tools/tiles/**
+src/examples/graphics/tools/shapes/**
+
+

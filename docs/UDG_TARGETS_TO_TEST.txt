@@ -19,7 +19,7 @@ Special code to select the PALETTE
 Too little memory
 
 - SV8000 (4K) only 23 tiles (inverted and no fonts)
-- HECTOR1 too little memory
+- HECTOR1 too little memory ??
 -----------------------------
 
 -----------------------------
@@ -31,7 +31,7 @@ Only turn-based:
 -----------------------------
 
 -----------------------------
-HOW TO CHECK
+HOW TO CHECK ?
 
 
 - GEMINI    160x75 hard to test/missing Windows emulator -> Linux emulate fails to compile -> maybe we need to use Docker
@@ -40,16 +40,15 @@ HOW TO CHECK
 -----------------------------
 
 -----------------------------
-Target to implement
+KO
 
-- TRS-80 Model 2 
+- TRS-80 Model 2 -> freeze
 -----------------------------
 
+TO Implement:
 
------------------------------
-To understand:
+ZX Spectrum 128 (PSG sound)
 
-- ZXN         How to have 8x8 UDGs?
 -----------------------------
 
 ----
@@ -107,6 +106,6 @@ GX4000      OK
 
 PMD85       OK
 EG2K        OK
-
+ZXN         OK
 ---
 
