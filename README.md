@@ -34,6 +34,9 @@ All 91 redefined tiles have been tested on the following targets.
 ### MS-DOS 8088/8086 with redefined graphical tiles (UDGs)
 - MS-DOS 8088/8086
 
+### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
+- Atari Lynx
+
 ### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
 - Agon Light
 - Amstrad CPC
