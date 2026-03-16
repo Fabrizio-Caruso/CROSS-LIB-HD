@@ -89,6 +89,9 @@ $(ASSETS_PATH)/cc65_udc_64_chars.s: $(wildcard $(8X8_TILES)/*.txt)
 $(ASSETS_PATH)/cc65_udc_arcade_64_chars.s:$(wildcard $(8X8_TILES)/*.txt)
 	$(CREATE_ASSET)
 
+$(ASSETS_PATH)/cc65_udc_arcade_128_chars.s:$(wildcard $(8X8_TILES)/*.txt)
+	$(CREATE_ASSET)
+
 $(ASSETS_PATH)/cc65_udc_6chars.s: $(wildcard $(8X8_TILES)/*.txt)
 	$(CREATE_ASSET)
     
