@@ -37,6 +37,7 @@ All 91 redefined tiles have been tested on the following targets.
 ### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
 - Atari Lynx
 - Commodore 64
+- Watara Supervision
 
 ### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
 - Agon Light
