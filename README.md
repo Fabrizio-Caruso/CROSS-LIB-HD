@@ -107,7 +107,8 @@ All 91 redefined tiles have been tested on the following targets.
 - Vtech Laser 500
 - Vtech VZ200
 - Z80 TV GAME
-- ZX Spectrum 16/48/128
+- ZX Spectrum 16K/48K
+- ZX Spectrum 128K
 - ZX Spectrum Next
 
 ## More features?
