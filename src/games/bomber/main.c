@@ -419,9 +419,12 @@ void intro(void)
 }
 
 #define INITIALIZE_CROSS_LIB() \
+    do { \
     _XL_INIT_GRAPHICS(); \
     _XL_INIT_INPUT(); \
-    _XL_INIT_SOUND();
+    _XL_INIT_SOUND(); \
+    } while(0)
+    
 
 
 void initialize_game(void)

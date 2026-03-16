@@ -841,6 +841,7 @@ vic20_exp_8k_conio: $(ASSETS_PATH)/cc65_udc_arcade_v2.s
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.prg
 
 
+# REMARK: This uses REVERSED chars
 vic20_exp_8k: $(ASSETS_PATH)/cc65_udc_vic20_27_tiles.s
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t vic20 \
 	--config $(CFG_PATH)/cc65/vic20-8k_memory_mapped_GFX.cfg \
