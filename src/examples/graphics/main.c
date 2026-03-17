@@ -157,6 +157,18 @@ int main(void)
             
             _XL_PRINT(0, 0, (char *) color_name[j]);
             
+            _XL_PRINT(0,YSize-3,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            _XL_PRINT(0,YSize-4,"0123456789");
+            // {
+                // uint8_t i;
+                // for(i=0;i<250;++i)
+                // {
+                    // POKE(4096+i,i);
+                    // POKE(37888+i,1);
+                // }
+                // while(1){};
+            // }
+            
             #if YSize>=16
             _XL_SET_TEXT_COLOR(FIRST_COLOR);
             _XL_PRINT(COL_OFFSET,YSize-1, _PRESS);

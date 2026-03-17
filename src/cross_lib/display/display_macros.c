@@ -26,6 +26,10 @@
     #define POKE(addr,val)     (*(uint8_t*) (addr) = (val))
 #endif
 
+#ifndef PEEK
+    #define PEEK(addr)         (*(uint8_t*)addr)
+#endif
+
 #if defined(__ATARI__) && (defined(__ANTIC_MODE6_GRAPHICS) ) 
 extern uint16_t BASE_ADDR;
 #endif
@@ -730,4 +734,15 @@ void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
         gotoxy(x+X_OFFSET,Y_OFFSET+y);
         cputc(ch);
     }
+#endif
+
+
+#if defined(__C128__) && defined(__80COL_UDG)
+
+void vdc_write(uint8_t vdc_register, uint8_t value)
+{
+    POKE(ADDRESS_PORT,vdc_register);
+    while(!(PEEK(ADDRESS_PORT)&(0x80))){};
+    POKE(DATA_PORT,value);
+}
 #endif

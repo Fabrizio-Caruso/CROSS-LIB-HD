@@ -450,5 +450,19 @@
     #define _XL_INIT_GRAPHICS() _setScreenColors()
 #endif
 
+#if defined(__C128__) && defined(__80COL_UDG)
+#define ADDRESS_PORT 0xD600
+#define DATA_PORT    0xD601
+
+#define HIGH_ADDRESS_REGISTER 0x12
+#define LOW_ADDRESS_REGISTER  0x13
+#define VDC_DATA_REGISTER     0x1F
+
+#define CHAR_BASE    0x3000
+
+void vdc_write(uint8_t vdc_register, uint8_t value);
+#endif
+
+
 #endif // _DISPLAY_MACROS
 

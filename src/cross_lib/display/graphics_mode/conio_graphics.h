@@ -1,6 +1,19 @@
 #ifndef _CONIO_GRAPHICS_H
 #define _CONIO_GRAPHICS_H
 
+#if defined(__C128__) && defined(__80COL_UDG)
+    #include "display_macros.h"
+    #define VDC_DATA_REGISTER     0x1F
+    #define HIGH_ADDRESS_REGISTER 0x12
+    #define LOW_ADDRESS_REGISTER  0x13
+
+#endif
+
+
+            // uint16_t address; \
+            // address = y*80+x; \
+            // vdc_write(HIGH_ADDRESS_REGISTER,address>>8); \
+            // vdc_write(LOW_ADDRESS_REGISTER,address&0xFF); \
 
 #if !defined(_XL_NO_COLOR)
     #if defined(__NO_BOTTOM)
@@ -13,6 +26,15 @@
                 _XL_SET_TEXT_COLOR(color); \
                 cputc(tile); \
             } \
+        } \
+        while(0)
+    #elif defined(__80COL_UDG)
+        #define _XL_DRAW(x,y,tile,color) \
+        do \
+        { \
+            vdc_write(HIGH_ADDRESS_REGISTER,(y*80U+x)>>8); \
+            vdc_write(LOW_ADDRESS_REGISTER,(y*80U+x)&0xFF); \
+            vdc_write(VDC_DATA_REGISTER,tile); \
         } \
         while(0)
     #else
