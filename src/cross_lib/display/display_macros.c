@@ -750,7 +750,18 @@ void vdc_write(uint8_t vdc_register, uint8_t value)
 void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
 {
     uint16_t address;
+    
+    address = 0x0800 + y*80U+x;
+
+    // _XL_SET_TEXT_COLOR(color);
+    vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
+    vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
+    vdc_write(VDC_DATA_REGISTER,0x80+(color&0xF));
+    // POKE(241,0x0F);
+
     address = y*80U+x;
+
+
     vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
     vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
     vdc_write(VDC_DATA_REGISTER,tile);

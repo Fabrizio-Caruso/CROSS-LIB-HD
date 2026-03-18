@@ -131,7 +131,7 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
     #define _PRESS "PRESS FIRE"
 #endif
 
-#define WAIT_FOR_EACH_TILE
+// #define WAIT_FOR_EACH_TILE
 
 
 int main(void)
