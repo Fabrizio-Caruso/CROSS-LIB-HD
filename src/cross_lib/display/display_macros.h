@@ -460,7 +460,9 @@
 
 #define CHAR_BASE    0x3000
 
+void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color);
 void vdc_write(uint8_t vdc_register, uint8_t value);
+
 #endif
 
 

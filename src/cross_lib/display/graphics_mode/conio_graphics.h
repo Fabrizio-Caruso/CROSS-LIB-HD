@@ -32,9 +32,7 @@
         #define _XL_DRAW(x,y,tile,color) \
         do \
         { \
-            vdc_write(HIGH_ADDRESS_REGISTER,(y*80U+x)>>8); \
-            vdc_write(LOW_ADDRESS_REGISTER,(y*80U+x)&0xFF); \
-            vdc_write(VDC_DATA_REGISTER,tile); \
+            vdc_tile_write(x, y, tile, color); \
         } \
         while(0)
     #else

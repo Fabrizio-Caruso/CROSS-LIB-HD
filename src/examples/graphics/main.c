@@ -119,8 +119,6 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
 #endif
 
 
-
-
 #if YSize<=25
     #define LINE_SKIP 1
 #else
@@ -132,6 +130,8 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
 #else
     #define _PRESS "PRESS FIRE"
 #endif
+
+#define WAIT_FOR_EACH_TILE
 
 
 int main(void)
@@ -157,18 +157,11 @@ int main(void)
             
             _XL_PRINT(0, 0, (char *) color_name[j]);
             
+            #if YSize>=20 && XSize>=16
             _XL_PRINT(0,YSize-3,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            _XL_PRINT(0,YSize-4,"0123456789");
-            // {
-                // uint8_t i;
-                // for(i=0;i<250;++i)
-                // {
-                    // POKE(4096+i,i);
-                    // POKE(37888+i,1);
-                // }
-                // while(1){};
-            // }
-            
+            _XL_PRINT(0,YSize-2,"0123456789");
+            #endif
+
             #if YSize>=16
             _XL_SET_TEXT_COLOR(FIRST_COLOR);
             _XL_PRINT(COL_OFFSET,YSize-1, _PRESS);
@@ -179,12 +172,19 @@ int main(void)
             {
                 _XL_DRAW((i&15)*CHAR_SKIP+COL_OFFSET,(i/16)*LINE_SKIP+ROW_OFFSET,tiles[i],tile_color[j]);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+                #if defined(WAIT_FOR_EACH_TILE)
+                    _XL_WAIT_FOR_INPUT();
+                #endif
             }
             #else
             for(i=0;i<_XL_NUMBER_OF_TILES;++i)
             {
                 _XL_DRAW((i&7)*CHAR_SKIP+COL_OFFSET,(i/8)*LINE_SKIP+ROW_OFFSET,tiles[i],tile_color[j]);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+                #if defined(WAIT_FOR_EACH_TILE)
+                    _XL_WAIT_FOR_INPUT();
+                #endif
+
             }
             #endif
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
