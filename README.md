@@ -37,7 +37,8 @@ All 91 redefined tiles have been tested on the following targets.
 ### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
 - Atari Lynx
 - Commodore 64
-- Commodore 128 MOS8502 80 column
+- Commodore 128 [MOS 8502] [80 column display]
+- Commodore VIC 20
 - Watara Supervision
 
 ### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
@@ -54,7 +55,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Casio FP-1100
 - Casio PV-2000
 - CCE MC-1000
-- Commodore 128 Z80 40 column
+- Commodore 128 [Zilog 80] [40 column display]
 - Coleco Adam
 - Coleco Vision
 - EACA Colour Genie EG2000

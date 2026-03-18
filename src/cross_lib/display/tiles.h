@@ -36,7 +36,9 @@
 #elif defined(__VIC20__) && defined(__VIC20_UNEXPANDED) && !defined(_XL_NO_UDG)
 	#include "vic20_rom_chars_and_6_tiles_settings.h"
 #elif defined(__VIC20__) && defined(__CONIO_GRAPHICS)
-	#include "vic20_exp_16k_v2_settings.h"
+	// #include "vic20_exp_16k_v2_settings.h"
+    #include "vic20_rom_chars_and_91_tiles_settings.h"
+
 #elif defined(__C16__) && !defined(_XL_NO_UDG) && !defined(__MEMORY_MAPPED_GRAPHICS)
 	#include "c264_redefined_chars_settings.h"
 #elif defined(__C16__) && !defined(_XL_NO_UDG)

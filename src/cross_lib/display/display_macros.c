@@ -739,64 +739,83 @@ void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
 
 #if defined(__C128__) && defined(__80COL_UDG)
 
-void vdc_write(uint8_t vdc_register, uint8_t value)
-{
-    POKE(ADDRESS_PORT,vdc_register);
-    while(!(PEEK(ADDRESS_PORT)&(0x80))){};
-    POKE(DATA_PORT,value);
-}
+    void vdc_write(uint8_t vdc_register, uint8_t value)
+    {
+        POKE(ADDRESS_PORT,vdc_register);
+        while(!(PEEK(ADDRESS_PORT)&(0x80))){};
+        POKE(DATA_PORT,value);
+    }
 
 
-uint8_t vdc_color_map(uint8_t color)
-{
-    if(color == _XL_WHITE)
+    uint8_t vdc_color_map(uint8_t color)
     {
-        return 0x8F;
+        if(color == _XL_WHITE)
+        {
+            return 0x8F;
+        }
+        else if(color == _XL_RED)
+        {
+            return 0x88;
+        }
+        else if(color == _XL_CYAN)
+        {
+            return 0x87;
+        }
+        else if(color == _XL_GREEN)
+        {
+            return 0x84;
+        }
+        else if(color == _XL_YELLOW) 
+        {
+            return 0x8D;
+        }
+        else if(color == _XL_MAGENTA) // too dark?
+        {
+            return 0x8B;
+        }
+        else if(color == _XL_BLUE)
+        {
+            return 0x82;
+        }
+        return 0x80;
     }
-    else if(color == _XL_RED)
-    {
-        return 0x88;
-    }
-    else if(color == _XL_CYAN)
-    {
-        return 0x87;
-    }
-    else if(color == _XL_GREEN)
-    {
-        return 0x84;
-    }
-    else if(color == _XL_YELLOW) 
-    {
-        return 0x8D;
-    }
-    else if(color == _XL_MAGENTA) // too dark?
-    {
-        return 0x8B;
-    }
-    else if(color == _XL_BLUE)
-    {
-        return 0x82;
-    }
-    return 0x80;
-}
 
-void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
-{
-    uint16_t address;
+    void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
+    {
+        uint16_t address;
+        
+        address = 0x0800 + y*80U+x;
+
+        vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
+        vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
+        // vdc_write(VDC_DATA_REGISTER,0x80+(color&0xF));
+        vdc_write(VDC_DATA_REGISTER,vdc_color_map(color));
+
+        address = y*80U+x;
+
+
+        vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
+        vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
+        vdc_write(VDC_DATA_REGISTER,tile);
+    }
+
+#endif
+
+
+#if defined(__VIC20__) && defined(__CONIO_GRAPHICS) && defined(__VIC20_EXP_8K)
+    #define BASE_ADDR 0x1000
+    #define COLOR_ADDR 0x9400
     
-    address = 0x0800 + y*80U+x;
-
-    vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
-    vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
-    // vdc_write(VDC_DATA_REGISTER,0x80+(color&0xF));
-    vdc_write(VDC_DATA_REGISTER,vdc_color_map(color));
-
-    address = y*80U+x;
-
-
-    vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
-    vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
-    vdc_write(VDC_DATA_REGISTER,tile);
-}
+    void vic20_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
+    {
+        uint16_t address;
+        
+        address = 0x9400+x+y*YSize;
+        POKE(address,color);
+        
+        address = 0x1000+x+y*XSize;
+        POKE(address,tile);
+        
+    }
 
 #endif

@@ -451,24 +451,30 @@
 #endif
 
 #if defined(__C128__) && defined(__80COL_UDG)
-#define ADDRESS_PORT 0xD600
-#define DATA_PORT    0xD601
+    #define ADDRESS_PORT 0xD600
+    #define DATA_PORT    0xD601
 
-#define HIGH_ADDRESS_REGISTER   0x12
-#define LOW_ADDRESS_REGISTER    0x13
-#define VDC_DATA_REGISTER       0x1F
-#define VDC_COLOR_REGISTER      0x1A
-#define HIGH_ATTRIBUTE_REGISTER 0x14
-#define LOW_ATTRIBUTE_REGISTER  0x15
+    #define HIGH_ADDRESS_REGISTER   0x12
+    #define LOW_ADDRESS_REGISTER    0x13
+    #define VDC_DATA_REGISTER       0x1F
+    #define VDC_COLOR_REGISTER      0x1A
+    #define HIGH_ATTRIBUTE_REGISTER 0x14
+    #define LOW_ATTRIBUTE_REGISTER  0x15
 
 
-#define CHAR_BASE    0x3000
+    #define CHAR_BASE    0x3000
 
-void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color);
-void vdc_write(uint8_t vdc_register, uint8_t value);
+    void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color);
+    void vdc_write(uint8_t vdc_register, uint8_t value);
 
 #endif
 
+
+
+#if defined(__VIC20__) && defined(__CONIO_GRAPHICS) && defined(__VIC20_EXP_8K)
+    void vic20_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color);
+
+#endif
 
 #endif // _DISPLAY_MACROS
 

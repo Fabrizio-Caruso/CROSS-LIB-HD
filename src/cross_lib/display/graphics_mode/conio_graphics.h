@@ -28,6 +28,13 @@
             } \
         } \
         while(0)
+    #elif defined(__VIC20__) && defined(__VIC20_EXP_8K)
+        #define _XL_DRAW(x,y,tile,color) \
+        do \
+        { \
+            vic20_tile_write(x,y,tile,color); \
+        } \
+        while(0)
     #elif defined(__80COL_UDG)
         #define _XL_DRAW(x,y,tile,color) \
         do \
