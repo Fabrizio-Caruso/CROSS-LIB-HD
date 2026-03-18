@@ -747,17 +747,49 @@ void vdc_write(uint8_t vdc_register, uint8_t value)
 }
 
 
+uint8_t vdc_color_map(uint8_t color)
+{
+    if(color == _XL_WHITE)
+    {
+        return 0x8F;
+    }
+    else if(color == _XL_RED)
+    {
+        return 0x88;
+    }
+    else if(color == _XL_CYAN)
+    {
+        return 0x87;
+    }
+    else if(color == _XL_GREEN)
+    {
+        return 0x84;
+    }
+    else if(color == _XL_YELLOW) 
+    {
+        return 0x8D;
+    }
+    else if(color == _XL_MAGENTA) // too dark?
+    {
+        return 0x8B;
+    }
+    else if(color == _XL_BLUE)
+    {
+        return 0x82;
+    }
+    return 0x80;
+}
+
 void vdc_tile_write(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
 {
     uint16_t address;
     
     address = 0x0800 + y*80U+x;
 
-    // _XL_SET_TEXT_COLOR(color);
     vdc_write(HIGH_ADDRESS_REGISTER,(uint8_t)(address>>8));
     vdc_write(LOW_ADDRESS_REGISTER,(uint8_t)(address&0xFF));
-    vdc_write(VDC_DATA_REGISTER,0x80+(color&0xF));
-    // POKE(241,0x0F);
+    // vdc_write(VDC_DATA_REGISTER,0x80+(color&0xF));
+    vdc_write(VDC_DATA_REGISTER,vdc_color_map(color));
 
     address = y*80U+x;
 
