@@ -120,12 +120,14 @@ const struct redefine_struct redefine_map[] =
     {_TILE_82, _TILE_82_UDG},
     {_TILE_83, _TILE_83_UDG},
     {_TILE_84, _TILE_84_UDG},
+    #if _XL_NUMBER_OF_TILES>85
     {_TILE_85, _TILE_85_UDG},
     {_TILE_86, _TILE_86_UDG},
     {_TILE_87, _TILE_87_UDG},
     {_TILE_88, _TILE_88_UDG},
     {_TILE_89, _TILE_89_UDG},
     {_TILE_90, _TILE_90_UDG},
+    #endif
     // #endif
 };
 

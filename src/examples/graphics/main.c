@@ -39,7 +39,7 @@ const uint8_t tiles[] = {
 		_TILE_20, _TILE_21, _TILE_22, _TILE_23, 
         _TILE_24, _TILE_25, _TILE_26,
         #endif
-        #if _XL_NUMBER_OF_TILES>=91
+        #if _XL_NUMBER_OF_TILES>=85
                                       _TILE_27, 
         _TILE_28, _TILE_29, _TILE_30, _TILE_31,
         _TILE_32, _TILE_33, _TILE_34, _TILE_35, 
@@ -55,8 +55,11 @@ const uint8_t tiles[] = {
 		_TILE_72, _TILE_73, _TILE_74, _TILE_75, 
 		_TILE_76, _TILE_77, _TILE_78, _TILE_79,
 		_TILE_80, _TILE_81, _TILE_82, _TILE_83,
-        _TILE_84, _TILE_85, _TILE_86, _TILE_87, 
+        _TILE_84, 
+        #if _XL_NUMBER_OF_TILES>=91
+                , _TILE_85, _TILE_86, _TILE_87, 
 		_TILE_88, _TILE_89, _TILE_90,
+        #endif
         #endif
         #if _XL_NUMBER_OF_TILES==99
                                       _TILE_91,
@@ -156,6 +159,15 @@ int main(void)
             _XL_SET_TEXT_COLOR(tile_color[j]);
             
             _XL_PRINT(0, 0, (char *) color_name[j]);
+            
+            // {
+                // for(i=0;i<250;++i)
+                // {
+                    // POKE(0x0c00+i,i);
+                    // POKE(0x0800+i,127);
+                // }
+                // _XL_WAIT_FOR_INPUT();
+            // }
             
             #if YSize>=20 && XSize>=16
             _XL_PRINT(0,YSize-3,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
