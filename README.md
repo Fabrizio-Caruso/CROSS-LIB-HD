@@ -1,5 +1,7 @@
 # CROSS-LIB-HD
-CROSS-LIB-HD is Cross-Lib with a higher number of tiles.
+CROSS-LIB-HD is CROSS-LIB with a higher number of tiles but slightly larger binaries and fewer colors on a couple of targets.
+
+More information on CROSS-LIB is here: https://github.com/Fabrizio-Caruso/CROSS-LIB
 
 **REMARK**
 This is still a work process.
@@ -37,7 +39,7 @@ All 91 redefined tiles have been tested on the following targets.
 ### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
 - Atari Lynx
 - Commodore 128 [MOS 8502] [80 column display]
-- Commodore 16 [16k]
+- Commodore 16 [16k, 32k/64k]
 - Commodore 64
 - Commodore VIC 20 [unexpanded, +3k, +8k/16k/24k]
 - Watara Supervision
