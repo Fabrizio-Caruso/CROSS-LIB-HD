@@ -181,17 +181,17 @@
 	{
 		if(ch&0x80)
         {
-			return ch&0x7F;
+			return ch&(0x7F+0x80);
 		}
         else
 		{
             if(ch<58) // TODO: Use bitwise operator <64?
             {
-                return ch|64;
+                return (ch)|(64+128);
             }
             else
             {
-                return ch;
+                return (ch+0x80);
             }
 		}
 	}  

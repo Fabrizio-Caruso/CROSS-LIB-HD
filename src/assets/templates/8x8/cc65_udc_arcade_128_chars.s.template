@@ -3,12 +3,12 @@
 
 _Charset:
 
-.byte <tile_0>
-.byte <tile_1>
-.byte <tile_2>
-.byte <tile_3>
-.byte <tile_4>
-.byte <tile_5>
+.byte <tile_85>
+.byte <tile_86>
+.byte <tile_87>
+.byte <tile_88>
+.byte <tile_89>
+.byte <tile_90>
 
 .byte <tile_0>
 .byte <tile_1>

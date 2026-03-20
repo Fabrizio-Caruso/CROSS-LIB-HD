@@ -57,7 +57,7 @@ const uint8_t tiles[] = {
 		_TILE_80, _TILE_81, _TILE_82, _TILE_83,
         _TILE_84, 
         #if _XL_NUMBER_OF_TILES>=91
-                , _TILE_85, _TILE_86, _TILE_87, 
+                  _TILE_85, _TILE_86, _TILE_87, 
 		_TILE_88, _TILE_89, _TILE_90,
         #endif
         #endif
@@ -161,12 +161,13 @@ int main(void)
             _XL_PRINT(0, 0, (char *) color_name[j]);
             
             // {
-                // for(i=0;i<250;++i)
+                // for(i=0;i<254;++i)
                 // {
                     // POKE(0x0c00+i,i);
                     // POKE(0x0800+i,127);
                 // }
                 // _XL_WAIT_FOR_INPUT();
+                // _XL_CLEAR_SCREEN();
             // }
             
             #if YSize>=20 && XSize>=16
