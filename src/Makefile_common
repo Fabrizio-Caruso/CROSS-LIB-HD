@@ -3349,16 +3349,6 @@ mc10:
 
 
 
-# ------------------------------------------------------------------------------------------
-# VBCC
-#
-
-
-
-vbcc_targets: \
-	bbc_buffered
-
-
 
 ###############################################################################################
 # GCC
@@ -3696,7 +3686,6 @@ include makefiles.common/targets/gcc4ti/Makefile_ti99
 include makefiles.common/targets/vbcc/Makefile_amiga
 include makefiles.common/targets/vbcc/Makefile_atari_jaguar
 include makefiles.common/targets/vbcc/Makefile_bbc
-include makefiles.common/targets/vbcc/Makefile_bbcmaster
 include makefiles.common/targets/vbcc/Makefile_m65
 
 # ATARI_MINT_GCC
@@ -3714,7 +3703,6 @@ include makefiles.common/targets/ack/Makefile.ack_targets
 
 # Z88DK Extras
 include makefiles.common/targets/z88dk/extras/Makefile_agon
-# include makefiles.common/targets/z88dk/extras/Makefile_bee
 include makefiles.common/targets/z88dk/extras/Makefile_camputers_lynx
 include makefiles.common/targets/z88dk/extras/Makefile_gal
 include makefiles.common/targets/z88dk/extras/Makefile_gal_plus

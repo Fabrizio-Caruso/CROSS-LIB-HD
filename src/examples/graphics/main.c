@@ -29,19 +29,20 @@
 
 const uint8_t tiles[] = { 
 		_TILE_0,  _TILE_1,  _TILE_2,  _TILE_3, 
-		_TILE_4,  _TILE_5,  _TILE_6,  
+		_TILE_4,  _TILE_5,    
         
-        #if _XL_NUMBER_OF_TILES>=27
-                                      _TILE_7, 
+        #if _XL_NUMBER_OF_TILES>6
+                            _TILE_6,  _TILE_7, 
 		_TILE_8,  _TILE_9,  _TILE_10, _TILE_11, 
 		_TILE_12, _TILE_13, _TILE_14, _TILE_15, 
 		_TILE_16, _TILE_17, _TILE_18, _TILE_19,
 		_TILE_20, _TILE_21, _TILE_22, _TILE_23, 
         _TILE_24, _TILE_25, _TILE_26,
-        #endif
-        #if _XL_NUMBER_OF_TILES>=85
+        #if _XL_NUMBER_OF_TILES>=27
                                       _TILE_27, 
         _TILE_28, _TILE_29, _TILE_30, _TILE_31,
+ 
+        #if _XL_NUMBER_OF_TILES>32
         _TILE_32, _TILE_33, _TILE_34, _TILE_35, 
 		_TILE_36, _TILE_37, _TILE_38, _TILE_39,
 		_TILE_40, _TILE_41, _TILE_42, _TILE_43,
@@ -55,16 +56,10 @@ const uint8_t tiles[] = {
 		_TILE_72, _TILE_73, _TILE_74, _TILE_75, 
 		_TILE_76, _TILE_77, _TILE_78, _TILE_79,
 		_TILE_80, _TILE_81, _TILE_82, _TILE_83,
-        _TILE_84, 
-        #if _XL_NUMBER_OF_TILES>=91
-                  _TILE_85, _TILE_86, _TILE_87, 
+        _TILE_84, _TILE_85, _TILE_86, _TILE_87, 
 		_TILE_88, _TILE_89, _TILE_90,
         #endif
         #endif
-        #if _XL_NUMBER_OF_TILES==99
-                                      _TILE_91,
-        _TILE_92, _TILE_93, _TILE_94, _TILE_95,
-        _TILE_96, _TILE_97, _TILE_98, _TILE_99,
         #endif
 		};
 

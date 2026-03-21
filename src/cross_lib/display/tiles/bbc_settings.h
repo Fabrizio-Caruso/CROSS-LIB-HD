@@ -26,3 +26,11 @@
 #define _TILE_24 224
 #define _TILE_25 225
 #define _TILE_26 226
+
+#define _TILE_27 227
+#define _TILE_28 228
+#define _TILE_29 229
+#define _TILE_30 230
+#define _TILE_31 231
+#define _TILE_32 232
+

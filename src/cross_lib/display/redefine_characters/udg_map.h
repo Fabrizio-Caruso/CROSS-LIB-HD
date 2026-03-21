@@ -39,6 +39,7 @@ const struct redefine_struct redefine_map[] =
 	{_TILE_3, _TILE_3_UDG},
 	{_TILE_4, _TILE_4_UDG},
 	{_TILE_5, _TILE_5_UDG},
+    #if _XL_NUMBER_OF_TILES>6
 	{_TILE_6, _TILE_6_UDG},
     {_TILE_7, _TILE_7_UDG},
     {_TILE_8, _TILE_8_UDG},
@@ -60,12 +61,15 @@ const struct redefine_struct redefine_map[] =
     {_TILE_24, _TILE_24_UDG},
     {_TILE_25, _TILE_25_UDG},
     {_TILE_26, _TILE_26_UDG},
-    
+    #if _XL_NUMBER_OF_TILES>27
+
     {_TILE_27, _TILE_27_UDG},
     {_TILE_28, _TILE_28_UDG},
     {_TILE_29, _TILE_29_UDG},
     {_TILE_30, _TILE_30_UDG},
     {_TILE_31, _TILE_31_UDG},
+    
+    #if _XL_NUMBER_OF_TILES>32
     {_TILE_32, _TILE_32_UDG},
     {_TILE_33, _TILE_33_UDG},
     {_TILE_34, _TILE_34_UDG},
@@ -91,7 +95,6 @@ const struct redefine_struct redefine_map[] =
     {_TILE_54, _TILE_54_UDG},
     {_TILE_55, _TILE_55_UDG},
     {_TILE_56, _TILE_56_UDG},
-    // #if _XL_NUMBER_OF_TILES>57
     {_TILE_57, _TILE_57_UDG},
     {_TILE_58, _TILE_58_UDG},
     {_TILE_59, _TILE_59_UDG},
@@ -120,13 +123,14 @@ const struct redefine_struct redefine_map[] =
     {_TILE_82, _TILE_82_UDG},
     {_TILE_83, _TILE_83_UDG},
     {_TILE_84, _TILE_84_UDG},
-    #if _XL_NUMBER_OF_TILES>85
     {_TILE_85, _TILE_85_UDG},
     {_TILE_86, _TILE_86_UDG},
     {_TILE_87, _TILE_87_UDG},
     {_TILE_88, _TILE_88_UDG},
     {_TILE_89, _TILE_89_UDG},
     {_TILE_90, _TILE_90_UDG},
+    #endif
+    #endif
     #endif
     // #endif
 };
