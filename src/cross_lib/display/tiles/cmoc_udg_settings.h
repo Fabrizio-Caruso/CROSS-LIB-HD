@@ -70,15 +70,15 @@
 
 
 // 0x50 -> 0
-#if defined(__MO5__)||defined(__TO7__)
-    #define _TILE_19 49
-    #define _TILE_20 50
-    #define _TILE_21 51
-    #define _TILE_22 52
-    #define _TILE_23 53
-    #define _TILE_24 54
-    #define _TILE_26 (_TILE_8+1)
-#elif defined(__COCO3__) || defined(__COCO__)||defined(__DRAGON__)
+// #if defined(__MO5__)||defined(__TO7__)
+    // #define _TILE_19 49
+    // #define _TILE_20 50
+    // #define _TILE_21 51
+    // #define _TILE_22 52
+    // #define _TILE_23 53
+    // #define _TILE_24 54
+    // #define _TILE_26 (_TILE_8+1)
+#if defined(__MO5__) || defined(__TO7__) ||  defined(__COCO3__) || defined(__COCO__)||defined(__DRAGON__)
     #define _TILE_19 (_TILE_16+2)
     #define _TILE_20 (_TILE_16+3)
     #define _TILE_21 (_TILE_16+4)

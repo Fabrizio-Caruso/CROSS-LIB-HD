@@ -44,7 +44,7 @@ extern uint8_t udgs[];
 		uint8_t __i; \
 		uint16_t __base = (x)+(_BITMAP_XSize)*8*(y); \
 		uint8_t __delta = 0; \
-		uint8_t __offset = (8U*(uint8_t)(tile)) ; \
+		uint16_t __offset = (8U*(uint16_t)(tile)) ; \
 		\
 		SWITCH_COLOR_BANK_OFF(); \
 		BIT_MAP_DRAW(); \
