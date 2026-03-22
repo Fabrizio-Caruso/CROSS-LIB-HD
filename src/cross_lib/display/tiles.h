@@ -46,10 +46,12 @@
 // #elif defined(__CBM__) && defined(__MEMORY_MAPPED_GRAPHICS)
 // e.g., Bomber Vic 20 unexpanded no gfx
 // #include "petscii_memory_mapped_settings.h"
-#elif defined(__MO5__) || defined(__TO7__) || ( (defined(__COCO__) || defined(__DRAGON__)) && (defined(__BIT_MAPPED_GRAPHICS) || defined(__BIT_MAPPED_4_GRAPHICS)))
-	#include "cmoc_udg_settings.h"
+#elif defined(__MO5__) || defined(__TO7__) 
+	#include "mo5_udg_settings.h"
 #elif (defined(__COCO__) || defined(__DRAGON__)) && defined(__MEMORY_MAPPED_GRAPHICS)
 	#include "cmoc_memory_mapped_settings.h"
+#elif ( (defined(__COCO__) || defined(__DRAGON__)) && (defined(__BIT_MAPPED_GRAPHICS) || defined(__BIT_MAPPED_4_GRAPHICS)))
+	#include "cmoc_udg_settings.h"
 #elif defined(__COCO3__)
 	#include "cmoc_udg_settings.h"
 #elif (defined(__ATARI__) && defined(__ANTIC_MODE6_GRAPHICS))
