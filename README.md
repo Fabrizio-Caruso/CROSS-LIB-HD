@@ -44,6 +44,9 @@ All 91 redefined tiles have been tested on the following targets.
 - Commodore VIC 20 [unexpanded, +3k, +8k/16k/24k]
 - Watara Supervision
 
+### VBC (MOS 6502) with redefined graphics tiles (UDGs)
+- BBC Micro
+
 ### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
 - Agon Light
 - Amstrad CPC
