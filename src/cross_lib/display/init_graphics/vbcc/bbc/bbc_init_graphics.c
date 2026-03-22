@@ -92,7 +92,13 @@ void osputc(__reg("a") char)="\tjsr\t0xffee";
 // static uint8_t player[] = {24, 36, 24,102,153, 24, 36, 102};
 
 
+// Lda #20
+// Ldx # x
+// Jsr $FFF4
+// "\tlda\t#20;\tldx\t#6\tjsr\t0xfff4";
 
+
+void set_udg_memory()="\tlda\t#20\n\tldx\t#06\n\tjsr\t0xfff4";
 
 // void redefine(const uint8_t ch, const uint8_t* image) 
 // { 
@@ -169,7 +175,6 @@ void SET_UDG_IMAGES(void)
 void _XL_INIT_GRAPHICS(void)
 {
     // uint8_t res;
-
     #if __BBC_MODE!=7
         osputc(22);
         #if defined(__SHADOW_RAM)
@@ -215,7 +220,8 @@ void _XL_INIT_GRAPHICS(void)
     // osputc(16);
     // osputc(12);
 
-        
+    set_udg_memory();
+
     // Redefine characters
     // TODO: This is wrong
 #if !(__BBC_MODE==7) 

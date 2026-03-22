@@ -1,12 +1,7 @@
 #if !defined(_BBC_MACROS)
 #define _BBC_MACROS
 
-typedef struct {
-  int channel;
-  int amplitude;
-  int pitch;
-  int duration;
-} bbc_sound;
+
 
 
 // https://blog.mousefingers.com/post/bbc/bbc_colour_cycling/
