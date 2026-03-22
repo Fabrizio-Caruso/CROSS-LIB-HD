@@ -33,7 +33,7 @@ All 91 redefined tiles have been tested on the following targets.
 ### Native compiler (host CPU) with redefined graphical tiles (UDGs) 
 - Terminal
 
-### MS-DOS 8088/8086 with redefined graphical tiles (UDGs)
+### ACK (Intel 8088/8086) with redefined graphical tiles (UDGs)
 - MS-DOS 8088/8086
 
 ### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
