@@ -44,6 +44,11 @@ All 91 redefined tiles have been tested on the following targets.
 - Commodore VIC 20 [unexpanded, +3k, +8k/16k/24k]
 - Watara Supervision
 
+### CMOC (Motorola 6809) with redefined graphics tiles (UDGs)
+- CoCo 1/2
+- CoCo 3
+- Dragon 32/64
+
 ### VBC (MOS 6502) with redefined graphics tiles (UDGs)
 - BBC Master
 - BBC Micro
