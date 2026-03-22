@@ -47,11 +47,11 @@
 // e.g., Bomber Vic 20 unexpanded no gfx
 // #include "petscii_memory_mapped_settings.h"
 #elif defined(__MO5__) || defined(__TO7__) || ( (defined(__COCO__) || defined(__DRAGON__)) && (defined(__BIT_MAPPED_GRAPHICS) || defined(__BIT_MAPPED_4_GRAPHICS)))
-	#include "udg_settings.h"
+	#include "cmoc_udg_settings.h"
 #elif (defined(__COCO__) || defined(__DRAGON__)) && defined(__MEMORY_MAPPED_GRAPHICS)
 	#include "cmoc_memory_mapped_settings.h"
 #elif defined(__COCO3__)
-	#include "udg_settings.h"
+	#include "cmoc_udg_settings.h"
 #elif (defined(__ATARI__) && defined(__ANTIC_MODE6_GRAPHICS))
 	#include "atari_mode1_redefined_chars_settings.h"
 #elif defined(__ATARI5200__)

@@ -38,7 +38,7 @@ const uint8_t tiles[] = {
 		_TILE_16, _TILE_17, _TILE_18, _TILE_19,
 		_TILE_20, _TILE_21, _TILE_22, _TILE_23, 
         _TILE_24, _TILE_25, _TILE_26,
-        #if _XL_NUMBER_OF_TILES>=27
+        #if _XL_NUMBER_OF_TILES>27
                                       _TILE_27, 
         _TILE_28, _TILE_29, _TILE_30, _TILE_31,
  
