@@ -49,7 +49,7 @@ All 91 redefined tiles have been tested on the following targets.
 - CoCo 3
 - Dragon 32/64
 
-### VBC (MOS 6502) with redefined graphics tiles (UDGs)
+### VBCC (MOS 6502) with redefined graphics tiles (UDGs)
 - BBC Master
 - BBC Micro
 
