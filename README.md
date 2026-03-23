@@ -49,9 +49,10 @@ All 91 redefined tiles have been tested on the following targets.
 - CoCo 3
 - Dragon 32/64
 - Thomson Mo5/Thomson Mo6/Olivetti Prodest PC 128
+- Thomson To7/To8/To9
 
 ### VBCC (MOS 6502) with redefined graphics tiles (UDGs)
-- BBC Master
+- BBC Master / Olivetti Prodest PC 128S
 - BBC Micro
 
 ### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
