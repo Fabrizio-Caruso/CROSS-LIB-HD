@@ -38,6 +38,7 @@ All 91 redefined tiles have been tested on the following targets.
 
 ### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
 - Atari Lynx
+- Commander X16
 - Commodore 128 [MOS 8502] [80 column display]
 - Commodore 16 [16k, 32k/64k]
 - Commodore 64
