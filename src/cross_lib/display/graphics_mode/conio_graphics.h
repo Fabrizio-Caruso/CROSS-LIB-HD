@@ -15,6 +15,9 @@
             // vdc_write(HIGH_ADDRESS_REGISTER,address>>8); \
             // vdc_write(LOW_ADDRESS_REGISTER,address&0xFF); \
 
+// vpoke(screen_code, 0x1b000 + 256 * y + 2 * x)
+// vpoke(color, 0x1b001 + 256 * y + 2 * x)
+
 #if !defined(_XL_NO_COLOR)
     #if defined(__NO_BOTTOM)
         #define _XL_DRAW(x,y,tile,color) \
@@ -26,6 +29,14 @@
                 _XL_SET_TEXT_COLOR(color); \
                 cputc(tile); \
             } \
+        } \
+        while(0)
+    #elif defined(__CX16__)
+        #define _XL_DRAW(x,y,tile,color) \
+        do \
+        { \
+            vpoke(tile, 0x1b000 + 256U * (y) + 2U * (x)); \
+            vpoke(color, 0x1b001 + 256U * (y) + 2U * (x)); \
         } \
         while(0)
     #elif defined(__VIC20__) && defined(__VIC20_EXP_8K)
