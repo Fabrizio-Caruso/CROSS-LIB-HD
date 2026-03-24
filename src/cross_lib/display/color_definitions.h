@@ -221,11 +221,11 @@
         
     #else
         #define _COMX_BLUE 0
-        #define _COMX_GREEN 1
-        #define _COMX_CYAN 2
+        #define _COMX_GREEN 0
+        #define _COMX_CYAN 0
         #define _COMX_PURPLE (0+128)
-        #define _COMX_YELLOW (1+128)
-        #define _COMX_WHITE  (2+128) 
+        #define _COMX_YELLOW (0+128)
+        #define _COMX_WHITE  (0+128) 
 
         #define _XL_RED _COMX_PURPLE
         #define _XL_WHITE _COMX_WHITE

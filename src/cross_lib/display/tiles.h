@@ -79,8 +79,8 @@
     #include "cidelsa_no_gfx.h"
 #elif defined(__COMX_COLOR_GRAPHICS) && !defined(__MICRO__)
 	#include "comx_color_settings.h"
-#elif defined(__COMX__) || defined(__PECOM__) || ((defined(__CIDELSA__) && !defined(_XL_NO_UDG)))
-    #include "comx_settings.h"
+// #elif defined(__COMX__) || defined(__PECOM__) || ((defined(__CIDELSA__) && !defined(_XL_NO_UDG)))
+    // #include "comx_settings.h"
 #elif defined(__MICRO__)
 	// #include "micro_settings.h"
 #elif defined(__ATARI_LYNX__) && defined(__LYNX_TGI_GRAPHICS)
