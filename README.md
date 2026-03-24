@@ -51,6 +51,10 @@ All 91 redefined tiles have been tested on the following targets.
 - Thomson Mo5/Thomson Mo6/Olivetti Prodest PC 128
 - Thomson To7/To8/To9
 
+### LCC1802 (RCA 1802) with redefined graphics tiles (UDGs)
+- COMX-35
+- Pecom 32/64
+
 ### VBCC (MOS 6502) with redefined graphics tiles (UDGs)
 - BBC Master / Olivetti Prodest PC 128S
 - BBC Micro
