@@ -30,13 +30,13 @@ More information on Cross-Lib is here: https://github.com/Fabrizio-Caruso/CROSS-
 
 All 91 redefined tiles have been tested on the following targets.
 
-### Native compiler (host CPU) with redefined graphical tiles (UDGs) 
+### Native compiler (host CPU) with redefined tiles (UDGs) 
 - Terminal
 
-### ACK (Intel 8088/8086) with redefined graphical tiles (UDGs)
+### ACK (Intel 8088/8086) with redefined tiles (UDGs)
 - MS-DOS 8088/8086
 
-### CC65 (MOS 6502) with redefined graphics tiles (UDGs)
+### CC65 (MOS 6502) with redefined tiles (UDGs)
 - Atari Lynx
 - Commander X16
 - Commodore 128 [MOS 8502] [80 column display]
@@ -45,22 +45,22 @@ All 91 redefined tiles have been tested on the following targets.
 - Commodore VIC 20 [unexpanded, +3k, +8k/16k/24k]
 - Watara Supervision
 
-### CMOC (Motorola 6809) with redefined graphics tiles (UDGs)
+### CMOC (Motorola 6809) with redefined tiles (UDGs)
 - CoCo 1/2
 - CoCo 3
 - Dragon 32/64
 - Thomson Mo5/Thomson Mo6/Olivetti Prodest PC 128
 - Thomson To7/To8/To9
 
-### LCC1802 (RCA 1802) with redefined graphics tiles (UDGs)
+### LCC1802 (RCA 1802) with redefined tiles (UDGs)
 - COMX-35
 - Pecom 32/64
 
-### VBCC (MOS 6502) with redefined graphics tiles (UDGs)
+### VBCC (MOS 6502) with redefined tiles (UDGs)
 - BBC Master / Olivetti Prodest PC 128S
 - BBC Micro
 
-### Z88DK (Z80 and Intel 8080) with redefined graphical tiles (UDGs)
+### Z88DK (Z80 and Intel 8080) with redefined tiles (UDGs)
 - Agon Light
 - Amstrad CPC
 - Amstrad GX4000
