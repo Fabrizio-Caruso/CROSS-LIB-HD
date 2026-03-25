@@ -3,17 +3,8 @@ Special APIs
 
 - ACE KO maybe not enough UDGs
 - Z88 special init
------------------------------
 
 -----------------------------
-Special code to select the PALETTE
-
-- MSX2 -> how to set screen modes? 6 gets us 512x212 in black and green shades
------------------------------
-
-
------------------------------
-
 
 -----------------------------
 Too little memory
@@ -45,9 +36,6 @@ KO
 - TRS-80 Model 2 -> freeze
 -----------------------------
 
-TO Implement:
-
-ZX Spectrum 128 (PSG sound)
 
 -----------------------------
 
@@ -107,5 +95,7 @@ GX4000      OK
 PMD85       OK
 EG2K        OK
 ZXN         OK
+
+PV1000      OK
 ---
 

@@ -26,10 +26,10 @@
     #define _XL_MAGENTA _XL_RED
 #elif defined(__PV1000_GRAPHICS)
     #define __PV1000_WHITE  0
-    #define __PV1000_CYAN   1
-    #define __PV1000_GREEN  2
-    #define __PV1000_YELLOW 3
-    #define __PV1000_RED    4
+    #define __PV1000_CYAN   0
+    #define __PV1000_GREEN  0
+    #define __PV1000_YELLOW 0
+    #define __PV1000_RED    1
 
     
     #define _XL_WHITE   __PV1000_WHITE

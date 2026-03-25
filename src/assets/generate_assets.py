@@ -123,31 +123,28 @@ def generate_two_bit_asset(abstract_asset):
 
         
     # 27 tiles in color 0
-    for i in range(37,64):
+    for i in range(37,128):
         for j in range(0,8):
             two_bit_block = one_to_two(abstract_asset[i*8+j],color_1)
-            # two_bit_asset.extend(two_bit_block)
             two_bit_asset.append(two_bit_block)
         
     # 27 tiles in color 1
-    for i in range(37,64):
-        for j in range(0,8):
-            two_bit_block = one_to_two(abstract_asset[i*8+j],color_2)
-            # two_bit_asset.extend(two_bit_block)
-            two_bit_asset.append(two_bit_block)
+    # for i in range(37,128):
+        # for j in range(0,8):
+            # two_bit_block = one_to_two(abstract_asset[i*8+j],color_2)
+            # two_bit_asset.append(two_bit_block)
 
         
     # 27 tiles in color 2
-    for i in range(37,64):
-        for j in range(0,8):
-            two_bit_block = one_to_two(abstract_asset[i*8+j],color_3)
-            # two_bit_asset.extend(two_bit_block)
-            two_bit_asset.append(two_bit_block)
+    # for i in range(37,64):
+        # for j in range(0,8):
+            # two_bit_block = one_to_two(abstract_asset[i*8+j],color_3)
+            # two_bit_asset.append(two_bit_block)
 
     # padding to get to 128
-    for i in range(0,10):
-        for j in range(0,8):
-            two_bit_asset.append([255,255])
+    # for i in range(0,10):
+        # for j in range(0,8):
+            # two_bit_asset.append([255,255])
 
     return two_bit_asset
 

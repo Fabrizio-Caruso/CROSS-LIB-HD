@@ -37,6 +37,7 @@ All 91 redefined tiles have been tested on the following targets.
 - MS-DOS 8088/8086
 
 ### CC65 (MOS 6502) with redefined tiles (UDGs)
+- Atari 7800
 - Atari Lynx
 - Commander X16
 - Commodore 128 [MOS 8502] [80 column display]
@@ -72,6 +73,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Bondwell 2
 - Camputers Lynx
 - Casio FP-1100
+- Casio PV-1000
 - Casio PV-2000
 - CCE MC-1000
 - Commodore 128 [Zilog 80] [40 column display]
