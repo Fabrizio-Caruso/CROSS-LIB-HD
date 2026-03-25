@@ -56,6 +56,7 @@ All 91 redefined tiles have been tested on the following targets.
 ### LCC1802 (RCA 1802) with redefined tiles (UDGs)
 - COMX-35
 - Pecom 32/64
+- Microboard System [PAL] [128 chars]
 
 ### VBCC (MOS 6502) with redefined tiles (UDGs)
 - BBC Master / Olivetti Prodest PC 128S
