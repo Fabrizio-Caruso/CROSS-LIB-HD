@@ -942,6 +942,16 @@ Click on the selected file to insert in the tape player
 Type LOADM  
 
 
+-----------------------------------------------------------
+
+###  MICRO (MICROBOARD SYSTEM)
+
+Use Emma 02 emulator.
+Select RCA -> Microboard System
+CARD2 -> 128 6x8 characters
+CARD1 ->  RAM U20 -> binary
+START
+
 
 -----------------------------------------------------------
 
