@@ -71,8 +71,6 @@
 	#include "cpc_cpcrslib_settings.h"
 #elif defined(__SUPERVISION__)
 	#include "supervision_settings.h"
-#elif defined(__NES__) && defined(__CONIO_GRAPHICS)
-	#include "nes_settings.h"
 #elif defined(__NES__) && defined(__NES_CONIO_GRAPHICS)
 	#include "nes_conio_settings.h"
 #elif defined(__CIDELSA__) && defined(_XL_NO_UDG)

@@ -148,13 +148,13 @@
 
     #define _NES_RED 0
     #define _NES_CYAN 1
-    #define _NES_WHITE 2
+    // #define _NES_WHITE 2
 
     #define _XL_BLACK COLOR_BLACK
     #define _XL_RED _NES_RED
-    #define _XL_WHITE _NES_WHITE
+    #define _XL_WHITE _NES_CYAN
     #define _XL_BLUE _NES_CYAN
-    #define _XL_YELLOW _NES_WHITE
+    #define _XL_YELLOW _NES_CYAN
     #define _XL_GREEN _NES_CYAN
     #define _XL_CYAN _NES_CYAN
     
