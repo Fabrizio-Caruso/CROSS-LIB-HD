@@ -52,7 +52,7 @@
         const struct redefine_struct
         {
            const uint8_t _ascii;
-           const uint8_t _bitmap[9];
+           const uint8_t _bitmap[NUMBER_OF_LINES];
         } ;
 
     #if defined(__COMX__) || defined(__PECOM__) || defined(__MICRO__)

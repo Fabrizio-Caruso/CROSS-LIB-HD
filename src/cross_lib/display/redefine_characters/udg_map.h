@@ -7,10 +7,16 @@
     #include "tiles.h"
 #endif
 
+#if (defined(__COMX__) || defined(__PECOM__) || defined(__MICRO__)) && !defined(NTSC)
+    #define NUMBER_OF_LINES 9
+#else
+    #define NUMBER_OF_LINES 8
+#endif
+
 const struct redefine_struct
 {
    const uint8_t ascii;
-   const uint8_t bitmap[8];
+   const uint8_t bitmap[NUMBER_OF_LINES];
 } ;
 
 
