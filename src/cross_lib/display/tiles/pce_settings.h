@@ -113,15 +113,16 @@
 #define _TILE_80 46
 #define _TILE_81 47
 
-#define _TILE_82 146
-#define _TILE_83 147
-#define _TILE_84 148
-#define _TILE_85 149
-#define _TILE_86 150
-#define _TILE_87 151
-#define _TILE_88 152
-#define _TILE_89 153
-#define _TILE_90 154
+#define _TILE_82 58
+#define _TILE_83 59
+#define _TILE_84 60
+#define _TILE_85 61
+#define _TILE_86 62
+#define _TILE_87 63
+#define _TILE_88 64
+
+#define _TILE_89 (10+128)
+#define _TILE_90 (13+128)
 
 
 #endif // _PCE_GRAPHICS_SETTINGS

@@ -279,6 +279,17 @@ def generate_asset_from_template(dir_name, stripped_template_file_name):
                     normalized_digits_string += normalized_digit_string + ","
                 normalized_digits_string = normalized_digits_string[:-1]
                 tile_data=normalized_digits_string
+            elif stripped_template_file_name.startswith("cc65_pce_tiles"):
+                digits_string = tile[i].split(",")
+                normalized_digits_string = ""
+                for digit_string in digits_string:
+                    int_digit_string = int(digit_string)
+                    if i>=89: # tile 89 and 90 are mapped to inverse
+                        int_digit_string = 255-int_digit_string
+                    normalized_digit_string = str(int_digit_string)
+                    normalized_digits_string += normalized_digit_string + ","
+                normalized_digits_string = normalized_digits_string[:-1]
+                tile_data=normalized_digits_string
             elif stripped_template_file_name.startswith("cmoc"):
                 tile_data = tile[i].replace(","," \n    FCB ")
             else:

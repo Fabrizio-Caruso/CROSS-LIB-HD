@@ -19,10 +19,10 @@ _pce_font:
 .byte <tile_5>
 .byte <tile_7>
 .byte <tile_4>
-.byte   $00, $24, $66, $FF, $66, $24, $00, $00
+.byte <tile_89>;  (10) 
 .byte <tile_8>
 .byte <tile_17>
-.byte   $00, $24, $66, $FF, $66, $24, $00, $00
+.byte <tile_90>;  (13)
 .byte <tile_9>
 .byte <tile_18>
 .byte <tile_11>
@@ -61,7 +61,7 @@ _pce_font:
 .byte <tile_80>
 .byte <tile_81>
 
-.byte   $7C, $C6, $CE, $DE, $F6, $E6, $7C, $00
+.byte   $7C, $C6, $CE, $DE, $F6, $E6, $7C, $00 ; 48
 .byte   $30, $70, $30, $30, $30, $30, $FC, $00
 .byte   $78, $CC, $0C, $38, $60, $CC, $FC, $00
 .byte   $78, $CC, $0C, $38, $0C, $CC, $78, $00
@@ -70,15 +70,17 @@ _pce_font:
 .byte   $38, $60, $C0, $F8, $CC, $CC, $78, $00
 .byte   $FC, $CC, $0C, $18, $30, $30, $30, $00
 .byte   $78, $CC, $CC, $78, $CC, $CC, $78, $00
-.byte   $78, $CC, $CC, $7C, $0C, $18, $70, $00
-.byte   $00, $30, $30, $00, $00, $30, $30, $00
-.byte   $00, $30, $30, $00, $00, $30, $30, $60
-.byte   $18, $30, $60, $C0, $60, $30, $18, $00
-.byte   $00, $00, $FC, $00, $00, $FC, $00, $00
-.byte   $60, $30, $18, $0C, $18, $30, $60, $00
-.byte   $78, $CC, $0C, $18, $30, $00, $30, $00
-.byte   $7C, $C6, $DE, $DE, $DE, $C0, $78, $00
-.byte   $30, $78, $CC, $CC, $FC, $CC, $CC, $00
+.byte   $78, $CC, $CC, $7C, $0C, $18, $70, $00 ; 57
+
+.byte <tile_82>
+.byte <tile_83>
+.byte <tile_84>
+.byte <tile_85>
+.byte <tile_86>
+.byte <tile_87>
+.byte <tile_88>
+
+.byte   $30, $78, $CC, $CC, $FC, $CC, $CC, $00 ; 65 (A)
 .byte   $FC, $66, $66, $7C, $66, $66, $FC, $00
 .byte   $3C, $66, $C0, $C0, $C0, $66, $3C, $00
 .byte   $F8, $6C, $66, $66, $66, $6C, $F8, $00
@@ -103,7 +105,7 @@ _pce_font:
 .byte   $C6, $C6, $C6, $D6, $FE, $EE, $C6, $00
 .byte   $C6, $C6, $6C, $38, $38, $6C, $C6, $00
 .byte   $CC, $CC, $CC, $78, $30, $30, $78, $00
-.byte   $FE, $06, $0C, $18, $30, $60, $FE, $00
+.byte   $FE, $06, $0C, $18, $30, $60, $FE, $00 ; 90 (Z)
 
 
 .byte <tile_27>
@@ -146,13 +148,7 @@ _pce_font:
 
 
 
-.byte <tile_82>
-.byte <tile_83>
-.byte <tile_84>
-.byte <tile_85>
-.byte <tile_86>
-.byte <tile_87>
-.byte <tile_88>
-.byte <tile_89>
-.byte <tile_90>
+
+.byte <tile_89> ; inverted becaise > 127
+.byte <tile_90> ; inverted becaise > 127
 

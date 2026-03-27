@@ -46,6 +46,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Commodore 64
 - Commodore VIC 20 [unexpanded, +3k, +8k/16k/24k]
 - Nintendo NES
+- PC-Engine
 - Watara Supervision
 
 ### CMOC (Motorola 6809) with redefined tiles (UDGs)
