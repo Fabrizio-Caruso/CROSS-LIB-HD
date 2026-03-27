@@ -15,14 +15,14 @@ _pce_font:
 .byte <tile_0>
 .byte <tile_1>
 .byte <tile_2> 
-.byte <tile_3>	 
+.byte <tile_3>
 .byte <tile_5>
 .byte <tile_7>
 .byte <tile_4>
-.byte $00,$80,$7e,$c8,$f8,$c0,$80,$00
+.byte   $00, $24, $66, $FF, $66, $24, $00, $00
 .byte <tile_8>
 .byte <tile_17>
-.byte $00,$3c,$5a,$db,$c3,$5A,$3c,$18
+.byte   $00, $24, $66, $FF, $66, $24, $00, $00
 .byte <tile_9>
 .byte <tile_18>
 .byte <tile_11>
@@ -38,25 +38,29 @@ _pce_font:
 .byte <tile_23>
 .byte <tile_24>
 .byte <tile_25>
-.byte   $00, $24, $66, $FF, $66, $24, $00, $00
-.byte   $00, $18, $3C, $7E, $FF, $FF, $00, $00
-.byte   $00, $FF, $FF, $7E, $3C, $18, $00, $00
-.byte   $00, $00, $00, $00, $00, $00, $00, $00
-.byte   $30, $78, $78, $78, $30, $00, $30, $00
-.byte   $6C, $6C, $6C, $00, $00, $00, $00, $00
-.byte   $6C, $6C, $FE, $6C, $FE, $6C, $6C, $00
-.byte   $30, $7C, $C0, $78, $0C, $F8, $30, $00
-.byte   $00, $C6, $CC, $18, $30, $66, $C6, $00
-.byte   $38, $6C, $38, $76, $DC, $CC, $76, $00
-.byte   $60, $60, $C0, $00, $00, $00, $00, $00
-.byte   $18, $30, $60, $60, $60, $30, $18, $00
-.byte   $60, $30, $18, $18, $18, $30, $60, $00
-.byte   $00, $66, $3C, $FF, $3C, $66, $00, $00
-.byte   $00, $30, $30, $FC, $30, $30, $00, $00
-.byte   $00, $00, $00, $00, $00, $30, $30, $60
-.byte   $00, $00, $00, $FC, $00, $00, $00, $00
-.byte   $00, $00, $00, $00, $00, $30, $30, $00
-.byte   $06, $0C, $18, $30, $60, $C0, $80, $00
+
+.byte <tile_64>
+.byte <tile_65>
+.byte <tile_66>
+
+.byte   $00, $00, $00, $00, $00, $00, $00, $00 ; (32)
+
+.byte <tile_67>
+.byte <tile_68>
+.byte <tile_69>
+.byte <tile_70>
+.byte <tile_71>
+.byte <tile_72>
+.byte <tile_73>
+.byte <tile_74>
+.byte <tile_75>
+.byte <tile_76>
+.byte <tile_77>
+.byte <tile_78>
+.byte <tile_79>
+.byte <tile_80>
+.byte <tile_81>
+
 .byte   $7C, $C6, $CE, $DE, $F6, $E6, $7C, $00
 .byte   $30, $70, $30, $30, $30, $30, $FC, $00
 .byte   $78, $CC, $0C, $38, $60, $CC, $FC, $00
@@ -139,24 +143,9 @@ _pce_font:
 .byte <tile_61>
 .byte <tile_62>
 .byte <tile_63>
-.byte <tile_64>
-.byte <tile_65>
-.byte <tile_66>
-.byte <tile_67>
-.byte <tile_68>
-.byte <tile_69>
-.byte <tile_70>
-.byte <tile_71>
-.byte <tile_72>
-.byte <tile_73>
-.byte <tile_74>
-.byte <tile_75>
-.byte <tile_76>
-.byte <tile_77>
-.byte <tile_78>
-.byte <tile_79>
-.byte <tile_80>
-.byte <tile_81>
+
+
+
 .byte <tile_82>
 .byte <tile_83>
 .byte <tile_84>

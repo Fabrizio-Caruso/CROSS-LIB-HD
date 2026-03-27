@@ -22,8 +22,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 /* --------------------------------------------------------------------------------------- */ 
 
-#ifndef _PCE_GRAPHICS_SETTINGS
-#define _PCE_GRAPHICS_SETTINGS
+#ifndef _GAMATE_GRAPHICS_SETTINGS
+#define _GAMATE_GRAPHICS_SETTINGS
 
 
 
@@ -92,27 +92,24 @@
 #define _TILE_61 125
 #define _TILE_62 126
 #define _TILE_63 127
-
-
-#define _TILE_64 29
-#define _TILE_65 30
-#define _TILE_66 31
-#define _TILE_67 33
-#define _TILE_68 34
-#define _TILE_69 35
-#define _TILE_70 36
-#define _TILE_71 37
-#define _TILE_72 38
-#define _TILE_73 39
-#define _TILE_74 40
-#define _TILE_75 41
-#define _TILE_76 42
-#define _TILE_77 43
-#define _TILE_78 44
-#define _TILE_79 45
-#define _TILE_80 46
-#define _TILE_81 47
-
+#define _TILE_64 128
+#define _TILE_65 129
+#define _TILE_66 130
+#define _TILE_67 131
+#define _TILE_68 132
+#define _TILE_69 133
+#define _TILE_70 134
+#define _TILE_71 135
+#define _TILE_72 136
+#define _TILE_73 137
+#define _TILE_74 138
+#define _TILE_75 139
+#define _TILE_76 140
+#define _TILE_77 141
+#define _TILE_78 142
+#define _TILE_79 143
+#define _TILE_80 144
+#define _TILE_81 145
 #define _TILE_82 146
 #define _TILE_83 147
 #define _TILE_84 148
@@ -124,5 +121,5 @@
 #define _TILE_90 154
 
 
-#endif // _PCE_GRAPHICS_SETTINGS
+#endif // _GAMATE_GRAPHICS_SETTINGS
 
