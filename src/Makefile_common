@@ -397,9 +397,27 @@ endif
 
 #################################################################
 
-atari: $(ASSETS_PATH)/8x8_chars.h
+
+atari_hires: $(ASSETS_PATH)/8x8_chars.h
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari \
-	 \
+	-D__ANTIC_MODE6_GRAPHICS \
+	$(5COLOR_PALETTE)  \
+	--config $(CFG_PATH)/cc65/atari_mode1_redefined_chars.cfg \
+	-D__ATARI_HIRES -D__ALT_SLEEP  \
+	-D__NO_SCREEN_COLOR_INIT \
+	-D__ALT_PRINT \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI_SLOWDOWN) \
+	$(CROSS_LIB_PATH)/display/alt_print/atari_mode1_alt_print.c \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/disable_setcursor.s \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/atari_mode1_redefined_chars_init_graphics.c \
+	$(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
+	$(FULL_FILES) \
+	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.xex
+
+
+atari: $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
+	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari \
+	-D_XL_NUMBER_OF_TILES=27 \
 	$(5COLOR_PALETTE)  \
 	--config $(CFG_PATH)/cc65/atari_mode1_redefined_chars.cfg \
 	-D__ANTIC_MODE6_GRAPHICS -D__ALT_SLEEP  \
@@ -412,6 +430,7 @@ atari: $(ASSETS_PATH)/8x8_chars.h
 	$(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
 	$(FULL_FILES) \
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.xex
+	$(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr $(BUILD_PATH)/X$(GAME_NAME)_$@.atr -b $(BUILD_PATH)/X$(GAME_NAME)_$@.xex
 
 
 #################################################################
