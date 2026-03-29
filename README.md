@@ -13,12 +13,13 @@ Both CROSS-LIB and CROSS-LIB-HD have 37 fixed (26 letters, 10 digits and 1 empty
 - **CROSS-LIB**: supports at most 64 total tiles: i.e.,  27 redefinable tiles.
 
 ### Same targets as CROSS-LIB
-In principle it is possible to support the same set of targets as CROSS-LIB even for targets that cannot have 91 redefinable tiles in the same colors and video modes as the ones used by CROSS-LIB
+It is possible to support the same set of targets as CROSS-LIB even for targets that cannot have 91 redefinable tiles in the same colors and video modes as the ones used by CROSS-LIB.
 
 We can use:
 
 - __fewer colors__ -> When a given target cannot have 91 redefinable tiles for each available color in CROSS-LIB, it may be possible to have those tiles with fewer color variations or in a different screen mode.
 - __ASCII tiles__ -> If there were a target with graphics that cannot have 91 redefinable monochromatic tiles, the target can still use 91 ASCII characters (no UDG mode).
+
 
 ## Compatible with CROSS-LIB
 Source code of games and programs written with CROSS-LIB are compatible with CROSS-LIB-HD.
@@ -38,6 +39,7 @@ All 91 redefined tiles have been tested on the following targets.
 
 ### CC65 (MOS 6502) with redefined tiles (UDGs)
 - Atari 7800
+- Atari 8-bit
 - Atari Lynx
 - Bit Corporation Gamate
 - Commander X16

@@ -261,6 +261,7 @@ uint8_t _atari_text_color;
     #define _ATARI_EXTRA_COLOR GTIA_COLOR_WHITE
 #endif
 
+uint16_t BASE_ADDR;
 
 void _XL_INIT_GRAPHICS(void)
 {
@@ -303,7 +304,8 @@ void _XL_INIT_GRAPHICS(void)
             // POKE((PEEK(88)+PEEK(89)*256)+i,i&0xFF);
         // }
     // }
-    while(1){};
+    BASE_ADDR = (PEEK(88)+PEEK(89)*256);
+    // while(1){};
 }
 
 

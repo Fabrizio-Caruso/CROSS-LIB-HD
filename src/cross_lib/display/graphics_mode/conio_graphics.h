@@ -10,6 +10,7 @@
 #endif
 
 
+
             // uint16_t address; \
             // address = y*80+x; \
             // vdc_write(HIGH_ADDRESS_REGISTER,address>>8); \
@@ -87,6 +88,15 @@
 			} \
 		} \
 		while(0)
+    #elif defined(__ATARI__)
+        #include<peekpoke.h>
+        extern uint16_t BASE_ADDR;
+        #define _XL_DRAW(x,y,tile,color) \
+        do \
+        { \
+            POKE(BASE_ADDR+(x)+(y)*(XSize),tile); \
+        } \
+        while(0)
 	#else
 
 		#define _XL_DRAW(x,y,tile,color) \
