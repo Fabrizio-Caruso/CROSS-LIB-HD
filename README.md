@@ -94,6 +94,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Genius Leader GL6000SL
 - Hector HR
 - Hübler Grafik-MC
+- Jupiter Ace
 - LM-80C
 - Memotech MTX 500
 - Memotech MTX 512
