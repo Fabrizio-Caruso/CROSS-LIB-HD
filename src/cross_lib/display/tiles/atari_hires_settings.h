@@ -1,6 +1,6 @@
 
-#ifndef _ATARI_MODE1_SETTINGS
-#define _ATARI_MODE1_SETTINGS
+#ifndef _ATARI_HIRES_SETTINGS
+#define _ATARI_HIRES_SETTINGS
 
 // Still available:
 // 3,15,26,27,31,32 (TILE_19-24)
@@ -14,6 +14,34 @@
 // #define _ATARI_MODE1_BLUE 128
 // #define _ATARI_MODE1_YELLOW 192
 
+
+// #define _TILE_0 64
+// #define _TILE_1 65
+// #define _TILE_2 66
+// #define _TILE_3 67
+// #define _TILE_4 68
+// #define _TILE_5 69
+// #define _TILE_6 70
+// #define _TILE_7 71
+// #define _TILE_8 72
+// #define _TILE_9 73
+// #define _TILE_10 74
+// #define _TILE_11 75
+// #define _TILE_12 76
+// #define _TILE_13 77
+// #define _TILE_14 78
+// #define _TILE_15 79
+// #define _TILE_16 80
+// #define _TILE_17 81
+// #define _TILE_18 82
+// #define _TILE_19 83
+// #define _TILE_20 84
+// #define _TILE_21 85
+// #define _TILE_22 86
+// #define _TILE_23 87
+// #define _TILE_24 88
+// #define _TILE_25 89
+// #define _TILE_26 90
 
 #define _TILE_0 60
 #define _TILE_1 61
@@ -114,5 +142,6 @@
 #define _TILE_88 125
 #define _TILE_89 126
 #define _TILE_90 127
-#endif // _ATARI_MODE1_SETTINGS
+
+#endif // _ATARI_HIRES_SETTINGS
 
