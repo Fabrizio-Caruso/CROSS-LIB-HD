@@ -21,7 +21,7 @@ void _XL_INIT_GRAPHICS(void)
 	int mode = __SCREEN_MODE;
 
 
-	console_ioctl(IOCTL_GENCON_SET_FONT32, &fonts);
+	console_ioctl(IOCTL_GENCON_SET_FONT32, &font_param);
 
 	console_ioctl(IOCTL_GENCON_SET_UDGS, &udg_param);
 
