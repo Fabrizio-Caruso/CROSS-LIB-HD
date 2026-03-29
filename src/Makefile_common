@@ -1009,15 +1009,15 @@ jupiter_ace: ace
 
 ace: ace_exp_16k
 
-ace_exp_16k: $(ASSETS_PATH)/z88dk_xchase.asm
+ace_exp_16k: $(ASSETS_PATH)/z88dk_ace.asm
 	$(Z88DK_PATH)$(MYZ88DK) +ace $(SCCZ80_OPTS) $(INCLUDE_OPTS) \
-	-D__ACE__  \
+	-D__ACE__ \
+	-D_XL_NO_JOYSTICK \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ACE_SLOWDOWN) \
-	 \
 	-D__CONIO_GRAPHICS \
 	-clib=default \
-	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
-	$(ASSETS_PATH)/z88dk_xchase.asm \
+	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/ace/ace_init_graphics.c \
+	$(ASSETS_PATH)/z88dk_ace.asm \
 	$(FULL_FILES) \
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@ -Cz--audio -create-app
 	rm $(BUILD_PATH)/X$(GAME_NAME)_$@

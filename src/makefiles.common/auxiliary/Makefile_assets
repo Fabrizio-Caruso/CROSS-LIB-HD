@@ -119,6 +119,9 @@ $(ASSETS_PATH)/z88dk_sprites_definitions.h: $(wildcard $(8X8_TILES)/*.txt)
 $(ASSETS_PATH)/z88dk_xchase.asm: $(wildcard $(8X8_TILES)/*.txt)
 	$(CREATE_ASSET)
 
+$(ASSETS_PATH)/z88dk_ace.asm: $(wildcard $(8X8_TILES)/*.txt)
+	$(CREATE_ASSET)
+
 $(ASSETS_PATH)/cmoc_udc_25_tiles.s: $(wildcard $(8X8_TILES)/*.txt)
 	$(CREATE_ASSET)
 

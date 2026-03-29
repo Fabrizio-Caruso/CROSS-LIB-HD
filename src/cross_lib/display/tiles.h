@@ -87,6 +87,8 @@
 #elif defined(__ATARI_LYNX__) && defined(__LYNX_TGI_GRAPHICS)
     #include "tgi_gfx_settings.h"
 // #elif (defined(__SCCZ80) || defined(__SDCC)) && !defined(_XL_NO_UDG)
+#elif defined(__ACE__)
+	#include "ace_settings.h"
 #elif  defined(__Z88DK__) && !defined(_XL_NO_UDG)
 	#include "udg_settings.h"
 #elif defined(__PCE__)

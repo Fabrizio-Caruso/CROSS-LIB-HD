@@ -683,7 +683,7 @@ Use EightOne emulator.
 
 For the FULL version game 
 
-"0 0 bload ace"
+"0 0 bload <name>"
 
 Open the FULL .wav version with 
 
