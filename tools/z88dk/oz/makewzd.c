@@ -42,7 +42,7 @@
 #endif
 
 #include <fcntl.h>
-
+#include <unistd.h>
 
 
 char *randname(void);
@@ -105,9 +105,10 @@ char *randname()
     return name;
 }
 
-main(argc,OrigArgv)
-int argc;
-char **OrigArgv;
+// int main(argc,OrigArgv)
+int main(int argc, char *OrigArgv[]) 
+// int argc;
+// char **OrigArgv;
 {
 	FILE *in, *out;
     int c;
