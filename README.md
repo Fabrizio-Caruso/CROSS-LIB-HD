@@ -36,6 +36,7 @@ All 91 redefined tiles have been tested on the following targets.
 
 ### ACK (Intel 8088/8086) with redefined tiles (UDGs)
 - MS-DOS 8088/8086
+- PC 8088/8086 [bare metal]
 
 ### CC65 (MOS 6502) with redefined tiles (UDGs)
 - Atari 7800
