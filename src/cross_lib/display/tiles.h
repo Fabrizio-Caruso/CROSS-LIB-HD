@@ -22,9 +22,9 @@
 #elif defined(__BBC_GRAPHICS) && !defined(_XL_NO_UDG)
     #include "bbc_settings.h"
 #elif defined(__CREATIVISION__) && defined(__VDP_MODE1_GRAPHICS) && !defined(_XL_NO_UDG)
-    #include "vdp_mode1_settings.h"
+    #include "creativision_vdp_mode1_settings.h"
 #elif defined(__TI99__) && !defined(_XL_NO_UDG)
-    #include "vdp_mode1_settings.h"
+    #include "ti99_vdp_mode1_settings.h"
     // #include "vdp_bitmap_settings.h"
 #elif defined(__CREATIVISION__) && !defined(_XL_NO_UDG)
     #include "creativision_settings.h"

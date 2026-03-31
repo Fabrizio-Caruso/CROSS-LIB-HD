@@ -47,6 +47,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Commodore 16 [16k, 32k/64k]
 - Commodore 64
 - Commodore VIC 20 [unexpanded, +3k, +8k/16k/24k]
+- Creativision
 - Nintendo NES
 - PC-Engine
 - Watara Supervision
