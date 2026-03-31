@@ -25,6 +25,7 @@
     #include "vdp_mode1_settings.h"
 #elif defined(__TI99__) && !defined(_XL_NO_UDG)
     #include "vdp_mode1_settings.h"
+    // #include "vdp_bitmap_settings.h"
 #elif defined(__CREATIVISION__) && !defined(_XL_NO_UDG)
     #include "creativision_settings.h"
 #elif defined(__VIC20__) && defined(__VIC20_EXP_3K) && defined(_XL_NO_UDG)

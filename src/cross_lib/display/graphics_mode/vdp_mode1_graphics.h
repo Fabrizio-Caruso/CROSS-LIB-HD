@@ -64,7 +64,7 @@ uint16_t loc(uint8_t x, uint8_t y);
 
 // #define _XL_DELETE(x,y) DISPLAY_POKE(locti99(x,y), _SPACE)
 
-
+//     DISPLAY_POKE(loc(x,y), (__tile)+(__color));
 #define _XL_DRAW(x,y,__tile,__color) \
 do \
 { \

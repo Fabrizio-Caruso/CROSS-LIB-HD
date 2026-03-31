@@ -273,23 +273,12 @@
 
 #elif defined(__VDP_MODE1_GRAPHICS)
 
-    #if defined(__TI99__)
-        #define _COLOR_OFFSET -64
-    #else
-        #define _COLOR_OFFSET 0
-    #endif
-        
-    #if defined(__TI99__)
-        #define _CREAT_YELLOW (192+_COLOR_OFFSET)
-        #define _CREAT_GREEN  (160+_COLOR_OFFSET)
-    #else
-        #define _CREAT_YELLOW (32 +_COLOR_OFFSET)
-        #define _CREAT_GREEN  (0 +_COLOR_OFFSET)
-    #endif
-    #define _CREAT_WHITE  (64 +_COLOR_OFFSET)
-    #define _CREAT_CYAN   (96 +_COLOR_OFFSET)
-    #define _CREAT_RED    (128+_COLOR_OFFSET)
-    #define _CREAT_BLUE _CREAT_CYAN
+    #define _CREAT_YELLOW 0
+    #define _CREAT_GREEN  128
+    #define _CREAT_WHITE  0
+    #define _CREAT_CYAN   128
+    #define _CREAT_RED    0
+    #define _CREAT_BLUE   128
 
     #define _XL_RED _CREAT_RED
     #define _XL_WHITE _CREAT_WHITE

@@ -58,6 +58,9 @@ All 91 redefined tiles have been tested on the following targets.
 - Thomson Mo5/Thomson Mo6/Olivetti Prodest PC 128
 - Thomson To7/To8/To9
 
+### GCC4TI (TMS9900) with redefined tiles (UDGs)
+- Texas Instruments TI99/4A
+
 ### LCC1802 (RCA 1802) with redefined tiles (UDGs)
 - COMX-35
 - Pecom 32/64
