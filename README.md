@@ -141,6 +141,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Sord M5
 - Spectravideo SVI
 - Texas Instruments TI-83
+- Texas Instruments TI-83 Plus
 - TIKI-100
 - TIM-011
 - Timex TS2068
