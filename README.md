@@ -91,6 +91,8 @@ All 91 redefined tiles have been tested on the following targets.
 - Coleco Adam
 - Coleco Vision
 - EACA Colour Genie EG2000
+- Epson PX-4
+- Epson PX-8
 - Excalibur 64
 - Exidy Sorcerer
 - GameGear
