@@ -66,7 +66,7 @@
 #elif defined(__ATMOS__) && !defined(NO_UDG)
 	#include "atmos_redefined_characters_settings.h"
 #elif defined(__Z88DK_SPRITES_GRAPHICS) 
-	#include "udg_settings.h"
+	#include "sprite_settings.h"
 #elif defined(__MSX__) && defined(__MEMORY_MAPPED_GRAPHICS)
 	#include "msx_redefined_chars_settings.h"
 #elif defined(__CPCRSLIB_GRAPHICS)
