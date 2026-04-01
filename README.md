@@ -130,6 +130,10 @@ All 91 redefined tiles have been tested on the following targets.
 - Sega SG 1000
 - Seiko MAP-1010
 - Sharp X1
+- Sinclair ZX81
+- Sinclair ZX Spectrum 128K
+- Sinclair ZX Spectrum 16K/48K
+- Sinclair ZX Spectrum Next
 - Super-80r (VDUEB)
 - Sony SMC-777
 - Sord M5
@@ -143,9 +147,8 @@ All 91 redefined tiles have been tested on the following targets.
 - Vtech Laser 500
 - Vtech VZ200
 - Z80 TV GAME
-- ZX Spectrum 16K/48K
-- ZX Spectrum 128K
-- ZX Spectrum Next
+
+
 
 ## More features?
 In the future a few extra features may be added but the highest priority goes to the increased number of tiles.

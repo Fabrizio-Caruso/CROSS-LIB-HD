@@ -2219,7 +2219,7 @@ zx81_wrx: zx81_32k_wrx
 
 zx81_16k_wrx: $(ASSETS_PATH)/z88dk_sprites_definitions.h
 	$(Z88DK_PATH)$(MYZ88DK) +zx81 $(SCCZ80_OPTS) -subtype=wrx -clib=wrx \
-	$(INCLUDE_OPTS) -D_XL_NUMBER_OF_TILES=27 \
+	$(INCLUDE_OPTS)  \
 	-pragma-include:$(CFG_PATH)/z88dk/zpragma_clib_no_printf.inc \
 	-D__NO_SPRITE_TRANSPARENCY \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ZX81_WRX_SLOWDOWN) $(ZX81_GFX_GAME_OPTS) \
