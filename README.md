@@ -132,7 +132,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Sega SG 1000
 - Seiko MAP-1010
 - Sharp X1
-- Sinclair ZX81
+- Sinclair ZX81 WRX [16k, 32k]
 - Sinclair ZX Spectrum 128K
 - Sinclair ZX Spectrum 16K/48K
 - Sinclair ZX Spectrum Next
