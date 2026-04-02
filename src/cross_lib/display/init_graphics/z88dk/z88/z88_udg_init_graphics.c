@@ -16,7 +16,7 @@
 #endif 
 #pragma -reqpag=BAD_PAGES
 
-#pragma printf = ""
+// #pragma printf = ""
 
 // /* Redirect OZ required callbacks to our functions */
 // #pragma redirect handlecmds=_handlecmds
@@ -58,7 +58,7 @@ void _XL_INIT_GRAPHICS(void)
     // win.width=255; 
     // win.number='4'; 
     // window(win); 
-
+    z88_disable_cursor();
     _setScreenColors();
 }
 
