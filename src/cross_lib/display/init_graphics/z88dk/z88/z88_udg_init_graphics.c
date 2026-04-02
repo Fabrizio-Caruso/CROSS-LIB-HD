@@ -17,13 +17,6 @@ extern uint8_t udgs[];
 
 void _XL_INIT_GRAPHICS(void) 
 { 
-    // static struct window win; /* Window structure */ 	
-
-    // win.graph=1; 
-    // win.width=255; 
-    // win.number='4'; 
-    // window(win); 
-        
 	void *param = &udgs;
 	#if !defined(__SCREEN_MODE)
 		#define __SCREEN_MODE 2
