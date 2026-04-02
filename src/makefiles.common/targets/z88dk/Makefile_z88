@@ -33,6 +33,7 @@ z88_mode0: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_Z88_SLOWDOWN) \
 	-D_XL_NO_JOYSTICK -D__SCREEN_MODE=0 \
 	-D__CONIO_GRAPHICS \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-vn -lndos \
 	--generic-console \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/z88/z88_udg_init_graphics.c \
@@ -55,6 +56,7 @@ z88_mode1: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_Z88_SLOWDOWN) \
 	-D_XL_NO_JOYSTICK -D__SCREEN_MODE=1 \
 	-D__CONIO_GRAPHICS \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-vn -lndos \
 	--generic-console \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/z88/z88_udg_init_graphics.c \
@@ -77,6 +79,7 @@ z88_mode2: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_Z88_SLOWDOWN) \
 	-D_XL_NO_JOYSTICK -D__SCREEN_MODE=2 \
 	-D__CONIO_GRAPHICS \
+	-pragma-redirect:CRT_FONT=_font_8x8_zx_system \
 	-vn -lndos \
 	--generic-console \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/z88/z88_udg_init_graphics.c \
