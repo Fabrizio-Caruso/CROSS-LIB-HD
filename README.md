@@ -82,6 +82,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Bandai RX78
 - Bit Corporation Bit90
 - Bondwell 2
+- Cambridge Z88
 - Camputers Lynx
 - Casio FP-1100
 - Casio PV-1000

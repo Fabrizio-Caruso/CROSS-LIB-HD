@@ -2173,4 +2173,14 @@ Start the game: Cart -> Insert -> Select .rom image file
 Input: Host -> Input -> Joystick1 -> Redefine keys
 
 
+----------------------------------------------------------
 
+### Z88 (Cambridge)
+
+Use OZvm emulator or Mame (mode 2 broken in recent versions, though)
+
+Use slot 1
+Select EPROM
+128K
+Load images -> game binary
+The app should appear in the app list as "XL"

@@ -1,10 +1,3 @@
------------------------------
-Special APIs
-
-- ACE KO maybe not enough UDGs
-- Z88 special init
-
------------------------------
 
 -----------------------------
 Too little memory
@@ -97,5 +90,8 @@ EG2K        OK
 ZXN         OK
 
 PV1000      OK
+ACE         OK
+Z88         OK
+
 ---
 
