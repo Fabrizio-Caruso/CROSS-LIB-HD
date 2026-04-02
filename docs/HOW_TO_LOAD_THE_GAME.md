@@ -1847,7 +1847,7 @@ Use the VTI emulator
 
 -----------------------------------------------------------
 
-### TI-83
+### TI-83 / TI-83 PLUS
 
 Use the VTI emulator
 
@@ -1927,37 +1927,6 @@ Alternative load instructions:
 -----------------------------------------------------------
 
 ### TI-85
-
-Use the VTI emulator
-
-1. Load the Rigel Shell into the calculator
-
-- 2nd + X-Var (LINK) + F2 
-
-- Drop Rigel memory backup file
-
-- 2ND + ON (OFF) 
-
--  ON (+ SAVE STATE to start from this point next time)
-
-
-2. Load the game
-
-- 2nd + X-Var (LINK) + F2 
-
--  Drop the .85s game binary
-
-
-
-3. Run the game
-
--  Custom + F1 (to select Rigel)
-
-- Select the game
-
-
-
-Alternative instructions:
 
 - Install the emulator program VTI.
 
