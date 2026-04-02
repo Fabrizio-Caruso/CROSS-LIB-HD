@@ -24,12 +24,12 @@ z88_sprites: $(ASSETS_PATH)/z88dk_sprites_definitions.h
 	mv z88.epr $(BUILD_PATH)/X$(GAME_NAME)_$@.epr
 
 
-z88: z88_mode1
+z88: z88_mode2
 
 z88_mode1: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +z88 $(SCCZ80_ROM_OPTS) -subtype=app \
 	$(INCLUDE_OPTS) \
-	-D__Z88__ -DXSize=80 -DYSize=8 \
+	-D__Z88__ -DXSize=60 -DYSize=8 \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_Z88_SLOWDOWN) \
 	-D_XL_NO_JOYSTICK -D__SCREEN_MODE=1 \
 	-D__CONIO_GRAPHICS \
@@ -54,7 +54,7 @@ z88_mode1: $(ASSETS_PATH)/z88dk_xchase.asm
 z88_mode2: $(ASSETS_PATH)/z88dk_xchase.asm
 	$(Z88DK_PATH)$(MYZ88DK) +z88 $(SCCZ80_ROM_OPTS) -subtype=app \
 	$(INCLUDE_OPTS) \
-	-D__Z88__ -DXSize=80 -DYSize=8 \
+	-D__Z88__ -DXSize=60 -DYSize=8 \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_Z88_SLOWDOWN) \
 	-D_XL_NO_JOYSTICK -D__SCREEN_MODE=2 \
 	-D__CONIO_GRAPHICS \

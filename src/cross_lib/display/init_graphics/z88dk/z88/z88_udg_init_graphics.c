@@ -25,7 +25,7 @@ void _XL_INIT_GRAPHICS(void)
 	console_ioctl(IOCTL_GENCON_SET_UDGS, &param);
         
 	console_ioctl(IOCTL_GENCON_SET_MODE, &mode); 
-
+    clg();
     z88_disable_cursor();
     _setScreenColors();
 }

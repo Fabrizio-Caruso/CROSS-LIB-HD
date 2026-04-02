@@ -2183,4 +2183,7 @@ Use slot 1
 Select EPROM
 128K
 Load images -> game binary
-The app should appear in the app list as "XL"
+
+You may need to do a hard reset.
+
+Then the app should appear in the app list as "XL"
