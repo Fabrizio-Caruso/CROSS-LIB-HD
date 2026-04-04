@@ -414,6 +414,21 @@ atari_mono: $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mka
 	$(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr $(BUILD_PATH)/X$(GAME_NAME)_$@.atr -b $(BUILD_PATH)/X$(GAME_NAME)_$@.xex
 
 
+#cl65 -t atari -O --static-locals -Wl "-D__RESERVED_MEMORY__=0x2000"  -Ln nopoke.lbl nopoke.c -o nopoke.xex
+
+atari_antic_15:  $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
+	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari -Wl "-D__RESERVED_MEMORY__=0x2000" \
+	-D_XL_NUMBER_OF_TILES=91 \
+	-D__CONIO_GRAPHICS -D__ALT_SLEEP -D__ATARI_ANTIC_15 \
+	-D__NO_SCREEN_COLOR_INIT  \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/antic15_init_graphics.c \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI_SLOWDOWN) \
+	$(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
+	$(FULL_FILES) \
+	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.xex
+	$(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr $(BUILD_PATH)/X$(GAME_NAME)_$@.atr -b $(BUILD_PATH)/X$(GAME_NAME)_$@.xex
+
+
 
 #################################################################
 
@@ -426,6 +441,50 @@ atari5200: $(ASSETS_PATH)/8x8_chars.h
 	$(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
 	$(FULL_FILES) \
 	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/atari5200_init_graphics.c \
+	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom
+
+
+# cl65 -O --static-locals -t atari5200 -C atari5200gr15.cfg -Ln nopoke.lbl -l nopoke.lst -o nopoke.rom nopoke.c gr15_5200.asm
+
+# atari5200_antic_15: $(ASSETS_PATH)/8x8_chars.h
+	# $(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari5200 --config $(CFG_PATH)/cc65/atari5200gr15.cfg \
+	# -D__ATARI5200__  -D_XL_NUMBER_OF_TILES=27 -D__ATARI_ANTIC_15 \
+	# -D__CONIO_GRAPHICS \
+	# -D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI5200_SLOWDOWN) \
+	# $(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
+	# $(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/gr15_5200.asm \
+	# $(FULL_FILES) \
+	# $(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/antic15_init_graphics.c \
+	# -o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom
+
+
+	# $(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/gr15_5200.asm \
+	# $(CROSS_LIB_PATH)/display/display_macros.c \
+	# $(CROSS_LIB_PATH)/input/input_macros.c \
+	# $(SOURCE_PATH)/main.c \
+
+atari5200_antic_15:  $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
+	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari5200 --config $(CFG_PATH)/cc65/atari5200gr15.cfg \
+	-D_XL_NUMBER_OF_TILES=91 \
+	-D__NO_GRAPHICS -D__ALT_SLEEP -D__ATARI_ANTIC_15 \
+	-D__NO_SCREEN_COLOR_INIT -D__DEFAULT_CLEAR_SCREEN \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/antic15_init_graphics.c \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI_SLOWDOWN) \
+	-D_XL_NO_SOUND -D_XL_NO_SLEEP \
+	$(FULL_FILES) \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/gr15_5200.asm \
+	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom
+    
+atari5200_antic_15_test:  $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
+	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari5200 --config $(CFG_PATH)/cc65/atari5200gr15_test.cfg \
+	-D_XL_NUMBER_OF_TILES=27 \
+	-D__NO_GRAPHICS  -D__ATARI_ANTIC_15 \
+	-D__NO_SCREEN_COLOR_INIT -D__DEFAULT_CLEAR_SCREEN \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/antic15_init_graphics.c \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI_SLOWDOWN) \
+	-D_XL_NO_SOUND \
+	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/gr15_5200.asm \
+	$(FULL_FILES) \
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom
 
 #################################################################

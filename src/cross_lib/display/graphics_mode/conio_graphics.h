@@ -88,7 +88,7 @@
 			} \
 		} \
 		while(0)
-    #elif defined(__ATARI__)
+    #elif defined(__ATARI__) && !defined(__ATARI_ANTIC_15)
         #include<peekpoke.h>
         extern uint16_t BASE_ADDR;
         #define _XL_DRAW(x,y,tile,color) \

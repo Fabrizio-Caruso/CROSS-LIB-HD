@@ -210,6 +210,9 @@
 
     void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val);
 
+#elif defined(__NO_GRAPHICS)
+    
+
 #elif !defined(__NO_PRINT)
     
     #define __CONIO_PRINT
@@ -242,7 +245,9 @@
 
 
 // COLORS
-#if defined(__ATARI5200__)
+#if defined(__NO_GRAPHICS)
+    #define _XL_SET_TEXT_COLOR(c)
+#elif defined(__ATARI5200__)
     #define _XL_SET_TEXT_COLOR(c) textcolor(c>>6)
 #elif defined(__ATARI__) && (defined(__ANTIC_MODE6_GRAPHICS))
     extern uint8_t _atari_text_color;

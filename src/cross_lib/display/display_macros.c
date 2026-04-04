@@ -546,30 +546,30 @@ lda $a7c0
 
 #if defined(__TERMINAL__)
 
-#if _XL_TILE_X_SIZE==8
-    #define _MAX_BIT_VALUE 128
+    #if _XL_TILE_X_SIZE==8
+        #define _MAX_BIT_VALUE 128
 
-    #if _XL_TILE_Y_SIZE==8
-        #include "8x8_chars.h"
+        #if _XL_TILE_Y_SIZE==8
+            #include "8x8_chars.h"
 
-    #elif _XL_TILE_Y_SIZE==6
-        #include "8x6_chars.h"
+        #elif _XL_TILE_Y_SIZE==6
+            #include "8x6_chars.h"
+        #endif
+    #elif _XL_TILE_X_SIZE==7
+        #define _MAX_BIT_VALUE 64
+
+        #include "7x8_chars.h"
+
+    #elif _XL_TILE_X_SIZE==6
+        #define _MAX_BIT_VALUE 32
+
+        #if _XL_TILE_Y_SIZE==8
+            #include "6x8_chars.h"
+            
+        #elif _XL_TILE_Y_SIZE==9
+            #include "6x9_chars.h"
+        #endif
     #endif
-#elif _XL_TILE_X_SIZE==7
-    #define _MAX_BIT_VALUE 64
-
-    #include "7x8_chars.h"
-
-#elif _XL_TILE_X_SIZE==6
-    #define _MAX_BIT_VALUE 32
-
-    #if _XL_TILE_Y_SIZE==8
-        #include "6x8_chars.h"
-        
-    #elif _XL_TILE_Y_SIZE==9
-        #include "6x9_chars.h"
-    #endif
-#endif
 
 
 
