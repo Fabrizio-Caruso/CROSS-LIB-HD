@@ -5,7 +5,7 @@
 #endif
 
 #define SCREEN_WIDTH 40
-#define CHAR_HEIGHT 16
+#define CHAR_HEIGHT 8
 #define CHAR_WIDTH 2
 
 char nibble2byte[16] = {
@@ -28,8 +28,8 @@ void outc_left(const char *src, char *dest)
 		c = ((n ^ 0xFF) & background_mask) | (n & foreground_mask);
 		*dest = c;
 		dest += SCREEN_WIDTH;
-		*dest = c;
-		dest += SCREEN_WIDTH;
+		// *dest = c;
+		// dest += SCREEN_WIDTH;
 	}
 }
 
@@ -43,8 +43,8 @@ void outc_right(const char *src, char *dest)
 		c = ((n ^ 0xFF) & background_mask) | (n & foreground_mask);
 		*dest = c;
 		dest += SCREEN_WIDTH;
-		*dest = c;
-		dest += SCREEN_WIDTH;
+		// *dest = c;
+		// dest += SCREEN_WIDTH;
 	}
 }
 
