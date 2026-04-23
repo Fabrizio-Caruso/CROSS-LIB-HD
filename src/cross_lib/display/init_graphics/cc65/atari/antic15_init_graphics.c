@@ -4,9 +4,18 @@
 #include <atari5200.h>
 #endif
 
+#include<peekpoke.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #define SCREEN_WIDTH 40
 #define CHAR_HEIGHT 8
 #define CHAR_WIDTH 2
+
+#include "8x8_chars.h"
+#include "udg_map.h"
 
 char nibble2byte[16] = {
 	0x00, 0x03, 0x0C, 0x0F,
@@ -28,8 +37,6 @@ void outc_left(const char *src, char *dest)
 		c = ((n ^ 0xFF) & background_mask) | (n & foreground_mask);
 		*dest = c;
 		dest += SCREEN_WIDTH;
-		// *dest = c;
-		// dest += SCREEN_WIDTH;
 	}
 }
 
@@ -43,9 +50,25 @@ void outc_right(const char *src, char *dest)
 		c = ((n ^ 0xFF) & background_mask) | (n & foreground_mask);
 		*dest = c;
 		dest += SCREEN_WIDTH;
-		// *dest = c;
-		// dest += SCREEN_WIDTH;
 	}
+}
+
+
+void output_code(char c)
+{
+	char *src, *dest;
+
+    // if (c >= 32 && c <= 95) c = c - 32;
+    // if (c >= 96 && c <= 127) c = (c + 64) & 127;
+#if !defined(__ATARI5200__)
+    src = (char *)(OS.chbas << 8) + (8 * c);
+#else
+    src = (char *)(0xF800 + (8 * c));
+#endif
+	dest = OS.savmsc;
+	outc_left(src, dest);
+	outc_right(src, ++dest);
+	OS.savmsc = ++dest;
 }
 
 void output_char(char c)
@@ -105,13 +128,45 @@ extern void _graphics(char mode);
 #endif
 
 
+#if !defined(__ATARI5200__)
+void set_udg(void)
+{
+	uint8_t *_CHBAS = (uint8_t *) 0x2F4;
+	extern char _FONT_START__[];
 
+	memcpy(_FONT_START__, (void *)0xE000, 512);
+	
+	/* modify your font at _FONT_START__, etc, then set the new font: */
+	REDEFINE_AT(_FONT_START__);
+	
+	*_CHBAS = ((int)_FONT_START__ >> 8);  /* enable the new font */
+}
+#else
+void set_udg(void)
+{
+	extern char _FONT_START__[];
+	
+	uint8_t *CHBASE = (uint8_t *)0xD409;
+
+	memcpy(_FONT_START__, (void *)0xF800, 512);
+	
+	REDEFINE_AT(_FONT_START__);
+	
+	*CHBASE = ((int)_FONT_START__ >> 8);
+}
+
+#endif
 
 // void main(void)
 void _XL_INIT_GRAPHICS(void)
 {
-	char i;
+	// char i;
 	char *msg = "Hi World!";
+
+    unsigned char j;
+    // int j;
+    
+
 
     _graphics(15+16);
 
@@ -119,29 +174,34 @@ void _XL_INIT_GRAPHICS(void)
 	OS.color1 = 0xD6; // Green
 	OS.color2 = 0x86; // Blue
 	OS.color4 = 0x00; // Black
-	
-	for (i=0; i<3; i++)
-	{
-		set_position(0, i);
-		set_back_color(0);
-		set_fore_color(i+1);
-		output_str(msg);
 
-		set_position(10, i);
-		set_back_color(1);
-		set_fore_color(i==0 ? 0 : i+1);
-		output_str(msg);
+    // for(j=0;j<128*8;++j)
+    // {
+        // POKE(0xF800+j,255);
+    // }
 
-		set_position(0, 4+i);
-		set_back_color(2);
-		set_fore_color(i==2 ? 3 : i);
-		output_str(msg);
+    set_udg();
 
-		set_position(10, 4+i);
-		set_back_color(3);
-		set_fore_color(i);
-		output_str(msg);
-	}
+    for(j=0;j<128;++j)
+    {
+        set_position(j%20,j/20);
+        output_code(j);
+    }
+
+    // for(i=0;i<3;++i)
+    // {
+        // set_position(10, 4+i);
+        // set_back_color(0);
+        // set_fore_color(i+1);
+        // output_str(msg);
+    // }
+	// for (i=0; i<3; i++)
+	// {
+		// set_position(10, 4+i);
+		// set_back_color(0);
+		// set_fore_color(i+1);
+		// output_str(msg);
+	// }
 
 
 
