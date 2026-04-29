@@ -283,7 +283,9 @@ def generate_asset_from_template(dir_name, stripped_template_file_name):
                 digits_string = tile[i].split(",")
                 normalized_digits_string = ""
                 for digit_string in digits_string:
-                    int_digit_string = int(digit_string)
+                    digit_string = digit_string.replace("$","0x")
+                    base = 16 if digit_string.startswith("0x") else 10
+                    int_digit_string = int(digit_string,base)
                     if i>=89: # tile 89 and 90 are mapped to inverse
                         int_digit_string = 255-int_digit_string
                     normalized_digit_string = str(int_digit_string)
