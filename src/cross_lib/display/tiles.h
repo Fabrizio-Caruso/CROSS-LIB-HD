@@ -60,7 +60,8 @@
 	// #include "atari_mode1_redefined_chars_settings.h"
 	#include "atari_hires_settings.h"
 #elif (defined(__ATARI__) && defined(__ATARI_ANTIC_15))
-	// #include "atari_mode1_redefined_chars_settings.h"
+	#include "atari_hires_settings.h"
+#elif (defined(__ATARI5200__) && defined(__ATARI_ANTIC_15))
 	#include "atari_hires_settings.h"
 #elif (defined(__ATARI__) && defined(__ANTIC_MODE6_GRAPHICS))
 	#include "atari_mode1_redefined_chars_settings.h"

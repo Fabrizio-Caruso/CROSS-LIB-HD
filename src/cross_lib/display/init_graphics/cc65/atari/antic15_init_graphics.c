@@ -29,6 +29,9 @@ char nibble2byte[16] = {
 char background_mask = 0x00;
 char foreground_mask = 0xFF;
 
+extern char _FONT_START__[];
+
+
 void outc_left(const char *src, char *dest)
 {
 	char i, n, c;
@@ -65,7 +68,7 @@ void output_code(char c)
 #if !defined(__ATARI5200__)
     src = (char *)(OS.chbas << 8) + (8 * c);
 #else
-    src = (char *)(0xF800 + (8 * c));
+    src = (char *)(_FONT_START__ + (8*c));
 #endif
 	dest = OS.savmsc;
 	outc_left(src, dest);
@@ -119,12 +122,12 @@ void set_fore_color(char c)
 }
 
 #if !defined(__ATARI5200__)
-void getkey(void)
-{
-	OS.ch = 0xFF;
-	while (OS.ch == 0xFF);
-	OS.ch = 0xFF;
-}
+// void getkey(void)
+// {
+	// OS.ch = 0xFF;
+	// while (OS.ch == 0xFF);
+	// OS.ch = 0xFF;
+// }
 #else
 extern void _graphics(char mode);
 #endif
@@ -134,7 +137,6 @@ extern void _graphics(char mode);
 void set_udg(void)
 {
 	uint8_t *_CHBAS = (uint8_t *) 0x2F4;
-	extern char _FONT_START__[];
 
 	memcpy(_FONT_START__, (void *)0xE000, 512);
 	
@@ -146,15 +148,14 @@ void set_udg(void)
 #else
 void set_udg(void)
 {
-	// extern char _FONT_START__[];
+	extern char _FONT_START__[];
 	
-	// uint8_t *CHBASE = (uint8_t *)0xD409;
+	uint8_t *CHBASE = (uint8_t *)0xD409;
 
-	// memcpy(_FONT_START__, (void *)0xF800, 512);
+	memcpy(_FONT_START__, (void *)0xF800, 512);
+	REDEFINE_AT(_FONT_START__);
 	
-	// REDEFINE_AT(_FONT_START__);
-	
-	// *CHBASE = ((int)_FONT_START__ >> 8);
+	*CHBASE = ((int)_FONT_START__ >> 8);
 }
 
 #endif
@@ -163,7 +164,7 @@ void set_udg(void)
 void _XL_INIT_GRAPHICS(void)
 {
 	// char i;
-	char *msg = "Hi World!";
+	// char *msg = "Hi World!";
 
     // unsigned char j;
     // int j;
