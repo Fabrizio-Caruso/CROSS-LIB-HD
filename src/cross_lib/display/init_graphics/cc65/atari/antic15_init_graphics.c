@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <string.h>
+
 #define SCREEN_WIDTH 40
 #define CHAR_HEIGHT 8
 #define CHAR_WIDTH 2
@@ -144,15 +146,15 @@ void set_udg(void)
 #else
 void set_udg(void)
 {
-	extern char _FONT_START__[];
+	// extern char _FONT_START__[];
 	
-	uint8_t *CHBASE = (uint8_t *)0xD409;
+	// uint8_t *CHBASE = (uint8_t *)0xD409;
 
-	memcpy(_FONT_START__, (void *)0xF800, 512);
+	// memcpy(_FONT_START__, (void *)0xF800, 512);
 	
-	REDEFINE_AT(_FONT_START__);
+	// REDEFINE_AT(_FONT_START__);
 	
-	*CHBASE = ((int)_FONT_START__ >> 8);
+	// *CHBASE = ((int)_FONT_START__ >> 8);
 }
 
 #endif
@@ -163,7 +165,7 @@ void _XL_INIT_GRAPHICS(void)
 	// char i;
 	char *msg = "Hi World!";
 
-    unsigned char j;
+    // unsigned char j;
     // int j;
     
 
@@ -182,11 +184,11 @@ void _XL_INIT_GRAPHICS(void)
 
     set_udg();
 
-    for(j=0;j<128;++j)
-    {
-        set_position(j%20,j/20);
-        output_code(j);
-    }
+    // for(j=0;j<128;++j)
+    // {
+        // set_position(j%20,j/20);
+        // output_code(j);
+    // }
 
     // for(i=0;i<3;++i)
     // {
@@ -205,11 +207,11 @@ void _XL_INIT_GRAPHICS(void)
 
 
 
-#if !defined(__ATARI5200__)
-	getkey();
-#else
-	while (1);
-#endif
+// #if !defined(__ATARI5200__)
+	// getkey();
+// #else
+	// while (1);
+// #endif
 }
 
 // int main(void)

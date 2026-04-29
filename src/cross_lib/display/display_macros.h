@@ -142,8 +142,12 @@
     #define _XL_PRINT(x,y,str)
     #define _XL_PRINTD(x,y,length, val)
     #define _XL_CHAR(x,y,ch)
-#elif defined(__ATARI__) && defined(__ANTIC_MODE6_GRAPHICS)
-    void _GOTOXY(uint8_t x, uint8_t y);
+#elif defined(__ATARI__) && (defined(__ANTIC_MODE6_GRAPHICS) || defined(__ATARI_ANTIC_15))
+    void _XL_PRINT(uint8_t x, uint8_t y, const char * str);
+    void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val);
+    void _XL_CHAR(uint8_t x, uint8_t y, char ch);
+
+#elif defined(__ATARI5200__) && defined(__ATARI_ANTIC_15)
     void _XL_PRINT(uint8_t x, uint8_t y, const char * str);
     void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val);
     void _XL_CHAR(uint8_t x, uint8_t y, char ch);
@@ -243,12 +247,26 @@
     } while(0)
 #endif
 
+#if defined(__ATARI_ANTIC_15)
+void output_code(char c);
+
+void output_char(char c);
+
+void output_str(const char *s);
+
+void set_position(char x, char y);
+
+void set_fore_color(char c);
+#endif
+
 
 // COLORS
 #if defined(__NO_GRAPHICS)
     #define _XL_SET_TEXT_COLOR(c)
-#elif defined(__ATARI5200__)
+#elif defined(__ATARI5200__) && !defined(__ATARI_ANTIC_15)
     #define _XL_SET_TEXT_COLOR(c) textcolor(c>>6)
+#elif defined(__ATARI_ANTIC_15)
+    #define _XL_SET_TEXT_COLOR(c)
 #elif defined(__ATARI__) && (defined(__ANTIC_MODE6_GRAPHICS))
     extern uint8_t _atari_text_color;
     #define _XL_SET_TEXT_COLOR(c) _atari_text_color = (c)

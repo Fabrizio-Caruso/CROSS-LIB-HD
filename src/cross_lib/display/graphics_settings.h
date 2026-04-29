@@ -13,6 +13,8 @@
     #include "bbc_graphics.h"
 #elif defined(__TERMINAL__) 
     #include "terminal_graphics.h"
+#elif defined(__ATARI_ANTIC_15)
+    #include "antic_mode15_graphics.h"
 #elif defined(__ATARI7800_COLOR_GRAPHICS)
 	#include "atari7800_color_graphics.h"
 #elif defined(__APPLE2_HGR_GRAPHICS)

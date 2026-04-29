@@ -90,6 +90,22 @@
     #define _XL_YELLOW CPC_YELLOW
     #define _XL_MAGENTA CPC_YELLOW
     #define _XL_GREEN CPC_YELLOW
+    
+#elif defined(__ATARI_ANTIC_15)
+        #define _ATARI_MODE15_WHITE 1
+        #define _ATARI_MODE15_GREEN 2
+        #define _ATARI_MODE15_BLACK 0
+        #define _ATARI_MODE15_CYAN 3
+
+        #define _XL_RED _ATARI_MODE15_WHITE
+        #define _XL_WHITE _ATARI_MODE15_WHITE
+        #define _XL_BLACK _ATARI_MODE15_BLACK
+        #define _XL_YELLOW _ATARI_MODE15_WHITE
+        #define _XL_GREEN _ATARI_MODE15_GREEN
+        #define _XL_CYAN _ATARI_MODE15_CYAN
+        #define _XL_BLUE _XL_CYAN
+        #define _XL_MAGENTA _XL_RED
+
 #elif defined(__ANTIC_MODE6_GRAPHICS) || defined(__ATARI5200__)
 
     #if defined(__USE_CYAN_YELLOW)

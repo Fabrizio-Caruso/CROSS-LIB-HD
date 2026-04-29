@@ -667,6 +667,28 @@ lda $a7c0
 #endif
 
 
+#if defined(__ATARI_ANTIC_15)
+    #include <stdint.h>
+
+    void _XL_PRINT(uint8_t x, uint8_t y, const char * str)
+    {
+        set_position(x,y);
+        set_fore_color(1);
+        output_str(str);
+    }
+    
+    void _XL_CHAR(uint8_t x, uint8_t y, char ch)
+    {
+        set_position(x,y);
+        output_char(ch);
+    }
+    
+    void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
+    {
+    }
+
+#endif
+
 
 #if defined(__BBC__)
 

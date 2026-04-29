@@ -151,7 +151,9 @@ int main(void)
         {
             _XL_CLEAR_SCREEN();
             
+            #if !defined(_XL_NO_COLOR)
             _XL_SET_TEXT_COLOR(tile_color[j]);
+            #endif
             
             _XL_PRINT(0, 0, (char *) color_name[j]);
             
