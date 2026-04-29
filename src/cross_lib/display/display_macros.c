@@ -683,9 +683,20 @@ lda $a7c0
         output_char(ch);
     }
     
-    void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
-    {
-    }
+void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
+{
+	uint8_t i;
+	uint8_t digit;
+
+	for(i=0;i<length;++i)
+	{
+		digit = (uint8_t) ((val)%10);
+		val-= digit;
+		val/=10;
+        set_position(x+length-1-i,y);
+        output_char((uint8_t) (digit+(uint8_t) 48u));
+	}
+}
 
 #endif
 
