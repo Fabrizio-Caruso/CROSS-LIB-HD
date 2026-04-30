@@ -265,8 +265,9 @@ void set_fore_color(char c);
     #define _XL_SET_TEXT_COLOR(c)
 #elif defined(__ATARI5200__) && !defined(__ATARI_ANTIC_15)
     #define _XL_SET_TEXT_COLOR(c) textcolor(c>>6)
-#elif defined(__ATARI_ANTIC_15)
-    #define _XL_SET_TEXT_COLOR(c)
+#elif defined(__ATARI_ANTIC_15) 
+    extern uint8_t _atari_text_color;
+    #define _XL_SET_TEXT_COLOR(c) _atari_text_color = (c)
 #elif defined(__ATARI__) && (defined(__ANTIC_MODE6_GRAPHICS))
     extern uint8_t _atari_text_color;
     #define _XL_SET_TEXT_COLOR(c) _atari_text_color = (c)

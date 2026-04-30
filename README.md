@@ -39,6 +39,7 @@ All 91 redefined tiles have been tested on the following targets.
 - PC 8088/8086 [bare metal]
 
 ### CC65 (MOS 6502) with redefined tiles (UDGs)
+- Atari 5200
 - Atari 7800
 - Atari 8-bit
 - Atari Lynx

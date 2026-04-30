@@ -19,6 +19,8 @@
 #include "8x8_chars.h"
 #include "udg_map.h"
 
+uint8_t _atari_text_color;
+
 char nibble2byte[16] = {
 	0x00, 0x03, 0x0C, 0x0F,
 	0x30, 0x33, 0x3C, 0x3F,
@@ -96,6 +98,7 @@ void output_char(char c)
 void output_str(const char *s)
 {
 	char c;
+    set_fore_color(_atari_text_color);
 	for (c = *s; c != 0; c = *(++s))
 	{
 		output_char(c);

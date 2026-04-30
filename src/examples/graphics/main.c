@@ -199,6 +199,7 @@ int main(void)
             #endif
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             
+            _XL_REFRESH();
             _XL_WAIT_FOR_INPUT();
         }
     }
