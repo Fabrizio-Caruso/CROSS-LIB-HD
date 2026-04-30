@@ -1,7 +1,7 @@
 #ifndef  __BIT_BANG_SOUNDS
 #define  __BIT_BANG_SOUNDS
 
-#if defined(__APPLE2__) || defined(__APPLE2ENH__)
+#if defined(__APPLE2__) || defined(__APPLE2ENH__) || defined(__AGAT__)
     #define BIT_BANG_ADDR 0xC030
     #define ROM_ADDR 0xD000
 #endif
