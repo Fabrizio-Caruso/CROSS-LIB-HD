@@ -397,7 +397,7 @@ endif
 
 #################################################################
 
-atari: atari_mono
+atari: atari_antic_15
 
 atari_mono: $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari \
@@ -419,7 +419,7 @@ atari_mono: $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mka
 atari_antic_15:  $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari -Wl "-D__RESERVED_MEMORY__=0x2000" \
 	--config $(CFG_PATH)/cc65/atari_mode1_redefined_chars.cfg \
-	-D_XL_NUMBER_OF_TILES=27 -DXSize=20 -DYSize=24 \
+	-DXSize=20 -DYSize=24 \
 	-D__CONIO_GRAPHICS -D__ALT_SLEEP -D__ATARI_ANTIC_15 -D__DEFAULT_CLEAR_SCREEN \
 	-D__NO_SCREEN_COLOR_INIT  \
 	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/antic15_init_graphics.c \
@@ -433,16 +433,16 @@ atari_antic_15:  $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-maste
 
 #################################################################
 
-atari5200: $(ASSETS_PATH)/8x8_chars.h
-	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari5200 \
-	--config $(CFG_PATH)/cc65/atari5200_redefined_chars_32k.cfg \
-	-D__ATARI5200__  $(5COLOR_PALETTE) -D_XL_NUMBER_OF_TILES=27 \
-	-D__ANTIC_MODE6_GRAPHICS \
-	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI5200_SLOWDOWN) \
-	$(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
-	$(FULL_FILES) \
-	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/atari5200_init_graphics.c \
-	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom
+# atari5200: $(ASSETS_PATH)/8x8_chars.h
+	# $(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari5200 \
+	# --config $(CFG_PATH)/cc65/atari5200_redefined_chars_32k.cfg \
+	# -D__ATARI5200__  $(5COLOR_PALETTE) -D_XL_NUMBER_OF_TILES=27 \
+	# -D__ANTIC_MODE6_GRAPHICS \
+	# -D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ATARI5200_SLOWDOWN) \
+	# $(CROSS_LIB_PATH)/sound/cc65/pokey/pokey_sounds.c \
+	# $(FULL_FILES) \
+	# $(CROSS_LIB_PATH)/display/init_graphics/cc65/atari5200/atari5200_init_graphics.c \
+	# -o $(BUILD_PATH)/X$(GAME_NAME)_$@.rom
 
 
 # cl65 -O --static-locals -t atari5200 -C atari5200gr15.cfg -Ln nopoke.lbl -l nopoke.lst -o nopoke.rom nopoke.c gr15_5200.asm
@@ -464,10 +464,12 @@ atari5200: $(ASSETS_PATH)/8x8_chars.h
 	# $(CROSS_LIB_PATH)/input/input_macros.c \
 	# $(SOURCE_PATH)/main.c \
 
+atari5200: atari5200_antic_15
+
 atari5200_antic_15:  $(ASSETS_PATH)/8x8_chars.h $(TOOLS_PATH)/cc65/atari/mkatr-master/mkatr$(COMPILEDEXT)
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS) -t atari5200 \
 	--config $(CFG_PATH)/cc65/atari5200gr15_udg.cfg \
-	-D_XL_NUMBER_OF_TILES=27  -DXSize=20 -DYSize=24 \
+	-DXSize=20 -DYSize=24 \
 	-D__ALT_SLEEP -D__ATARI_ANTIC_15 \
 	-D__NO_SCREEN_COLOR_INIT -D__DEFAULT_CLEAR_SCREEN \
 	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atari/antic15_init_graphics.c \
