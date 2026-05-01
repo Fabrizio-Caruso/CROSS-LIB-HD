@@ -8,12 +8,12 @@
     #include "pv1000_graphics.h"
 #elif defined(__VGA_GRAPHICS)
     #include "vga_graphics.h"
+#elif defined(__TERMINAL__) 
+    #include "terminal_graphics.h"
 #elif defined(__NCURSES_GRAPHICS)
     #include "ncurses_graphics.h"
 #elif defined(__BBC__) && defined(__BBC_GRAPHICS)
     #include "bbc_graphics.h"
-#elif defined(__TERMINAL__) 
-    #include "terminal_graphics.h"
 #elif defined(__ATARI_ANTIC_15)
     #include "antic_mode15_graphics.h"
 #elif defined(__ATARI7800_COLOR_GRAPHICS)

@@ -97,7 +97,7 @@ const char color_name[NUMBER_OF_COLORS][MAX_STRING_SIZE] = {
                                 };
 
 
-#if YSize<16
+#if YSize<=16
     #define COL_OFFSET 0
 #else
     #define COL_OFFSET 2

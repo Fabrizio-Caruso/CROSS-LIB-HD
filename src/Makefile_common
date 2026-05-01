@@ -235,9 +235,10 @@ lcc1802_targets: \
     _lcc1802_ascii_targets \
     clean_combo_files
 
+    # terminal \
+    # msdos \
+
 udg_test: \
-    terminal \
-    msdos \
     agon \
     cpc \
     nc100 \
