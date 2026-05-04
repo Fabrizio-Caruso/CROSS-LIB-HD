@@ -26,8 +26,8 @@
 	#include "nes_conio_graphics.h"
 #elif defined(__COMX_COLOR_GRAPHICS)
 	#include "lcc1802_color_graphics.h"
-#elif defined(__ORIC_COLOR_GRAPHICS)
-	#include "oric_color_graphics.h"
+#elif defined(__ORIC_HIRES_GRAPHICS)
+	#include "oric_hires_graphics.h"
 #elif defined(__CONIO_GRAPHICS)
 	#include "conio_graphics.h"
 #elif defined(__ANTIC_MODE6_GRAPHICS)

@@ -70,7 +70,8 @@
 #elif defined(__ATARI5200__)
 	#include "atari_mode1_redefined_chars_settings.h"
 #elif defined(__ATMOS__) && !defined(NO_UDG)
-	#include "atmos_redefined_characters_settings.h"
+    #include "vga_settings.h"
+	// #include "atmos_redefined_characters_settings.h"
 #elif defined(__Z88DK_SPRITES_GRAPHICS) 
 	#include "sprite_settings.h"
 #elif defined(__MSX__) && defined(__MEMORY_MAPPED_GRAPHICS)
