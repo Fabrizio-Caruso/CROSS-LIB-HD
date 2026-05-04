@@ -40,6 +40,8 @@ All 91 redefined tiles have been tested on the following targets.
 
 ### CC65 (MOS 6502) with redefined tiles (UDGs)
 - Agat-7/9
+- Apple ][
+- Apple // enhanced
 - Atari 5200
 - Atari 7800
 - Atari 8-bit
@@ -53,6 +55,7 @@ All 91 redefined tiles have been tested on the following targets.
 - Creativision
 - Nintendo NES
 - PC-Engine
+- Tangerine Oric 1/Oric Atmos
 - Watara Supervision
 
 ### CMOC (Motorola 6809) with redefined tiles (UDGs)
