@@ -190,7 +190,7 @@ void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile)
     uint8_t i;
     uint16_t x_offset;
     
-    for(i=0,x_offset = BASE_ADDR+x+320U*(uint16_t)y; i<8;++i, x_offset+=40)
+    for(i=0,x_offset = BASE_ADDR+X_OFFSET+x+320U*(uint16_t)y; i<8;++i, x_offset+=40)
     {
         POKE(x_offset,__oric__tiles[tile][i]);
     }
@@ -202,20 +202,32 @@ void _oric_hires_delete(uint8_t x, uint8_t y)
     uint8_t i;
     uint16_t x_offset;
     
-    for(i=0,x_offset = BASE_ADDR+x+320U*(uint16_t)y; i<8;++i, x_offset+=40)
+    for(i=0,x_offset = BASE_ADDR+X_OFFSET+x+320U*(uint16_t)y; i<8;++i, x_offset+=40)
     {
         POKE(x_offset,64);
     }
 }
 
+
+#if defined(_XL_NO_COLOR)
 void _XL_INIT_GRAPHICS(void)
 {
-    // REDEFINE_AT(((uint8_t *)BASE_ADDR));
-
-    // init_colors();
     uint16_t i;
     preprocess_tiles();
-    // POKE(0x026A,2); // turn flashing cursor off
+
+    for(i=0;i<8192;++i)
+    {
+        POKE(BASE_ADDR+i,16);
+    };
+    
+    POKE(0xBFDF ,0x1E); // Set screen to hires
+}
+#else
+void _XL_INIT_GRAPHICS(void)
+{
+    uint16_t i;
+    uint8_t c;
+    preprocess_tiles();
 
     for(i=0;i<8192;++i)
     {
@@ -224,6 +236,9 @@ void _XL_INIT_GRAPHICS(void)
     
     POKE(0xBFDF ,0x1E); // Set screen to hires
 
-
-    // _setScreenColors();
+    for(c=0,i=0;i<40*200;i+=40,++c)
+    {
+       POKE(BASE_ADDR+i,3+3*(c&1));
+    }
 }
+#endif
