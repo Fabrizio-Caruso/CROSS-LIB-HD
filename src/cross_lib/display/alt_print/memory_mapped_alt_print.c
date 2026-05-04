@@ -278,6 +278,27 @@
         DISPLAY_POKE((loc(x,y)), ch);
         DISPLAY_POKE((0x1800+loc(x,y)), PEEK(0x0286));
         } 
+#elif defined(__ORIC_HIRES_GRAPHICS)
+    extern void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile);
+    
+    void _DISPLAY(uint8_t x, uint8_t y, uint8_t ch)
+        {
+            uint8_t tile_index;
+            
+            if((ch>=65) && (ch<=65+25))
+            {
+                tile_index = _XL_NUMBER_OF_TILES+ch-'A';
+            }
+            else if ((ch>=48) && (ch<=48+9))
+            {
+                tile_index = _XL_NUMBER_OF_TILES+26+ch-'0';
+            }
+            else
+            {
+                tile_index = _XL_NUMBER_OF_TILES+26+10;
+            }
+            _oric_hires_draw(x, y, tile_index);
+        } 
 #elif defined(__VGA_GRAPHICS)
     extern uint8_t _vga_text_color;
 
@@ -398,7 +419,7 @@
         }
 #else
     void _DISPLAY(uint8_t x, uint8_t y, uint8_t ch)
-        {		
+        {
         DISPLAY_POKE((loc(x,y)), (ch));
         }
 #endif

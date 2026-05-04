@@ -476,7 +476,6 @@ lda $a7c0
 #endif
 
 
-
 #if defined(__MEMORY_MAPPED_GRAPHICS)
     #if !defined(_XL_NO_COLOR)
     

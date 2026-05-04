@@ -874,8 +874,9 @@ oric_atmos: $(ASSETS_PATH)/6x8_chars.h
 	-t atmos -D_XL_NO_JOYSTICK  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ORIC_SLOWDOWN) \
 	--config $(CFG_PATH)/cc65/atmos_better_tap.cfg  \
-	-D__ORIC_HIRES_GRAPHICS -D__NO_PRINT  \
-	-DXSize=40 -DYSize=25 -D__DEFAULT_CLEAR_SCREEN \
+	-D__ORIC_HIRES_GRAPHICS -D__ALT_PRINT  \
+	-DXSize=40 -DYSize=25 -D__DEFAULT_CLEAR_SCREEN -D__ALT_PRINT \
+	$(CROSS_LIB_PATH)/display/alt_print/memory_mapped_alt_print.c \
 	$(CROSS_LIB_PATH)/display/init_graphics/cc65/atmos/oric_hires_init_graphics.c \
 	$(FULL_FILES) \
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.tap

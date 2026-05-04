@@ -36,9 +36,9 @@
 	// }
 // }
 
-
+#define TOTAL_TILES ((_XL_NUMBER_OF_TILES)+26+10+1)
 // TODO: Pre-apply OR 64 to set tile data as a hires pattern 
-uint8_t __oric__tiles[91][8] =
+uint8_t __oric__tiles[TOTAL_TILES][8] =
 {
     _TILE_0_UDG,
     _TILE_1_UDG,
@@ -131,6 +131,43 @@ uint8_t __oric__tiles[91][8] =
     _TILE_88_UDG,
     _TILE_89_UDG,
     _TILE_90_UDG,
+    _TILE_A,
+    _TILE_B,
+    _TILE_C,
+    _TILE_D,
+    _TILE_E,
+    _TILE_F,
+    _TILE_G,
+    _TILE_H,
+    _TILE_I,
+    _TILE_J,
+    _TILE_K,
+    _TILE_L,
+    _TILE_M,
+    _TILE_N,
+    _TILE_O,
+    _TILE_P,
+    _TILE_Q,
+    _TILE_R,
+    _TILE_S,
+    _TILE_T,
+    _TILE_U,
+    _TILE_V,
+    _TILE_W,
+    _TILE_X,
+    _TILE_Y,
+    _TILE_Z,
+    _TILE_DIGIT_0,
+    _TILE_DIGIT_1,
+    _TILE_DIGIT_2,
+    _TILE_DIGIT_3,
+    _TILE_DIGIT_4,
+    _TILE_DIGIT_5,
+    _TILE_DIGIT_6,
+    _TILE_DIGIT_7,
+    _TILE_DIGIT_8,
+    _TILE_DIGIT_9,
+    _SPACE_TILE
 };
 
 
@@ -139,7 +176,7 @@ void preprocess_tiles(void)
     uint8_t i;
     uint8_t j;
     
-    for(i=0;i<_XL_NUMBER_OF_TILES;++i)
+    for(i=0;i<TOTAL_TILES;++i)
     {
         for(j=0;j<8;++j)
         {
