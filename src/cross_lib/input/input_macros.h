@@ -34,7 +34,8 @@
                 #include <peekpoke.h>
             #endif
 
-			// #define _XL_INIT_INPUT() { POKE(0x26A,PEEK(0x26A) | 8);}
+			// #define _XL_INIT_INPUT() \
+                // POKE(0x26A,PEEK(0x26A) | 8)
             
 			#define _XL_INIT_INPUT() { POKE(0x026A,2); } 
 

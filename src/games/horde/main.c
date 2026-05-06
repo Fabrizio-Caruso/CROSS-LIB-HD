@@ -58,9 +58,11 @@
 
 #if YSize>=16
     #define INITIAL_ZOMBIE_Y (((YSize)/2)-2)
-#elif YSize>10
+#elif YSize>12
     #define INITIAL_ZOMBIE_Y (((YSize)/2)-1)
-#else
+#elif YSize>10
+    #define INITIAL_ZOMBIE_Y 4
+#else 
     #define INITIAL_ZOMBIE_Y 2
 #endif
 
@@ -112,10 +114,23 @@
 #define HYPER_SPEED_VALUE 3
 
 #define RED_RANGE_VALUE INITIAL_ARROW_RANGE
-#define YELLOW_RANGE_VALUE ((INITIAL_ARROW_RANGE)-2)
-#define GREEN_RANGE_VALUE ((INITIAL_ARROW_RANGE)-4)
 
-#define INITIAL_ARROW_RANGE ((INITIAL_ZOMBIE_Y)+1)
+#if YSize>12
+    #define INITIAL_ARROW_RANGE ((INITIAL_ZOMBIE_Y)+1)
+
+    #define YELLOW_RANGE_VALUE ((INITIAL_ARROW_RANGE)-2)
+
+    #define GREEN_RANGE_VALUE ((INITIAL_ARROW_RANGE)-4)
+#else
+    #define INITIAL_ARROW_RANGE ((INITIAL_ZOMBIE_Y)+2)
+
+    #define YELLOW_RANGE_VALUE ((INITIAL_ARROW_RANGE))
+
+    #define GREEN_RANGE_VALUE ((INITIAL_ARROW_RANGE)-2)
+#endif
+
+
+
 #define ITEM_SPAWN_CHANCE 11000U
 
 #define MINION_ENERGY 6
@@ -2270,6 +2285,12 @@ do \
     #define CONTROLS_Y YSize-3
 #endif
 
+#if YSize>12
+    #define _ITEMS_Y ((YSize)/3+3)
+#else
+    #define _ITEMS_Y ((YSize)/3+2)
+#endif
+
 #if !defined(NO_EXTRA_TITLE)
     #if !defined(NO_CONTROL_INSTRUCTIONS) && YSize>=15
         #define control_instructions() PRINT_CENTERED_ON_ROW(CONTROLS_Y,\
@@ -2285,9 +2306,9 @@ do \
         \
         for(i=0;i<5;++i) \
         { \
-            _XL_DRAW(XSize/2-5,YSize/3+3+_NEXT_ROW, item_tile[i][0], item_tile[i][1]); \
+            _XL_DRAW(XSize/2-5,_ITEMS_Y+_NEXT_ROW, item_tile[i][0], item_tile[i][1]); \
             _XL_SET_TEXT_COLOR(_XL_GREEN); \
-            _XL_PRINT(XSize/2-5+3,YSize/3+3+_NEXT_ROW, (char *)item_name[i]); \
+            _XL_PRINT(XSize/2-5+3,_ITEMS_Y+_NEXT_ROW, (char *)item_name[i]); \
         } \
         control_instructions(); \
     } while(0)
@@ -2296,10 +2317,15 @@ do \
 #endif
 
 
-#if YSize<=22
+#if YSize<=12
     #define _HISCORE_Y 1
+    #define _HORDE_STRING_Y ((YSize)/3-1)
+#elif YSize<=22
+    #define _HISCORE_Y 1
+    #define _HORDE_STRING_Y ((YSize)/3-2)
 #else
     #define _HISCORE_Y 2
+    #define _HORDE_STRING_Y ((YSize)/3-2)
 #endif
 
 #define _HORDE_STRING "HORDE"
@@ -2319,7 +2345,7 @@ do \
         _XL_PRINTD(XSize/2-3,_HISCORE_Y+1,5,hiscore); \
         \
         _XL_SET_TEXT_COLOR(_XL_RED); \
-        PRINT_CENTERED_ON_ROW(YSize/3-2,_HORDE_STRING); \
+        PRINT_CENTERED_ON_ROW(_HORDE_STRING_Y,_HORDE_STRING); \
         \
         _XL_SET_TEXT_COLOR(_XL_WHITE); \
         PRINT_CENTERED_ON_ROW(YSize/3, "FABRIZIO CARUSO"); \

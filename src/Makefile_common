@@ -866,7 +866,7 @@ oric1_48k: oric
 
 # -D__NO_WAIT -D__NO_SLEEP
 
-oric: $(ASSETS_PATH)/6x8_chars.h
+oric_mono: $(ASSETS_PATH)/6x8_chars.h
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS)  \
 	-t atmos -D_XL_NO_JOYSTICK  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ORIC_SLOWDOWN) \
@@ -879,7 +879,7 @@ oric: $(ASSETS_PATH)/6x8_chars.h
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.tap
 
 
-oric_color_alt: $(ASSETS_PATH)/6x8_chars.h
+oric_alt: $(ASSETS_PATH)/6x8_chars.h
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS)  \
 	-t atmos -D_XL_NO_JOYSTICK  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ORIC_SLOWDOWN) \
@@ -892,7 +892,7 @@ oric_color_alt: $(ASSETS_PATH)/6x8_chars.h
 	-o $(BUILD_PATH)/X$(GAME_NAME)_$@.tap
 
 
-oric_color: $(ASSETS_PATH)/6x8_chars.h
+oric: $(ASSETS_PATH)/6x8_chars.h
 	$(CC65_PATH)$(MYCC65) $(INCLUDE_OPTS) $(CC65_OPTS)  \
 	-t atmos -D_XL_NO_JOYSTICK  \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_ORIC_SLOWDOWN) \

@@ -2684,6 +2684,12 @@ uint8_t fire_pressed_after_time(void)
     // #endif
 #endif
 
+#if YSize>12
+    #define ITEMS_Y ((YSize)/3+4)
+#else
+    #define ITEMS_Y ((YSize)/3+2)
+#endif
+
 #if YSize<=10 || defined(NO_DISPLAY_ITEMS)
     #define display_items()
 #else
@@ -2694,9 +2700,9 @@ uint8_t fire_pressed_after_time(void)
         \
         for(i=0;i<NUMBER_OF_ITEMS;++i) \
         { \
-            _XL_DRAW(XSize/2-5,YSize/3+4+_NEXT_ROW, item_tile[i][0], item_tile[i][1]); \
+            _XL_DRAW(XSize/2-5,ITEMS_Y+_NEXT_ROW, item_tile[i][0], item_tile[i][1]); \
             _XL_SET_TEXT_COLOR(_XL_GREEN); \
-            _XL_PRINT(XSize/2-5+3,YSize/3+4+_NEXT_ROW, (char *)item_name[i]); \
+            _XL_PRINT(XSize/2-5+3,ITEMS_Y+_NEXT_ROW, (char *)item_name[i]); \
         } \
     } while(0)
 #endif
@@ -3423,7 +3429,7 @@ void handle_level_end(void)
 		}
 		_XL_PING_SOUND();
 		less_short_sleep();
-		PRINT_CENTERED_ON_ROW(YSize/2,"     ");
+		PRINT_CENTERED_ON_ROW(YSize/2,"      ");
 		// _XL_SET_TEXT_COLOR(_XL_WHITE);
 		// PRINT_CENTERED_ON_ROW(YSize-2,"BONUS");
 	}

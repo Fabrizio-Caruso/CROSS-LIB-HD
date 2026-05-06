@@ -198,11 +198,12 @@ void preprocess_tiles(void)
 }
 
 
-void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
+void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t reverse)
 {
     uint8_t i;
     uint16_t x_offset;
 
+    if(reverse)
     {
         if(color==_XL_WHITE)
         {
@@ -259,6 +260,33 @@ void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
             }
         }
     }
+    else
+    {
+        for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+        {
+            if(color!=_XL_CYAN)
+            {
+            POKE(x_offset  ,__left_12x16_tiles[tile][i/2]);
+            POKE(x_offset+1,__right_12x16_tiles[tile][i/2]);
+            }
+            else
+            {
+                POKE(x_offset  ,64);
+                POKE(x_offset+1,64);
+            }
+            
+            if(color!=_XL_YELLOW)
+            {
+            POKE(x_offset+40  ,__left_12x16_tiles[tile][i/2]);
+            POKE(x_offset+40+1,__right_12x16_tiles[tile][i/2]);
+            }
+            else
+            {
+                POKE(x_offset+40  ,64);
+                POKE(x_offset+40+1,64);
+            }
+        }
+    }
 }
 
 
@@ -292,6 +320,7 @@ void _XL_INIT_GRAPHICS(void)
         POKE(BASE_ADDR+i,16);
     };
     
+    // POKE(0x26A,2);
     POKE(0xBFDF ,0x1E); // Set screen to hires
 
     for(c=0,i=0;i<40*200;i+=40,++c)

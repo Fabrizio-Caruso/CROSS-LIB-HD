@@ -217,7 +217,7 @@
 #elif defined(__NO_GRAPHICS)
     
 
-#elif !defined(__NO_PRINT)
+#else
     
     #define __CONIO_PRINT
 
