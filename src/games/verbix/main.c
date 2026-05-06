@@ -819,18 +819,23 @@ void handle_input(void)
 }
 
 
+#if YSize<13
+    #define USE_Y YSize-1
+#else
+    #define USE_Y YSize/2+6
+#endif
 
 #if defined(_XL_NO_JOYSTICK)
     #define control_instructions() \
     do \
     { \
-        _XL_PRINT(XSize/2-6, YSize/2+6, "USE IJKL SPACE"); \
+        _XL_PRINT(XSize/2-6, USE_Y, "USE IJKL SPACE"); \
     } while(0)
 #else
     #define control_instructions() \
     do \
     { \
-        _XL_PRINT(XSize/2-5, YSize/2+6, "USE JOYSTICK"); \
+        _XL_PRINT(XSize/2-5, USE_Y, "USE JOYSTICK"); \
     } while(0)
 #endif
 

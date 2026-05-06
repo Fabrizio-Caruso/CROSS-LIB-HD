@@ -279,8 +279,13 @@
         DISPLAY_POKE((0x1800+loc(x,y)), PEEK(0x0286));
         } 
 #elif defined(__ORIC_HIRES_GRAPHICS)
-    extern void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile);
-    
+    #if defined(_XL_NO_COLOR) || defined(_XL_NO_TEXT_COLOR) 
+        extern void __oric_hires_draw_no_color(uint8_t x, uint8_t y, uint8_t tile);
+    #else
+        extern uint8_t _oric_text_color;
+
+        extern void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color);
+    #endif
     void _DISPLAY(uint8_t x, uint8_t y, uint8_t ch)
         {
             uint8_t tile_index;
@@ -297,7 +302,11 @@
             {
                 tile_index = _XL_NUMBER_OF_TILES+26+10;
             }
-            _oric_hires_draw(x, y, tile_index);
+            #if  defined(_XL_NO_COLOR) || defined(_XL_NO_TEXT_COLOR) 
+            __oric_hires_draw_no_color(x, y, tile_index);
+            #else
+            _oric_hires_draw(x,y,tile_index,_oric_text_color); // TODO: Implement color
+            #endif
         } 
 #elif defined(__VGA_GRAPHICS)
     extern uint8_t _vga_text_color;

@@ -843,7 +843,7 @@ void _XL_PRINTD(uint8_t x, uint8_t y, uint8_t length, uint16_t val)
     {
         uint16_t address;
         
-        address = 0x9400+x+y*YSize;
+        address = 0x9400+x+y*XSize;
         POKE(address,color);
         
         address = 0x1000+x+y*XSize;

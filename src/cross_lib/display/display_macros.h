@@ -263,6 +263,9 @@ void set_fore_color(char c);
 // COLORS
 #if defined(__NO_GRAPHICS)
     #define _XL_SET_TEXT_COLOR(c)
+#elif defined(__ORIC_HIRES_GRAPHICS) && !defined(_XL_NO_TEXT_COLOR) && !defined(_XL_NO_COLOR)
+    extern uint8_t _oric_text_color;
+    #define _XL_SET_TEXT_COLOR(c) _oric_text_color = (c)
 #elif defined(__ATARI5200__) && !defined(__ATARI_ANTIC_15)
     #define _XL_SET_TEXT_COLOR(c) textcolor(c>>6)
 #elif defined(__ATARI_ANTIC_15) 
