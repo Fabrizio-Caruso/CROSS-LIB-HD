@@ -471,6 +471,14 @@ lda $a7c0
                 _XL_DELETE(i,j);
             }
         }
+        // {
+            // uint8_t c;
+            // uint16_t i;
+            // for(c=0,i=0;i<40*200;i+=40,++c)
+            // {
+               // POKE(0xA000+i,3+3*(c&1));
+            // }
+        // }
     }
     
 #endif

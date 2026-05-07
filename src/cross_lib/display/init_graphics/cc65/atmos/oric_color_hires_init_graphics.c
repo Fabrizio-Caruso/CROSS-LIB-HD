@@ -198,39 +198,90 @@ void preprocess_tiles(void)
 }
 
 
-void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t reverse)
-{
-    uint8_t i;
-    uint16_t x_offset;
 
-    if(reverse)
+#if !defined(__INVERSE_TILES)
+    void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t inverse)
     {
-        if(color==_XL_WHITE)
+        uint8_t i;
+        uint16_t x_offset;
+
+        if(inverse)
         {
-            for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+            if(color==_XL_WHITE)
             {
+                for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+                {
 
-            POKE(x_offset  ,__left_12x16_tiles[tile][i/2]^63|0x80); // __oric__tiles[tile][i]^63|0x80);
-            POKE(x_offset+1,__right_12x16_tiles[tile][i/2]^63|0x80);
-            
+                    // if((__left_12x16_tiles[tile][i/2]&63) || (__right_12x16_tiles[tile][i/2]&63)) // TODO: ?
+                    // {
+                        POKE(x_offset  ,__left_12x16_tiles[tile][i/2]^63|0x80); 
+                        POKE(x_offset+1,__right_12x16_tiles[tile][i/2]^63|0x80);
+                    // }
+                    // else
+                    // {
+                        // POKE(x_offset  ,64); 
+                        // POKE(x_offset+1,64);
+                    // }
+                    
 
-            POKE(x_offset+40  ,64);
-            POKE(x_offset+40+1,64);
+                    POKE(x_offset+40  ,64);
+                    POKE(x_offset+40+1,64);
+                }
+                return;
             }
-            return;
-        }
-        else if(color==_XL_RED)
-        {
-            for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+            else if(color==_XL_RED)
             {
+                for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+                {
 
-                POKE(x_offset  ,64);
-                POKE(x_offset+1,64);
-            
-                POKE(x_offset+40  ,(__left_12x16_tiles[tile][i/2])|0x80);
-                POKE(x_offset+40+1,(__right_12x16_tiles[tile][i/2])|0x80);
+                    POKE(x_offset  ,64);
+                    POKE(x_offset+1,64);
+                
+                    // if((__left_12x16_tiles[tile][i/2]&63) || (__right_12x16_tiles[tile][i/2]&63)) // TODO: ?
+                    // {
+                        POKE(x_offset+40  ,(__left_12x16_tiles[tile][i/2])|0x80);
+                        POKE(x_offset+40+1,(__right_12x16_tiles[tile][i/2])|0x80);
+                    // }
+                    // else
+                    // {
+                        // POKE(x_offset+40  ,64);
+                        // POKE(x_offset+40+1,64);
+                    // }
+                }
+                return;
             }
-            return;
+            else
+            {
+                for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+                {
+                    if(color!=_XL_CYAN)
+                    {
+
+                        POKE(x_offset  ,__left_12x16_tiles[tile][i/2]);
+                        POKE(x_offset+1,__right_12x16_tiles[tile][i/2]);
+
+
+                    }
+                    else
+                    {
+                        POKE(x_offset  ,64);
+                        POKE(x_offset+1,64);
+                    }
+                    
+                    if(color!=_XL_YELLOW)
+                    {
+
+                        POKE(x_offset+40  ,__left_12x16_tiles[tile][i/2]);
+                        POKE(x_offset+40+1,__right_12x16_tiles[tile][i/2]);
+
+                    }
+                    else
+                    {
+                        POKE(x_offset+40  ,64);
+                        POKE(x_offset+40+1,64);
+                    }
+                }
+            }
         }
         else
         {
@@ -238,8 +289,8 @@ void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t
             {
                 if(color!=_XL_CYAN)
                 {
-                POKE(x_offset  ,__left_12x16_tiles[tile][i/2]);
-                POKE(x_offset+1,__right_12x16_tiles[tile][i/2]);
+                    POKE(x_offset  ,__left_12x16_tiles[tile][i/2]);
+                    POKE(x_offset+1,__right_12x16_tiles[tile][i/2]);
                 }
                 else
                 {
@@ -249,8 +300,8 @@ void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t
                 
                 if(color!=_XL_YELLOW)
                 {
-                POKE(x_offset+40  ,__left_12x16_tiles[tile][i/2]);
-                POKE(x_offset+40+1,__right_12x16_tiles[tile][i/2]);
+                    POKE(x_offset+40  ,__left_12x16_tiles[tile][i/2]);
+                    POKE(x_offset+40+1,__right_12x16_tiles[tile][i/2]);
                 }
                 else
                 {
@@ -260,35 +311,83 @@ void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t
             }
         }
     }
-    else
+#else
+    void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color)
     {
-        for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+        uint8_t i;
+        uint16_t x_offset;
+
+        if(color==_XL_WHITE)
         {
-            if(color!=_XL_CYAN)
+            for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
             {
-            POKE(x_offset  ,__left_12x16_tiles[tile][i/2]);
-            POKE(x_offset+1,__right_12x16_tiles[tile][i/2]);
+
+            if((__left_12x16_tiles[tile][i/2]&63) || (__right_12x16_tiles[tile][i/2]&63)) // limit reverse artifact 
+            {
+                POKE(x_offset  ,__left_12x16_tiles[tile][i/2]^63|0x80); 
+                POKE(x_offset+1,__right_12x16_tiles[tile][i/2]^63|0x80);
             }
             else
             {
                 POKE(x_offset  ,64);
                 POKE(x_offset+1,64);
             }
-            
-            if(color!=_XL_YELLOW)
-            {
-            POKE(x_offset+40  ,__left_12x16_tiles[tile][i/2]);
-            POKE(x_offset+40+1,__right_12x16_tiles[tile][i/2]);
+
+            POKE(x_offset+40  ,64);
+            POKE(x_offset+40+1,64);
             }
-            else
+            return;
+        }
+        else if(color==_XL_RED)
+        {
+            for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80) // limit reverse artifact 
             {
-                POKE(x_offset+40  ,64);
-                POKE(x_offset+40+1,64);
+
+                POKE(x_offset  ,64);
+                POKE(x_offset+1,64);
+            
+                if((__left_12x16_tiles[tile][i/2]&63) || (__right_12x16_tiles[tile][i/2]&63))
+                {
+                    POKE(x_offset+40  ,(__left_12x16_tiles[tile][i/2])|0x80);
+                    POKE(x_offset+40+1,(__right_12x16_tiles[tile][i/2])|0x80);
+                }
+                else
+                {
+                    POKE(x_offset+40  ,64);
+                    POKE(x_offset+40+1,64);
+                }
+            }
+            return;
+        }
+        else
+        {
+            for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*y; i<2*8;i+=2, x_offset+=80)
+            {
+                if(color!=_XL_CYAN)
+                {
+                    POKE(x_offset  ,__left_12x16_tiles[tile][i/2]);
+                    POKE(x_offset+1,__right_12x16_tiles[tile][i/2]);
+                }
+                else
+                {
+                    POKE(x_offset  ,64);
+                    POKE(x_offset+1,64);
+                }
+                
+                if(color!=_XL_YELLOW)
+                {
+                    POKE(x_offset+40  ,__left_12x16_tiles[tile][i/2]);
+                    POKE(x_offset+40+1,__right_12x16_tiles[tile][i/2]);
+                }
+                else
+                {
+                    POKE(x_offset+40  ,64);
+                    POKE(x_offset+40+1,64);
+                }
             }
         }
     }
-}
-
+#endif
 
 void _oric_hires_delete(uint8_t x, uint8_t y)
 {
@@ -327,10 +426,5 @@ void _XL_INIT_GRAPHICS(void)
     {
        POKE(BASE_ADDR+i,3+3*(c&1));
     }
-    
-    
-    // _oric_hires_draw(0,0,0,0);
-    
-    
-    // while(1){};
 }
+

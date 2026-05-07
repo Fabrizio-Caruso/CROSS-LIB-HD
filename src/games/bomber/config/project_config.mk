@@ -1,5 +1,8 @@
 
 
+# ORIC_39x25_COLOR_OPTS        ?= -D__INVERSE_TILES
+ORIC_COLOR_OPTS              ?= -D__INVERSE_TILES
+
 #####################################################################
 # SLOWDOWN VALUES
 

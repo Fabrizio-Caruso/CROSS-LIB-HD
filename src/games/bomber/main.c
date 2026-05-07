@@ -87,12 +87,15 @@
         #define BUILDINGS_NUMBER (XSize-7)
         #define FIRST_BULDING_X_POS 4
     #endif
-#elif YSize>=12
+#elif YSize>12
     #define BUILDINGS_NUMBER (XSize/2)
     #define FIRST_BULDING_X_POS (XSize/4)  
-#else 
+#elif YSize>10
+    #define BUILDINGS_NUMBER 7
+    #define FIRST_BULDING_X_POS ((XSize/2)-3)
+#else
     #define BUILDINGS_NUMBER 5
-    #define FIRST_BULDING_X_POS ((XSize/2)-2)	
+    #define FIRST_BULDING_X_POS ((XSize/2)-2)
 #endif  
 
 // String definitions
@@ -298,8 +301,8 @@ void displayGameOverMessage(void)
 
 #if MAX_Y<24
     #if YSize<=16
-        #define LEVEL_FACTOR_SPEED_UP 4
-    #else
+        #define LEVEL_FACTOR_SPEED_UP 5
+    #elif YSize<=20
         #define LEVEL_FACTOR_SPEED_UP 3
     #endif
 #else
@@ -479,44 +482,44 @@ void initialize_buildings(void)
 
 void initialize_level(void)
 {
-            bombActive = 0;
-            bomb_x = 0;
-            bomb_y = MAX_Y-2;
-            bonus = 0;
-            remaining_buildings = BUILDINGS_NUMBER;
+        bombActive = 0;
+        bomb_x = 0;
+        bomb_y = MAX_Y-2;
+        bonus = 0;
+        remaining_buildings = BUILDINGS_NUMBER;
 
-            _XL_CLEAR_SCREEN();
-            
-            for(x=0;x<XSize;++x)
-            {
-                drawRoad();
-            }
-            initialize_buildings();
+        _XL_CLEAR_SCREEN();
+        
+        for(x=0;x<XSize;++x)
+        {
+            drawRoad();
+        }
+        initialize_buildings();
 
-            _XL_SLEEP(1);
-            y = INITIAL_PLANE_Y;
-            x = 1;
-            
-            displayScore();
-            
-            #if !defined(TINY_GAME)
-            _XL_DRAW(0,0,SCORE_TEXT_LEFT_TILE, _XL_GREEN);
-            _XL_DRAW(1,0,SCORE_TEXT_RIGHT_TILE, _XL_GREEN);
-            
-            _XL_DRAW(XSize-5,0,HI_TEXT_TILE, _XL_RED);
-            #endif
-            
-            #if XSize>=20 && !defined(TINY_GAME)
-                _XL_DRAW(XSize-8,0,LV_TEXT_TILE, _XL_GREEN);
-                displayLevel();
-            #endif
-            #if XSize>=16 && !defined(TINY_GAME)
-                _XL_DRAW(REMAINING_X-1,0,TWO_WINDOW_WALL_2_TILE, _XL_YELLOW);
-                displayRemainingBuilings();
-            #endif
-            
-            
-            displayHiScore(XSize-4);
+        _XL_SLEEP(1);
+        y = INITIAL_PLANE_Y;
+        x = 1;
+        
+        displayScore();
+        
+        #if !defined(TINY_GAME)
+        _XL_DRAW(0,0,SCORE_TEXT_LEFT_TILE, _XL_GREEN);
+        _XL_DRAW(1,0,SCORE_TEXT_RIGHT_TILE, _XL_GREEN);
+        
+        _XL_DRAW(XSize-5,0,HI_TEXT_TILE, _XL_RED);
+        #endif
+        
+        #if XSize>=20 && !defined(TINY_GAME)
+            _XL_DRAW(XSize-8,0,LV_TEXT_TILE, _XL_GREEN);
+            displayLevel();
+        #endif
+        #if XSize>=16 && !defined(TINY_GAME)
+            _XL_DRAW(REMAINING_X-1,0,TWO_WINDOW_WALL_2_TILE, _XL_YELLOW);
+            displayRemainingBuilings();
+        #endif
+        
+        
+        displayHiScore(XSize-4);
 }
 
 
@@ -679,7 +682,6 @@ void level_completed(void)
     {
         _XL_PRINTD(7,4,4,bonus_ind);
         _XL_SHOOT_SOUND();
-        _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
         _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
     }
     _XL_PRINTD(7,4,4,bonus);

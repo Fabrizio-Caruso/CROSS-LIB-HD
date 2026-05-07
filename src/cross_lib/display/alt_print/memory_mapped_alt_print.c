@@ -286,7 +286,11 @@
     #else
         extern uint8_t _oric_text_color;
 
-        extern void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t inverse);
+        #if !defined(__INVERSE_TILES)
+            extern void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color, uint8_t inverse);
+        #else
+            extern void _oric_hires_draw(uint8_t x, uint8_t y, uint8_t tile, uint8_t color);
+        #endif
     #endif
     void _DISPLAY(uint8_t x, uint8_t y, uint8_t ch)
         {
@@ -307,9 +311,14 @@
                 return;
             }
             #if  defined(_XL_NO_COLOR) || defined(_XL_NO_TEXT_COLOR) 
-            __oric_hires_draw_no_color(x, y, tile_index);
+                __oric_hires_draw_no_color(x, y, tile_index);
+            #elif !defined(__INVERSE_TILES)
+                _oric_hires_draw(x,y,tile_index,_oric_text_color,1); // TODO: Implement color
+            #elif defined(__MONO_TEXT)
+                _oric_hires_draw(x,y,tile_index,_XL_GREEN);
+
             #else
-            _oric_hires_draw(x,y,tile_index,_oric_text_color,1); // TODO: Implement color
+                _oric_hires_draw(x,y,tile_index,_oric_text_color);
             #endif
         } 
 #elif defined(__VGA_GRAPHICS)

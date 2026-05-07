@@ -807,8 +807,8 @@ void recharge_effect(void)
 {
     recharge_rockets(ROCKET_RECHARGE);
     increase_score(RECHARGE_POINTS);
-    #if YSize>10
-    PRINT_CENTERED_ON_ROW(2,"        ");
+    #if YSize>=16
+    PRINT_CENTERED_ON_ROW(2,"        "); // TODO: Fix this
     #endif
 }
 
@@ -3135,7 +3135,7 @@ void handle_auto_recharge(void)
     if(!remaining_rockets)
     {
         _XL_SET_TEXT_COLOR(_XL_RED);
-        #if YSize>10
+        #if YSize>=16
         PRINT_CENTERED_ON_ROW(2,"RECHARGE");
         #endif
         if(auto_recharge_counter)

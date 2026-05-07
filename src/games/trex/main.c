@@ -28,7 +28,11 @@
 
 #define INITIAL_LEVEL 1
 
-#if XSize<=21
+#if XSize<=19
+    #define LEFT_END_OF_TERRAIN 1
+
+    #define SIZE_OF_TERRAIN ((XSize)-3)
+#elif XSize<=21
     #define LEFT_END_OF_TERRAIN 1
 
     #define SIZE_OF_TERRAIN ((XSize)-2)

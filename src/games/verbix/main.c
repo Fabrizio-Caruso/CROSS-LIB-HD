@@ -356,7 +356,7 @@ void display_column(uint8_t row)
     {
         draw_letter(row,i);
     }  
-    for(;i<MAX_HEIGHT-1;++i)
+    for(;i<MAX_HEIGHT;++i)
     {
         draw_empty_slot(row,i);
     }
@@ -411,7 +411,7 @@ void drop_letter(void)
 
     matrix[slot_index][height]= new_letter;
     draw_letter(slot_index,height);
-    if(height==MAX_HEIGHT-1)
+    if(height==MAX_HEIGHT-1 && slot_index ==4)
     {
         alive = 0;
     }
@@ -892,6 +892,12 @@ void display_borders(uint8_t offset, uint8_t tile)
 #endif
 
 
+#if YSize>=16
+    #define _VERBIX_Y YSize/2-7
+#else
+    #define _VERBIX_Y 2
+#endif
+
 #define title_screen() \
 do \
 { \
@@ -901,13 +907,13 @@ do \
     \
     _XL_SET_TEXT_COLOR(_XL_YELLOW); \
     \
-    _XL_PRINT(XSize/2-5,YSize/2-7,"V E R B I X"); \
+    _XL_PRINT(XSize/2-5,_VERBIX_Y,"V E R B I X"); \
     \
     _XL_SET_TEXT_COLOR(_XL_WHITE); \
-    _XL_PRINT(XSize/2-7,YSize/2-5,"FABRIZIO CARUSO"); \
+    _XL_PRINT(XSize/2-7,_VERBIX_Y+2,"FABRIZIO CARUSO"); \
     \
     _XL_SET_TEXT_COLOR(_XL_RED); \
-    _XL_PRINT(XSize/2-7,YSize/2-1, "FIND WORDS WITH"); \
+    _XL_PRINT(XSize/2-7,_VERBIX_Y+2, "FIND WORDS WITH"); \
     _XL_SET_TEXT_COLOR(_XL_CYAN); \
     _XL_PRINT(LETTERS_X,YSize/2+2,letter); \
     \
