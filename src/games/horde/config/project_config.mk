@@ -4,7 +4,7 @@
 # ATARI5200_COLORS=-D__USE_GREEN
 
 # ORIC_39x25_COLOR_OPTS        ?= -D__INVERSE_TILES
-ORIC_COLOR_OPTS              ?= -D__INVERSE_TILES
+# ORIC_COLOR_OPTS              ?= -D__INVERSE_TILES
 
 
 #####################################################################
