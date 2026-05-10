@@ -33,7 +33,7 @@
 
 #include "speed_game_settings.h"
 
-#define INITIAL_LEVEL 5
+#define INITIAL_LEVEL 1
 
 // Final level 
 #define FINAL_LEVEL 20
