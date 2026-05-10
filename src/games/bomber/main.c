@@ -300,8 +300,10 @@ void displayGameOverMessage(void)
 #endif
 
 #if MAX_Y<24
-    #if YSize<=16
+    #if YSize<=14
         #define LEVEL_FACTOR_SPEED_UP 5
+    #elif YSize<=16
+        #define LEVEL_FACTOR_SPEED_UP 4
     #elif YSize<=20
         #define LEVEL_FACTOR_SPEED_UP 3
     #endif
