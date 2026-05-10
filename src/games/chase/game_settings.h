@@ -33,7 +33,7 @@
 
 #include "speed_game_settings.h"
 
-#define INITIAL_LEVEL 1
+#define INITIAL_LEVEL 5
 
 // Final level 
 #define FINAL_LEVEL 20
@@ -65,7 +65,11 @@
 #endif
 
 #if !defined(ROCKETS_NUMBER)
-    #define ROCKETS_NUMBER 4
+    #if defined(WIDE)
+        #define ROCKETS_NUMBER 4
+    #else
+        #define ROCKETS_NUMBER 2
+    #endif
 #endif
 
 #define GUNS_NUMBER 3
@@ -104,8 +108,11 @@
 	#define NON_BOSS_SKULL_HITS 3
 #endif	
 
-#define BOSS_SKULL_HITS (NON_BOSS_SKULL_HITS + 4)
-
+#if defined(WIDE)
+    #define BOSS_SKULL_HITS (NON_BOSS_SKULL_HITS + 8)
+#else
+    #define BOSS_SKULL_HITS (NON_BOSS_SKULL_HITS + 3)
+#endif
 
 #if defined(_XL_TURN_BASED)
 	#define INITIAL_GHOST_SLOWDOWN 16000
