@@ -509,7 +509,7 @@ void initialize_level(void)
         _XL_DRAW(XSize-5,0,HI_TEXT_TILE, _XL_RED);
         #endif
         
-        #if XSize>=20 && !defined(TINY_GAME)
+        #if XSize>=19 && !defined(TINY_GAME)
             _XL_DRAW(XSize-8,0,LV_TEXT_TILE, _XL_GREEN);
             displayLevel();
         #endif

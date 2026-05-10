@@ -14,6 +14,7 @@ MC10_COLORS=
 
 # ORIC_39x25_COLOR_OPTS        ?= -D__INVERSE_TILES
 # ORIC_COLOR_OPTS              ?= -D__INVERSE_TILES
+ORIC_COLOR_OPTS              ?= -DForce_YSize=13
 
 #####################################################################
 # SLOWDOWN VALUES

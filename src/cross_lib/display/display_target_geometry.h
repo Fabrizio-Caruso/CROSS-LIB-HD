@@ -46,6 +46,10 @@
 #endif
 #endif
 
+#if defined(Force_YSize)
+    #undef YSize
+    #define YSize Force_YSize
+#endif
 
 #if !defined(YSize)
 	#  if defined(__NCURSES__)
