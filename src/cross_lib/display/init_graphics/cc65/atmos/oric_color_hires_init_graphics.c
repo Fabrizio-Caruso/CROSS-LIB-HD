@@ -567,7 +567,7 @@ void preprocess_tiles(void)
                 for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)24; i<8;++i, x_offset+=40)
                 {
 
-                    if((__left_12x16_tiles[tile][i/2]&63) || (__right_12x16_tiles[tile][i]&63)) // limit reverse artifact 
+                    if((__left_12x16_tiles[tile][i]&63) || (__right_12x16_tiles[tile][i]&63)) // limit reverse artifact 
                     {
                         POKE(x_offset  ,__left_12x16_tiles[tile][i]); 
                         POKE(x_offset+1,__right_12x16_tiles[tile][i]);
