@@ -43,7 +43,11 @@
 #define MAX_TURN_BASES_LOOP 400
 
 #if !defined(BOMBS_NUMBER)
-	#define BOMBS_NUMBER 4
+    #if !defined(WIDE) && XSize<20 && YSize<16
+        #define BOMBS_NUMBER 2
+    #else
+        #define BOMBS_NUMBER 4
+    #endif
 #endif
 
 #if !defined(GHOSTS_NUMBER)
