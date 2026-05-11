@@ -539,7 +539,6 @@ PARALLEL_BUILD_TESTS = \
     [ \
         ("test xl examples",         EXAMPLES_TEST,       check_examples), \
         ("test xl games",            GAMES_TEST,          check_games), \
-        # ("test xl games terminal",   GAMES_TERMINAL_TEST, check_games_terminal), \
     ]
 
 TERMINAL_BUILD_TESTS =  \
@@ -565,7 +564,7 @@ def test_self(option_config, target = "stdio"):
     printc(option_config, bcolors.OKBLUE,target+"\n")
     printc(option_config, bcolors.OKCYAN,"----------------------------------------\n")
 
-    # self_tests = []
+    max_len = 0
     self_tests = STANDARD_SELF_TESTS
     if option_config.terminal_config.interactive_test:
         self_tests += INTERACTIVE_TESTS
@@ -576,6 +575,8 @@ def test_self(option_config, target = "stdio"):
 
     for test in self_tests:
         execute_string(option_config, "xl clean", silent = True)
+        if len(test[0][5:])>max_len:
+            max_len = len(test[0][5:])
         success_map[test[0][0]] = test_execute(option_config, target, *test)
         total_success*=success_map[test[0][0]]
     execute_string(option_config, "xl clean", silent = True)
@@ -584,9 +585,13 @@ def test_self(option_config, target = "stdio"):
     printc(option_config, bcolors.OKBLUE, "SUMMARY TEST RESULTS\n")
     for test in self_tests:
         success = success_map[test[0][0]]
-        success_string = "OK" if success else "KO"
-        printc(option_config, bcolors.OKCYAN,f"{test[0][5:]} -> ")
-        printc(option_config, bcolors.OKGREEN, success_string + "\n")
+        (success_color, success_string) = (bcolors.OKGREEN, "OK") if success else  (bcolors.ERROR, "KO")
+        
+        
+        spaces = " " * (max_len+2-len(test[0][5:])) 
+        printc(option_config, bcolors.OKCYAN,f"{test[0][5:]}" + spaces)
+        
+        printc(option_config, success_color, success_string + "\n")
 
     option_config.terminal_config.test = 0
     return total_success
@@ -675,9 +680,9 @@ def targets_test(option_config, params):
 def test(option_config, params):
     if (len(params)<=1) or ((len(params)==2) and (params[1]=="check")):
         if test_all(option_config, "stdio"):
-            printc(option_config, bcolors.OKGREEN, "TEST OK\n")
+            printc(option_config, bcolors.OKGREEN, "\nTEST OK\n")
         else:
-            printc(option_config, bcolors.FAIL, "TEST KO\n")
+            printc(option_config, bcolors.FAIL, "\nTEST KO\n")
         return
     if params[1]=="self":
         if len(params)<3:
