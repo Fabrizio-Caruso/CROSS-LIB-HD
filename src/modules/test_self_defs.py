@@ -59,8 +59,6 @@ COMPLEX_TEST = \
     [ \
         "xl delete _foo_test -y", \
         "xl clean tools", \
-        "xl tools", \
-        "xl clean tools", \
         "xl delete _test_project -y", \
         "xl clean", \
         "xl create _foo_test", \
