@@ -519,22 +519,34 @@ def binary_factor(target):
 STANDARD_SELF_TESTS = \
     [ \
         ("test xl clean",            CLEAN_TEST,          check_clean), \
-        ("test xl tools",            TOOLS_TEST,          check_tools,   CLEANUP_TOOLS_TEST), \
-        ("test several xl commands", COMPLEX_TEST,        check_complex, CLEANUP_COMPLEX_TEST), \
         ("test xl dev tools",        DEV_TOOLS_TEST), \
         ("test xl create",           CREATE_TEST,         check_create,  CLEANUP_CREATE_TEST), \
         ("test xl make",             MAKE_TEST,           check_make), \
         ("test xl rename",           RENAME_TEST,         check_rename,  CLEANUP_RENAME_TEST) \
     ]
 
+COMPLEX_SELF_TESTS = \
+    [
+        ("test several xl commands", COMPLEX_TEST,        check_complex, CLEANUP_COMPLEX_TEST), \
+    ]
+
+TOOLS_SELF_TESTS = \
+    [
+            ("test xl tools",            TOOLS_TEST,          check_tools,   CLEANUP_TOOLS_TEST),
+    ]
 
 PARALLEL_BUILD_TESTS = \
     [ \
         ("test xl examples",         EXAMPLES_TEST,       check_examples), \
         ("test xl games",            GAMES_TEST,          check_games), \
+        # ("test xl games terminal",   GAMES_TERMINAL_TEST, check_games_terminal), \
+    ]
+
+TERMINAL_BUILD_TESTS =  \
+    [ \
         ("test xl games terminal",   GAMES_TERMINAL_TEST, check_games_terminal), \
     ]
-    
+
 INTERACTIVE_TESTS = \
     [ \
         ("test xl run",              RUN_TEST,       no_check,      CLEANUP_RUN_TEST), \
@@ -547,25 +559,37 @@ def test_self(option_config, target = "stdio"):
     printc(option_config, bcolors.OKCYAN,"----------------------------------------\n")
     printc(option_config, bcolors.OKCYAN, "XL SCRIPT TEST")
     printc(option_config, bcolors.OKCYAN,"\n----------------------------------------\n")
-    success = 1
+    total_success = 1
+    success_map = {}
     printc(option_config, bcolors.BOLD,  "target: ")
     printc(option_config, bcolors.OKBLUE,target+"\n")
     printc(option_config, bcolors.OKCYAN,"----------------------------------------\n")
 
+    # self_tests = []
     self_tests = STANDARD_SELF_TESTS
     if option_config.terminal_config.interactive_test:
         self_tests += INTERACTIVE_TESTS
     if not option_config.terminal_config.fast_test:
+        self_tests += TOOLS_SELF_TESTS
+        self_tests += COMPLEX_SELF_TESTS
         self_tests += PARALLEL_BUILD_TESTS
 
     for test in self_tests:
         execute_string(option_config, "xl clean", silent = True)
-        success *= test_execute(option_config, target, *test)
-
+        success_map[test[0][0]] = test_execute(option_config, target, *test)
+        total_success*=success_map[test[0][0]]
     execute_string(option_config, "xl clean", silent = True)
+    
+    print("")
+    printc(option_config, bcolors.OKBLUE, "SUMMARY TEST RESULTS\n")
+    for test in self_tests:
+        success = success_map[test[0][0]]
+        success_string = "OK" if success else "KO"
+        printc(option_config, bcolors.OKCYAN,f"{test[0][5:]} -> ")
+        printc(option_config, bcolors.OKGREEN, success_string + "\n")
 
     option_config.terminal_config.test = 0
-    return success
+    return total_success
 
 
 def test_all(option_config, params):
