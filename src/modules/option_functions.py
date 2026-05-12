@@ -19,7 +19,8 @@ class TerminalConfig():
         test = "0",
         native_console = "",
         fast_test = "1",
-        interactive_test = "0"
+        interactive_test = "0",
+        terminal_test = "0"
         ):
         # terminal
         self.verbose = verbose
@@ -28,6 +29,7 @@ class TerminalConfig():
         self.native_console = native_console
         self.fast_test = fast_test
         self.interactive_test = interactive_test
+        self.terminal_test = terminal_test
 
 
 class RomConfig():
@@ -187,11 +189,13 @@ def config(option_config):
     color_terminal = option_config.terminal_config.color_terminal
     fast_test = option_config.terminal_config.fast_test
     interactive_test = option_config.terminal_config.interactive_test
+    terminal_test = option_config.terminal_config.terminal_test
     
     print("verbose:                 " + str(verbose))
     print("color_terminal:          " + str(color_terminal))
     print("fast_test:               " + str(fast_test))
     print("interactive_test:        " + str(interactive_test))
+    print("terminal test:           " + str(terminal_test))
 
     print("")
 
@@ -325,7 +329,13 @@ def read_config(config_file="./config.ini"):
         else:
             interactive_test=0
 
-        terminal_config = TerminalConfig(verbose=verbose, color_terminal=color_terminal, test=0, native_console=0, fast_test=fast_test, interactive_test=interactive_test)
+        terminal_test = read_config_option(config,"terminal","terminal_test")
+        if terminal_test!="":
+            terminal_test=int(terminal_test)
+        else:
+            terminal_test=0
+
+        terminal_config = TerminalConfig(verbose=verbose, color_terminal=color_terminal, test=0, native_console=0, fast_test=fast_test, interactive_test=interactive_test, terminal_test=terminal_test)
 
         if verbose:
             print("Config file found with: " + str(config.sections()))
@@ -444,7 +454,8 @@ def default_config():
             test=0, 
             native_console=0, 
             fast_test=1, 
-            interactive_test=0
+            interactive_test=0,
+            terminal_test=0
         )
 
         rom_config = RomConfig( \

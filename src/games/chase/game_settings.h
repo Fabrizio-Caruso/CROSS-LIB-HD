@@ -43,11 +43,7 @@
 #define MAX_TURN_BASES_LOOP 400
 
 #if !defined(BOMBS_NUMBER)
-    #if !defined(WIDE) && XSize<20 && YSize<16
-        #define BOMBS_NUMBER 2
-    #else
-        #define BOMBS_NUMBER 4
-    #endif
+    #define BOMBS_NUMBER 4
 #endif
 
 #if !defined(GHOSTS_NUMBER)
@@ -181,7 +177,14 @@
 
 #define FREEZE_COOL_DOWN (700/WAIT_SCALE)
 
-#define GUN_COOL_DOWN (200/WAIT_SCALE)	
+#if defined(WIDE)
+
+    #define GUN_COOL_DOWN (190/WAIT_SCALE)	
+#else
+    #define GUN_COOL_DOWN (90/WAIT_SCALE)	
+
+#endif
+
 
 #define SUPER_COOL_DOWN (150/WAIT_SCALE)
 

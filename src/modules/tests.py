@@ -518,37 +518,41 @@ def binary_factor(target):
 
 STANDARD_SELF_TESTS = \
     [ \
-        ("test xl clean",            CLEAN_TEST,          check_clean), \
-        ("test xl dev tools",        DEV_TOOLS_TEST), \
-        ("test xl create",           CREATE_TEST,         check_create,  CLEANUP_CREATE_TEST), \
-        ("test xl make",             MAKE_TEST,           check_make), \
-        ("test xl rename",           RENAME_TEST,         check_rename,  CLEANUP_RENAME_TEST) \
+        ("xl clean",            CLEAN_TEST,          check_clean), \
+        ("xl dev tools",        DEV_TOOLS_TEST), \
+        ("xl create",           CREATE_TEST,         check_create,  CLEANUP_CREATE_TEST), \
+        ("xl rename",           RENAME_TEST,         check_rename,  CLEANUP_RENAME_TEST) \
+    ]
+
+MAKE_SELF_TESTS = \
+    [ \
+        ("xl make",             MAKE_TEST,           check_make), \
     ]
 
 COMPLEX_SELF_TESTS = \
     [
-        ("test several xl commands", COMPLEX_TEST,        check_complex, CLEANUP_COMPLEX_TEST), \
+        ("several xl commands", COMPLEX_TEST,        check_complex, CLEANUP_COMPLEX_TEST), \
     ]
 
 TOOLS_SELF_TESTS = \
     [
-            ("test xl tools",            TOOLS_TEST,          check_tools,   CLEANUP_TOOLS_TEST),
+        ("xl tools",            TOOLS_TEST,          check_tools,   CLEANUP_TOOLS_TEST),
     ]
 
 PARALLEL_BUILD_TESTS = \
     [ \
-        ("test xl examples",         EXAMPLES_TEST,       check_examples), \
-        ("test xl games",            GAMES_TEST,          check_games), \
+        ("xl examples",         EXAMPLES_TEST,       check_examples), \
+        ("xl games",            GAMES_TEST,          check_games), \
     ]
 
 TERMINAL_BUILD_TESTS =  \
     [ \
-        ("test xl games terminal",   GAMES_TERMINAL_TEST, check_games_terminal), \
+        ("xl games terminal",   GAMES_TERMINAL_TEST, check_games_terminal), \
     ]
 
 INTERACTIVE_TESTS = \
     [ \
-        ("test xl run",              RUN_TEST,       no_check,      CLEANUP_RUN_TEST), \
+        ("xl run",              RUN_TEST,       no_check,      CLEANUP_RUN_TEST), \
     ]
     
 
@@ -565,9 +569,12 @@ def test_self(option_config, target = "stdio"):
     printc(option_config, bcolors.OKCYAN,"----------------------------------------\n")
 
     max_len = 0
-    self_tests = STANDARD_SELF_TESTS
+    self_tests = STANDARD_SELF_TESTS 
+    self_tests += MAKE_SELF_TESTS
     if option_config.terminal_config.interactive_test:
         self_tests += INTERACTIVE_TESTS
+    if option_config.terminal_config.terminal_test:
+        self_tests += TERMINAL_BUILD_TESTS
     if not option_config.terminal_config.fast_test:
         self_tests += TOOLS_SELF_TESTS
         self_tests += COMPLEX_SELF_TESTS
@@ -575,23 +582,27 @@ def test_self(option_config, target = "stdio"):
 
     for test in self_tests:
         execute_string(option_config, "xl clean", silent = True)
-        if len(test[0][5:])>max_len:
-            max_len = len(test[0][5:])
-        success_map[test[0][0]] = test_execute(option_config, target, *test)
-        total_success*=success_map[test[0][0]]
+        if len(test[0][0:])>max_len:
+            max_len = len(test[0][0:])
+        success_map[test[0][0:]] = test_execute(option_config, target, *test)
+        total_success*=success_map[test[0][0:]]
     execute_string(option_config, "xl clean", silent = True)
     
     print("")
+    print("-------------------------------")
     printc(option_config, bcolors.OKBLUE, "SUMMARY TEST RESULTS\n")
+    print("-------------------------------")
+
     for test in self_tests:
-        success = success_map[test[0][0]]
-        (success_color, success_string) = (bcolors.OKGREEN, "OK") if success else  (bcolors.ERROR, "KO")
+        success = success_map[test[0][0:]]
+        (success_color, success_string) = (bcolors.OKGREEN, "OK") if success else  (bcolors.FAIL, "KO")
         
         
-        spaces = " " * (max_len+2-len(test[0][5:])) 
-        printc(option_config, bcolors.OKCYAN,f"{test[0][5:]}" + spaces)
+        spaces = " " * (max_len+5-len(test[0][0:])) 
+        printc(option_config, bcolors.OKCYAN,f"{test[0][0:]} " + spaces)
         
         printc(option_config, success_color, success_string + "\n")
+        print("-------------------------------")
 
     option_config.terminal_config.test = 0
     return total_success
