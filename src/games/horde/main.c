@@ -134,7 +134,13 @@
 #define ITEM_SPAWN_CHANCE 11000U
 
 #define MINION_ENERGY 6
-#define BOSS_ENERGY 14
+#if YSize<=14
+    #define BOSS_ENERGY 10
+#elif YSize<=16
+    #define BOSS_ENERGY 11
+#else
+    #define BOSS_ENERGY 14
+#endif
 #define WALL_ENERGY 20
 
 #define MAX_ARROWS 99
@@ -174,9 +180,12 @@
 #define MAX_HYPER_COUNTER 180
 
 #if YSize>=20
-    #define HEIGHT_SHOOT_THRESHOLD YSize-10
+    #define HEIGHT_SHOOT_THRESHOLD ((INITIAL_RESPAWN_ZOMBIE_Y)+3)
+#elif YSize>=18
+    #define HEIGHT_SHOOT_THRESHOLD ((INITIAL_RESPAWN_ZOMBIE_Y)+2)
 #else
-    #define HEIGHT_SHOOT_THRESHOLD YSize-11
+    #define HEIGHT_SHOOT_THRESHOLD ((INITIAL_RESPAWN_ZOMBIE_Y)+1)
+
 #endif
 
 static uint8_t missile_randomness_mask;
@@ -952,7 +961,9 @@ void display_power_ups(void)
 }
 #endif
 
-#if YSize>10
+#define HYPER_STRING_THRESHOLD 15
+
+#if YSize>HYPER_STRING_THRESHOLD
     #define activate_hyper() \
     { \
         _XL_ZAP_SOUND(); \
@@ -2317,15 +2328,19 @@ do \
 #endif
 
 
-#if YSize<=12
+#if YSize<=14
     #define _HISCORE_Y 1
-    #define _HORDE_STRING_Y ((YSize)/3-1)
+    #define _HORDE_STRING_Y 3
+    #define _AUTHOR_Y 5
 #elif YSize<=22
     #define _HISCORE_Y 1
     #define _HORDE_STRING_Y ((YSize)/3-2)
+    #define _AUTHOR_Y (YSize/3)
 #else
     #define _HISCORE_Y 2
     #define _HORDE_STRING_Y ((YSize)/3-2)
+    #define _AUTHOR_Y (YSize/3)
+
 #endif
 
 #define _HORDE_STRING "HORDE"
@@ -2342,13 +2357,13 @@ do \
         PRINT_CENTERED_ON_ROW(_HISCORE_Y, "HISCORE"); \
         \
         _XL_SET_TEXT_COLOR(_XL_WHITE); \
-        _XL_PRINTD(XSize/2-3,_HISCORE_Y+1,5,hiscore); \
+        _XL_PRINTD((XSize-5)/2,_HISCORE_Y+1,5,hiscore); \
         \
         _XL_SET_TEXT_COLOR(_XL_RED); \
         PRINT_CENTERED_ON_ROW(_HORDE_STRING_Y,_HORDE_STRING); \
         \
         _XL_SET_TEXT_COLOR(_XL_WHITE); \
-        PRINT_CENTERED_ON_ROW(YSize/3, "FABRIZIO CARUSO"); \
+        PRINT_CENTERED_ON_ROW(_AUTHOR_Y, "FABRIZIO CARUSO"); \
         \
         display_items(); \
         sleep_and_wait_for_input(); \
@@ -2363,13 +2378,13 @@ do \
         PRINT_CENTERED_ON_ROW(_HISCORE_Y, "HISCORE"); \
         \
         _XL_SET_TEXT_COLOR(_XL_WHITE); \
-        _XL_PRINTD(XSize/2-3,_HISCORE_Y+1,5,hiscore); \
+        _XL_PRINTD((XSize-5)/2,_HISCORE_Y+1,5,hiscore); \
         \
         _XL_SET_TEXT_COLOR(_XL_RED); \
-        PRINT_CENTERED_ON_ROW(YSize/3-2,_HORDE_STRING); \
+        PRINT_CENTERED_ON_ROW(_HORDE_STRING_Y,_HORDE_STRING); \
         \
         _XL_SET_TEXT_COLOR(_XL_WHITE); \
-        PRINT_CENTERED_ON_ROW(YSize/3, "FABRIZIO CARUSO"); \
+        PRINT_CENTERED_ON_ROW(_AUTHOR_Y, "FABRIZIO CARUSO"); \
         \
         sleep_and_wait_for_input(); \
         _XL_CLEAR_SCREEN(); \
@@ -2429,7 +2444,7 @@ do \
 #endif
 
 
-#if YSize>10
+#if YSize>HYPER_STRING_THRESHOLD
 void clear_top_border(void)
 {
 	PRINT_CENTERED_ON_ROW(1,"       ");
