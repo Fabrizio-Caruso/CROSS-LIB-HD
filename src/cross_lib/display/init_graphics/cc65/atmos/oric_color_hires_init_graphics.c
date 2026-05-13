@@ -472,12 +472,96 @@ void preprocess_tiles(void)
             }
             else // Bottom line
             {
+                // if(color==_XL_WHITE)
+                // {
+                    // for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    // {
 
-                for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                                // POKE(x_offset  ,__left_12x16_tiles[tile][i]^63|0x80);
+                                // POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                    // }
+                // }
+                if(color==_XL_RED)
                 {
-                    POKE(x_offset  ,__left_12x16_tiles[tile][i]);
-                    POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    {
+                        if(__left_12x16_tiles[tile][i]&63 || __right_12x16_tiles[tile][i]&63)
+                        {
+                            if(i&1)
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]|0x80);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]|0x80);
+                            }
+                            else
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]^63);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]^63);
+                            }
+                        }
+                        else
+                        {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                        }
+                    
+                    }
+                }
+                else if(color==_XL_CYAN)
+                {
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    {
+                        if(__left_12x16_tiles[tile][i]&63 || __right_12x16_tiles[tile][i]&63)
+                        {
+                            if(i&1)
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]^63);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]^63);
+                            }
+                            else
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]|0x80);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]|0x80);
+                            }
+                        }
+                        else
+                        {
+                            POKE(x_offset  ,64);
+                            POKE(x_offset+1,64);
+                        }
+                    }
+                }
+                else if(color==_XL_YELLOW)
+                {
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    {
+                        if(__left_12x16_tiles[tile][i]&63 || __right_12x16_tiles[tile][i]&63)
+                        {
+                            if(i&1)
+                            {
+                                        POKE(x_offset  ,__left_12x16_tiles[tile][i]^63|0x80);
+                                        POKE(x_offset+1,__right_12x16_tiles[tile][i]^63|0x80);
+                            }
+                            else
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                            }
+                        }
+                        else
+                        {
+                            POKE(x_offset  ,64);
+                            POKE(x_offset+1,64);
+                        }
+                    }
+                }
+                else
+                {
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    {
 
+                                POKE(x_offset  ,__left_12x16_tiles[tile][i]);
+                                POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                    }
                 }
             }
         }
@@ -564,19 +648,96 @@ void preprocess_tiles(void)
             }
             else // Bottom line
             {
-                for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)24; i<8;++i, x_offset+=40)
-                {
+                // if(color==_XL_WHITE)
+                // {
+                    // for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    // {
 
-                    if((__left_12x16_tiles[tile][i]&63) || (__right_12x16_tiles[tile][i]&63)) // limit reverse artifact 
+                                // POKE(x_offset  ,__left_12x16_tiles[tile][i]^63|0x80);
+                                // POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                    // }
+                // }
+                if(color==_XL_RED)
+                {
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
                     {
-                        POKE(x_offset  ,__left_12x16_tiles[tile][i]); 
-                        POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                        if(__left_12x16_tiles[tile][i]&63 || __right_12x16_tiles[tile][i]&63)
+                        {
+                            if(i&1)
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]|0x80);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]|0x80);
+                            }
+                            else
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]^63);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]^63);
+                            }
+                        }
+                        else
+                        {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                        }
+                    
                     }
-                    else
+                }
+                else if(color==_XL_CYAN)
+                {
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
                     {
-                        POKE(x_offset  ,64);
-                        POKE(x_offset+1,64);
-                    };
+                        if(__left_12x16_tiles[tile][i]&63 || __right_12x16_tiles[tile][i]&63)
+                        {
+                            if(i&1)
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]^63);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]^63);
+                            }
+                            else
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]|0x80);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]|0x80);
+                            }
+                        }
+                        else
+                        {
+                            POKE(x_offset  ,64);
+                            POKE(x_offset+1,64);
+                        }
+                    }
+                }
+                else if(color==_XL_YELLOW )
+                {
+                   for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    {
+                        if(__left_12x16_tiles[tile][i]&63 || __right_12x16_tiles[tile][i]&63)
+                        {
+                            if(i&1)
+                            {
+                                        POKE(x_offset  ,__left_12x16_tiles[tile][i]^63|0x80);
+                                        POKE(x_offset+1,__right_12x16_tiles[tile][i]^63|0x80);
+                            }
+                            else
+                            {
+                                    POKE(x_offset  ,__left_12x16_tiles[tile][i]);
+                                    POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                            }
+                        }
+                        else
+                        {
+                            POKE(x_offset  ,64);
+                            POKE(x_offset+1,64);
+                        }
+                    }
+                }
+                else
+                {
+                    for(i=0,x_offset = BASE_ADDR+X_OFFSET+2*x+320U*(uint16_t)2*12; i<8;++i, x_offset+=40)
+                    {
+
+                                POKE(x_offset  ,__left_12x16_tiles[tile][i]);
+                                POKE(x_offset+1,__right_12x16_tiles[tile][i]);
+                    }
                 }
             }
         }
