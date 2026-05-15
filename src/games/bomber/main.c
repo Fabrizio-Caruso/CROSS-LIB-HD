@@ -64,29 +64,24 @@
 	#define INITIAL_PLANE_Y 1
 #endif
 
-#if YSize>=20
-    #if XSize>78
-        #define BUILDINGS_NUMBER (XSize-24) 
-        #define FIRST_BULDING_X_POS 12
-    #elif XSize>63
-        #define BUILDINGS_NUMBER (XSize-22)
-        #define FIRST_BULDING_X_POS 10
-    #elif XSize>48
-        #define BUILDINGS_NUMBER (XSize-18)
-        #define FIRST_BULDING_X_POS 9
-    #elif XSize>=40
-        #define BUILDINGS_NUMBER (XSize-16)
-        #define FIRST_BULDING_X_POS 8
-    #elif XSize>=30
-        #define BUILDINGS_NUMBER (XSize-14)
-        #define FIRST_BULDING_X_POS 7
-    #elif XSize>16
-        #define BUILDINGS_NUMBER (XSize-9)
-        #define FIRST_BULDING_X_POS 5
-    #else
-        #define BUILDINGS_NUMBER (XSize-7)
-        #define FIRST_BULDING_X_POS 4
-    #endif
+#if XSize>78
+    #define BUILDINGS_NUMBER (XSize-24) 
+    #define FIRST_BULDING_X_POS 12
+#elif XSize>63
+    #define BUILDINGS_NUMBER (XSize-22)
+    #define FIRST_BULDING_X_POS 10
+#elif XSize>48
+    #define BUILDINGS_NUMBER (XSize-18)
+    #define FIRST_BULDING_X_POS 9
+#elif XSize>=38
+    #define BUILDINGS_NUMBER (XSize-16)
+    #define FIRST_BULDING_X_POS 8
+#elif XSize>=30
+    #define BUILDINGS_NUMBER (XSize-14)
+    #define FIRST_BULDING_X_POS 7
+#elif XSize>16
+    #define BUILDINGS_NUMBER (XSize-9)
+    #define FIRST_BULDING_X_POS 5
 #elif YSize>12
     #define BUILDINGS_NUMBER (XSize/2)
     #define FIRST_BULDING_X_POS (XSize/4)  
