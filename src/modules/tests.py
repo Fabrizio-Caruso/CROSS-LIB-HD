@@ -276,24 +276,24 @@ def check_programs(option_config, title, command_list, expected_list, silent=Fal
     total_result = {}
 
     max_len = 0
-    for compiler in command_list.keys():
-        if len(compiler)>max_len:
-            max_len = len(compiler)
+    for command in command_list.keys():
+        if len(command)>max_len:
+            max_len = len(command)
     max_len = 28
 
-    for compiler in command_list.keys():
-        result = os.system(command_list[compiler] + " > /dev/null 2>&1")
-        spaces = " " * (max_len+1-len(compiler))
-        if result==expected_list[compiler]:
-            # print("[" + compiler + "] found")
+    for command in command_list.keys():
+        result = os.system(command_list[command] + " > /dev/null 2>&1")
+        spaces = " " * (max_len+1-len(command))
+        if result==expected_list[command]:
+            # print("[" + command + "] found")
             res = "found\n"
             res_color = bcolors.OKGREEN
             res_color2 = bcolors.OKGREEN
-            total_result[compiler]=True
+            total_result[command]=True
         else:
 
-            total_result[compiler]=False
-            if compiler in BUILDABLE_TOOLS:
+            total_result[command]=False
+            if command in BUILDABLE_TOOLS:
                 res = "NOT built\n"
                 res_color = bcolors.OKBLUE
                 res_color2 = bcolors.OKCYAN
@@ -302,7 +302,7 @@ def check_programs(option_config, title, command_list, expected_list, silent=Fal
                 res_color = bcolors.WARNING
                 res_color2 = bcolors.WARNING
         if not silent:
-            printc(option_config, res_color,"[" + compiler + "]")
+            printc(option_config, res_color,"[" + command + "]")
             printc(option_config, res_color2, spaces + res)
     return total_result
 
@@ -370,20 +370,7 @@ def _unit_tests(option_config, path="./"):
         run_single_unit_test(option_config, test)
 
 
-
-
 # TODO: Handle aliases such as dragon->coco
-
-# TODO: Handle Windows vs Linux and targets with 3 binaries
-if platform in ["cygwin", "msys"]:
-    TARGETS_WITH_2_BINARIES = ['aquarius', 'cpc', 'coco3', 'to5', 'ace', 'mtx500', \
-                               'mtx512', 'laser500']
-    TARGETS_WITH_3_BINARIES = ['coco','abc80']
-else:
-    TARGETS_WITH_2_BINARIES = ['aquarius', 'cpc', 'coco3', 'to5', 'ace', 'mtx500', \
-                               'mtx512', 'laser500','coco']
-    TARGETS_WITH_3_BINARIES = ['abc80']
-
 
 # LoggerSingleton.initLogger(__name__)
 logger = LoggerSingleton.initLogger('xl', '../logs')
@@ -421,12 +408,7 @@ def test_projects(option_config, projects, target="stdio"):
         if verbose:
             print("Test on the number of binaries for all these targets is not supported")
 
-    if target in TARGETS_WITH_3_BINARIES:
-        files_per_project = 3
-    elif target in TARGETS_WITH_2_BINARIES:
-        files_per_project = 2
-    else:
-        files_per_project = 1
+    files_per_project = binary_factor(target)
 
     if verbose:
         print("Expected binaries per project: " + str(files_per_project))
@@ -549,14 +531,6 @@ def test_execute(option_config, target, test_name, commands, check = no_check, c
     return result
 
 
-def binary_factor(target):
-    if target in TARGETS_WITH_2_BINARIES:
-        return 2
-    elif target in TARGETS_WITH_3_BINARIES:
-        return 3
-    else:
-        return 1
-
 # ---------------------------------------------------------
 # DEFAULT SELF TESTS
 # ---------------------------------------------------------
@@ -581,7 +555,7 @@ COMPLEX_SELF_TESTS = \
 
 TOOLS_SELF_TESTS = \
     [
-        ("xl tools",            TOOLS_TEST,          check_tools,   CLEANUP_TOOLS_TEST),
+        ("build some tools",    TOOLS_TEST,          check_tools,   CLEANUP_TOOLS_TEST),
     ]
 
 PARALLEL_BUILD_TESTS = \
@@ -663,15 +637,20 @@ def test_all(option_config, params):
     _unit_tests(option_config)
     return test_self(option_config, params)
 
-expected_files = {
-    "cc65": 8,
-    "z88dk": 5,
-    "cmoc": 3,
-    "lcc1802": 1,
-    "z88dk_alt": 38,
-    "stdio_alt": 1
+
+TEST_FILES = {
+    "native"      : ["stdio", "ncurses", "terminal"],
+    "cc65"        : ["vic20", "supervision", "atari", "atari_lynx", "creativision", "pet", "c64", "oric"],
+    "z88dk"       : ["c128_z80_80col", "cpm_z80_adm3a", "spectrum_48k", "msx", "zx81_32k_wrx"],
+    "cmoc"        : ["coco", "coco3", "mo5"],
+    "lcc1802"     : ["comx", "tmc600"],
+    "ack"         : ["msdos", "pc86"],
+    "cc6303"      : ["mc10"],
+    "vbcc"        : ["bbc", "bbcmaster"],
+    # "tms9900-gcc" : ["ti99"] # Variable number
     }
 
+Z88DK_ALT_EXPECTED_FILES = 38
 
 def targets_test(option_config, params):
 
@@ -680,7 +659,7 @@ def targets_test(option_config, params):
     compilation_threads = option_config.build_config.compilation_threads
     native_compiler = option_config.build_config.native_compiler
     GNU_MAKE = option_config.build_config.gnu_make
-    if params[1].startswith("z88dk") or params[1]=="cc65":
+    if params[1] == "z88dk_alt":
         parallel = " -j " + compilation_threads
     else:
         parallel = ""
@@ -691,16 +670,27 @@ def targets_test(option_config, params):
         if verbose:
             printc(option_config, bcolors.OKBLUE,"Create main.c from split source files\n")
         create_main(game_dir, project_type)
-    if params[1] in ("cc65", "z88dk", "cmoc", "lcc1802"):
-        make_command = GNU_MAKE + parallel + " test_" + params[1] + "_extra " + \
-                       " GNU_MAKE=" + GNU_MAKE + " _NATIVE_CC="+ native_compiler + " " + \
-                       all_compilers_opts(option_config, "","") + \
-                       " -f makefiles.other/chase/tests/Makefile.tests"
-        run_command(option_config, make_command)
+    if params[1] in TEST_FILES.keys():
+        devkit_test_files = TEST_FILES[params[1]]
+        print("Testing: " + str(devkit_test_files)[1:][:-1])
+        
+        expected_files = 0
+        for test_file in devkit_test_files:
+            # TODO: Parameters should be read from config.ini
+            _use_tools = option_config.build_config.use_tools
+            _tool_compiler = option_config.build_config.tool_compiler
+            make_command = GNU_MAKE + parallel + " " + test_file + \
+                           " GNU_MAKE=" + GNU_MAKE + " _NATIVE_CC="+ native_compiler + " " + \
+                           " USE_TOOLS=" + str(_use_tools) + " TOOL_CC=" + _tool_compiler + " " + \
+                           all_compilers_opts(option_config, "","") + \
+                           " -f makefiles.other/chase/tests/Makefile.tests"
+            expected_files += binary_factor(test_file)
+            run_command(option_config, make_command)
     elif params[1]=="z88dk_alt":
         make_command = GNU_MAKE + parallel + " GNU_MAKE=" + GNU_MAKE + \
                        " z88dk_quick_test -f makefiles.other/chase/tests/Makefile.z88dk_quick_tests"
         run_command(option_config, make_command)
+        expected_files = Z88DK_ALT_EXPECTED_FILES # TODO: Remove this hardcoded value
     else:
         printc(option_config, bcolors.FAIL, "Parameter not recognized\n")
         if is_project_split(game_dir):
@@ -713,23 +703,20 @@ def targets_test(option_config, params):
             printc(option_config, bcolors.OKBLUE,"Delete main.c (because of split source files)\n")
         delete_main(option_config, game_dir, project_type)
 
-
     built_files = len(files_in_path("../build"))-1
     if verbose:
         print("Number of built files: " + str(built_files))
 
-    if params[1] in expected_files.keys():
+    if params[1] in TEST_FILES.keys() or params[1] in ("z88dk_alt"):
         printc(option_config, bcolors.OKCYAN, "Built files: " + str(built_files)+"\n")
-        printc(option_config, bcolors.OKBLUE, "Expected files: " + str(expected_files[params[1]])+"\n")
-        if built_files != expected_files[params[1]]:
+        printc(option_config, bcolors.OKBLUE, "Expected files: " + str(expected_files)+"\n")
+        if built_files != expected_files:
             printc(option_config, bcolors.FAIL, "binaries KO\n")
             success=0
 
         else:
             printc(option_config, bcolors.OKGREEN, "binaries OK\n")
 
-    # if clean_test()==0:
-        # success=0
     return success
 
 
@@ -766,7 +753,7 @@ def test(option_config, params):
         test_make(option_config, silent=False)
     elif params[1] in ("unit-tests", "unit_tests", "unit-test", "unit_test", "u"):
         _unit_tests(option_config)
-    elif params[1] in ("cc65", "z88dk", "cmoc", "lcc1802") or params[1].endswith('_alt'):
+    elif params[1] in TEST_FILES.keys() or params[1].endswith('_alt'):
         if targets_test(option_config, params):
             printc(option_config, bcolors.OKGREEN, "TEST OK\n")
         else:

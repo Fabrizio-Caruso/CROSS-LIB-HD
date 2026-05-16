@@ -71,6 +71,7 @@ class BuildConfig():
         lcc1802_compiler_opts = "",
         gcc4ti99_compiler_opts = "",
         vbcc_compiler_opts = "",
+        ack_compiler_opts = "",
         native_compiler_opts = "",
         native_compiler = "gcc",
         tool_compiler = "gcc",
@@ -92,6 +93,7 @@ class BuildConfig():
         self.lcc1802_compiler_opts      = lcc1802_compiler_opts
         self.gcc4ti99_compiler_opts     = gcc4ti99_compiler_opts
         self.vbcc_compiler_opts         = vbcc_compiler_opts
+        self.ack_compiler_opts          = ack_compiler_opts
         self.native_compiler_opts       = native_compiler_opts
         self.native_compiler            = native_compiler
         self.tool_compiler              = tool_compiler
@@ -113,6 +115,7 @@ class BuildConfig():
             self.lcc1802_compiler_opts, \
             self.gcc4ti99_compiler_opts, \
             self.vbcc_compiler_opts, \
+            self.ack_compiler_opts, \
             self.native_compiler_opts, \
             self.native_compiler, \
             self.tool_compiler, \
@@ -156,6 +159,7 @@ def all_compilers_opts(option_config, zsdcc_extra_optimization, compiler_opts):
     lcc1802_compiler_opts, \
     gcc4ti99_compiler_opts, \
     vbcc_compiler_opts, \
+    ack_compiler_opts, \
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
@@ -179,6 +183,7 @@ def all_compilers_opts(option_config, zsdcc_extra_optimization, compiler_opts):
                                                   compiler_selection + "'" + \
            " GCC4TI99_MAKEFILE_COMPILATION_OPTS='" + gcc4ti99_compiler_opts + "'" + \
            " VBCC_MAKEFILE_COMPILATION_OPTS='" + vbcc_compiler_opts + "'" + \
+           " ACK_MAKEFILE_COMPILATION_OPTS='" + ack_compiler_opts + "'" + \
            " NATIVE_MAKEFILE_COMPILATION_OPTS='" + native_compiler_opts + "'" + \
            " CMOC_MAKEFILE_COMPILATION_OPTS='" + cmoc_compiler_opts + "'" + \
            " CC65_MAKEFILE_COMPILATION_OPTS='" + cc65_compiler_opts + "'" + \
@@ -216,6 +221,7 @@ def config(option_config):
     lcc1802_compiler_opts, \
     gcc4ti99_compiler_opts, \
     vbcc_compiler_opts, \
+    ack_compiler_opts, \
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
@@ -242,6 +248,7 @@ def config(option_config):
     print("lcc1802_compiler_opts:   " +  lcc1802_compiler_opts)
     print("gcc4ti99_compiler_opts:  " +  gcc4ti99_compiler_opts)
     print("vbcc_compiler_opts:      " +  vbcc_compiler_opts)
+    print("ack_compiler_opts:       " +  ack_compiler_opts)
     print("native_compiler_opts:    " +  native_compiler_opts)
 
     print("native_compiler:         " +  native_compiler)
@@ -249,7 +256,7 @@ def config(option_config):
 
     print("tool_compiler:           " +  tool_compiler)
     
-    print("default target           " + default_target)
+    print("default_target           " + default_target)
 
     print("")
     printc(option_config, bcolors.BOLD,"[run]\n")
@@ -383,6 +390,8 @@ def read_config(config_file="./config.ini"):
         lcc1802_compiler_opts = read_config_option(config,"build","lcc1802_compiler_opts")
         gcc4ti99_compiler_opts = read_config_option(config,"build","gcc4ti99_compiler_opts")
         vbcc_compiler_opts = read_config_option(config,"build","vbcc_compiler_opts")
+        ack_compiler_opts = read_config_option(config,"build","ack_compiler_opts")
+        
         native_compiler_opts = read_config_option(config,"build","native_compiler_opts")
 
         native_compiler = read_config_option(config,"build", "native_compiler")
@@ -429,6 +438,7 @@ def read_config(config_file="./config.ini"):
             lcc1802_compiler_opts,
             gcc4ti99_compiler_opts,
             vbcc_compiler_opts,
+            ack_compiler_opts,
             native_compiler_opts,
             native_compiler,
             tool_compiler,
@@ -494,6 +504,7 @@ def default_config():
             lcc1802_compiler_opts = '"-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" "-Wf-mulcall"',
             gcc4ti99_compiler_opts = "-O2 -fno-peephole2 -fno-function-cse",
             vbcc_compiler_opts = "",
+            ack_compiler_opts = "",
             native_compiler_opts = "",
             native_compiler = "gcc",
             tool_compiler = "gcc",

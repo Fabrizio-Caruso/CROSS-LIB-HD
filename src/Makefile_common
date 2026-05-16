@@ -1262,11 +1262,38 @@ c128_40col_zsdcc: c128_z80_40col_zsdcc
 
 c128_40col: c128_z80_40col
 
+c128_z80_40col_alt: $(ASSETS_PATH)/z88dk_xchase.asm 
+	$(Z88DK_PATH)$(MYZ88DK) +c128 $(SCCZ80_OPTS)  \
+	$(INCLUDE_OPTS) \
+	-lndos -subtype=disk -clib=gencon \
+	-D__C128_Z80__ -DXSize=40 \
+	 \
+	-D__BIT_BANG_SOUND   \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_C128_Z80_40COL_SLOWDOWN) \
+	-D__CONIO_GRAPHICS  \
+	$(FULL_FILES) \
+	$(ASSETS_PATH)/z88dk_xchase.asm \
+	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/udg/udg_init_graphics.c \
+	-create-app -o"a40.bin"
+ifdef USE_TOOLS
+	$(C1541) -format "crosschase,0" d64 FULL_$@.d64
+	$(C1541) -attach FULL_$@.d64 -write a40.ldr
+	$(C1541) -attach FULL_$@.d64 -write a40
+	mv FULL_$@.d64 $(BUILD_PATH)/X$(GAME_NAME)_$@.d64
+	rm a40.bin
+else
+	mv a40.bin $(BUILD_PATH)/X$(GAME_NAME)_$@.bin
+endif
+	rm a40.ldr
+	rm a40
+
+
 c128_z80_40col: $(ASSETS_PATH)/z88dk_xchase.asm  $(TOOLS_PATH)/generic/CC1541/cc1541$(COMPILEDEXT)
 	$(Z88DK_PATH)$(MYZ88DK) +c128 $(SCCZ80_OPTS)  \
 	$(INCLUDE_OPTS) \
 	-lndos -subtype=disk -clib=gencon \
 	-D__C128_Z80__ -DXSize=40 \
+	 \
 	-D__BIT_BANG_SOUND   \
 	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_C128_Z80_40COL_SLOWDOWN) \
 	-D__CONIO_GRAPHICS  \
@@ -1281,9 +1308,10 @@ c128_z80_40col: $(ASSETS_PATH)/z88dk_xchase.asm  $(TOOLS_PATH)/generic/CC1541/cc
 	rm -rf a40.ldr
 	rm -rf a40
 
+
 c128_80col: c128_8502_80col
 
-c128_z80_80col: $(ASSETS_PATH)/z88dk_sprites_definitions.h
+c128_z80_80col_alt: $(ASSETS_PATH)/z88dk_sprites_definitions.h
 	$(Z88DK_PATH)$(MYZ88DK) +c128 $(SCCZ80_OPTS) -lgfx128hr \
 	$(INCLUDE_OPTS)  \
 	-lndos -subtype=disk \
@@ -1308,6 +1336,28 @@ else
 endif
 	rm a80.ldr
 	rm a80
+
+c128_z80_80col: $(ASSETS_PATH)/z88dk_sprites_definitions.h $(TOOLS_PATH)/generic/CC1541/cc1541$(COMPILEDEXT)
+	$(Z88DK_PATH)$(MYZ88DK) +c128 $(SCCZ80_OPTS) -lgfx128hr \
+	$(INCLUDE_OPTS)  \
+	-lndos -subtype=disk \
+	-D__C128_Z80__ -D__SPRITE_X_STEP=8 -D__SPRITE_Y_STEP=8 -D__NO_SPRITE_TRANSPARENCY \
+	-D_XL_SLOW_DOWN_FACTOR=$(_COMMON_SLOWDOWN_FACTOR)*$(_C128_Z80_80COL_SLOWDOWN) \
+	-D__Z88DK_SPRITES_GRAPHICS \
+	-D__BIT_BANG_SOUND $(C128_Z80_80COL_GAME_OPTS)  \
+	-D__ALT_PRINT \
+	-D_XL_NO_COLOR \
+	$(CROSS_LIB_PATH)/display/alt_print/memory_mapped_alt_print.c \
+	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/c128/c128_init_graphics.c \
+	$(FULL_FILES) \
+	-create-app -o"a80.bin"
+	../tools/generic/CC1541/cc1541 -f a80.ldr -w a80.ldr X$(GAME_NAME)_$@.d64
+	../tools/generic/CC1541/cc1541 -f a80 -w a80 X$(GAME_NAME)_$@.d64
+	mv X$(GAME_NAME)_$@.d64 $(BUILD_PATH)/
+	rm -rf a80.bin
+	rm -rf a80.ldr
+	rm -rf a80
+
 
 c128_8x6: c128_8x6_80col
 c128_8x6_80col: c128_z80_8x6_80col
@@ -1336,7 +1386,6 @@ else
 endif
 	rm a80.ldr
 	rm a80
-
 #################################################################
 
 camputers_lynx: $(ASSETS_PATH)/z88dk_xchase.asm
@@ -3482,8 +3531,8 @@ ncurses_sized:
 	$(CROSS_LIB_PATH)/display/alt_print/ncurses_alt_print.c \
 	$(CROSS_LIB_PATH)/display/init_graphics/gcc/ncurses_init_graphics.c \
 	$(FULL_FILES) \
-	-lncurses
-	mv a$(COMPILEDEXT) $(BUILD_PATH)/X$(GAME_NAME)_ncurses_$(XSIZE)X$(YSIZE)$(COMPILEDEXT)
+	-lncurses \
+	-o $(BUILD_PATH)/X$(GAME_NAME)_ncurses_$(XSIZE)X$(YSIZE)$(COMPILEDEXT)
 
 
 ncurses:

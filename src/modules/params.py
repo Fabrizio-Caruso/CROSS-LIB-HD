@@ -11,6 +11,10 @@ from input_functions import generic_input
 
 logger = LoggerSingleton.initLogger('xl', '../logs')
 
+DEFAULT_PROJECT = "hello"
+
+DEFAULT_TARGET  = "stdio"
+
 
 def full_params(params):
     full_command = SHORT_COMMANDS_LIST.get(params[1])
@@ -38,7 +42,7 @@ def get_size_params(params):
     if len(params)<5:
         xsize = params[2]
         ysize = params[3]
-        target = 'ncurses'
+        target = DEFAULT_TARGET
     else:
         xsize = params[3]
         ysize = params[4]
@@ -65,13 +69,13 @@ def get_params_from_keyboard_input(option_config):
     print("")
     project_name = generic_input("Insert project to build\n")
     if project_name in ("", "\n"):
-        project_name="helloworld"
-        printc(option_config, bcolors.WARNING,"Defaulting to helloworld\n")
+        project_name=DEFAULT_PROJECT
+        printc(option_config, bcolors.WARNING,"Defaulting to " + DEFAULT_PROJECT + "\n")
     print("")
     target_name = generic_input("Insert target name\n")
     if target_name in ("", "\n"):
-        target_name="ncurses"
-        printc(option_config, bcolors.WARNING, "Defaulting to ncurses\n")
+        target_name=DEFAULT_TARGET
+        printc(option_config, bcolors.WARNING, "Defaulting to " + DEFAULT_TARGET + "\n")
     print("")
     return ["", "rebuild", project_name, target_name]
 

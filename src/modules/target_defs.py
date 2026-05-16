@@ -2,6 +2,7 @@ from __future__ import print_function
 
 
 import os
+import sys
 
 from default_values import default_tile_size, default_screen_size, default_terminal_size_string, get_terminal_target
 from file_functions import list_of_projects
@@ -9,8 +10,103 @@ from project_functions import project_category
 from print_functions import bcolors, printc
 
 
+def binary_factor(target):
+    platform = sys.platform
+    if platform in ["cygwin", "msys"]:
+        TARGETS_WITH_2_BINARIES = ['atari', 'aquarius', 'cpc', 'coco3', 'mo5', 'ace', 'mtx500', \
+                                   'mtx512', 'laser500']
+        TARGETS_WITH_3_BINARIES = ['bbc', 'bbcmaster', 'coco']
+    else:
+        TARGETS_WITH_2_BINARIES = ['atari', 'aquarius', 'cpc', 'coco3', 'mo5', 'ace', 'mtx500', \
+                                   'mtx512', 'laser500', 'coco']
+        TARGETS_WITH_3_BINARIES = ['bbc', 'bbcmaster']
+    if target in TARGETS_WITH_2_BINARIES:
+        return 2
+    elif target in TARGETS_WITH_3_BINARIES:
+        return 3
+    else:
+        return 1
+
+
+def retrieve_targets():
+    with open("../docs/STATUS.md", "r") as f:
+        raw_lines = [line for line in f if line.lstrip().startswith("*")]
+        lines = []
+        for raw_line in raw_lines:
+            line = raw_line.replace('\n','').split('|')
+            lines.append(line)
+    return lines
+
+
+def filter_targets(lines, compiler="", cpu="", working=""):
+    if compiler!='':
+        lines = [line for line in lines if line[4].lower().strip()==compiler]
+
+    if cpu!='':
+        lines = [line for line in lines if cpu.lower() in line[3].lower().strip()]
+    
+    if working!='':
+        lines = [line for line in lines if working.lower() in line[2].lower().strip()]
+    return lines
+
+
+def display_targets(lines):
+    print("target name         | long target name                            | working  |   CPU family  | dev-kit | real-time input |    graphics    |  sound  | notes      ")
+    for line in lines:
+        print(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8])
+
+    print("Targets found: " + str(len(lines)))
+
+
+def display_filtered_targets(lines, compiler="", cpu="", working=""):
+    
+    lines = filter_targets(lines, compiler, cpu, working)
+    
+    display_targets(lines)
+
+
+def get_targets(compiler="", cpu="", working=""):
+    lines = retrieve_targets()
+    filtered_lines=filter_targets(lines,compiler, cpu, working)
+    target_map = get_target_map(filtered_lines)
+    return target_map.keys()
+    
+
+def get_target_map(lines):
+    target_map = {}
+    for line in lines:
+        target_map[line[0].replace('*','').strip()]=[line[1].strip(), line[2].strip(), line[3].strip(), line[4].strip(), line[5].strip(), line[6].strip(), line[7].strip(), line[8].strip()]
+    return target_map
+
+
 def info(option_config, params):
     
+    lines = retrieve_targets()
+    target_map = get_target_map(lines)
+    
+    # target= params[1].lstrip()
+    # print(target_map[target][0].lstrip())
+
+    # print(str(target_map))
+    if len(params)==1 or params[1]=="targets":
+        display_filtered_targets(lines)
+        return
+    
+    if params[1] in ("cc65", "z88dk", "cmoc", "lcc1802", "cc6303", "ack", "tms9900-gcc", "vbcc", "xtc68"):
+        display_filtered_targets(lines, params[1])
+        return
+    
+    if params[1] in ("6502", "z80", "6809", "1802", "6803", "8080", "8085", "8086", "8088", "386", "tms9900", "68000", "68020", "gbz80"):
+        to_check = params[1].replace("z80", "Zilog 80").replace("8088","8086").replace("tms9900", "TMS 9900").replace("6502","MOS 6502")
+        display_filtered_targets(lines, "", cpu=to_check)
+        return
+
+    if params[1] in("yes","ok","no","ko","?"):
+        to_check = params[1].replace("ok", "yes").replace("ko","no")
+        display_filtered_targets(lines, "", cpu="", working=to_check)
+        return
+    
+
     if params[1] in list_of_projects("all"):
         project = params[1]
         category = project_category(project)
@@ -45,14 +141,14 @@ def info(option_config, params):
         print("code configuration :      " + str(game_config))
         print("override           :      " + str(override))
         print("memory optimizer   :      " + str(memory))
-    else:
+    elif params[1] in target_map.keys():
         target = params[1]
         xsize, ysize = default_screen_size(target)
         xtile, ytile = default_tile_size(target)
         
         if xsize==None:
-            print("Information not available")
-            return
+            xsize = "not available"
+            ysize = "not available"
         else:
             xsize = str(xsize)
             ysize = str(ysize)
@@ -65,16 +161,27 @@ def info(option_config, params):
         else:
             parallel  = "not supported"
         
-        print("target      :         ", end=""); printc(option_config, bcolors.BOLD,target); print("")
+        print("target          :         ", end=""); printc(option_config, bcolors.BOLD,target); print("")
+        print("name            :         " + target_map[target][0])
+        print("working         :         " + target_map[target][1])
+        print("cpu             :         " + target_map[target][2])
+        print("compiler        :         " + target_map[target][3])
+        print("real-time       :         " + target_map[target][4])
+        print("graphics        :         " + target_map[target][5])
+        print("sound           :         " + target_map[target][6])
+
         print("")
-        print("x size      :         " + xsize)
-        print("y size      :         " + ysize)
+        print("x size          :         " + xsize)
+        print("y size          :         " + ysize)
         print("")
-        print("x tile      :         " + xtile)
-        print("y tile      :         " + ytile)
+        print("x tile          :         " + xtile)
+        print("y tile          :         " + ytile)
         print("")
-        print("parallelism :         " + parallel)
-        
+        print("parallelism     :         " + parallel)
+        print("")
+        print("no. of binaries :         " + str(binary_factor(target)))
+    else:
+        print("No information found")
 
 #TODO: cc65 targets
 #TODO: cmoc targets
@@ -93,12 +200,15 @@ PARALLEL_TARGETS = \
     'atmos',
     'c16',
     'c64',
+    'c65',
     'cbm610',
     'cbm510',
     'creativision',
+    'cx16',
     'gamate',
     'oric',
     'oric1',
+    'mega65',
     'nes',
     'pet',
     'pce',
@@ -141,6 +251,7 @@ PARALLEL_TARGETS = \
     'interact',
     'kaypro',
     'kaypro83',
+    'kc',
     'kc85',
     'lambda',
     'laser500',
@@ -194,7 +305,7 @@ PARALLEL_TARGETS = \
     'zx81_wrx128',
     'zx81_8x6_wrx128',
     'z9001',
-    'kc',
+    'x07',
     'z1013',
     'zx80',
     'zxn'

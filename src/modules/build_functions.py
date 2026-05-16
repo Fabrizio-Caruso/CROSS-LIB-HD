@@ -35,6 +35,8 @@ from modules.clean_functions import clean, clean_test
 
 DEFAULT_COMPILATION_THREADS = 4
 
+DEFAULT_PROJECT = "hello"
+
 logger = LoggerSingleton.initLogger('xl', '../logs')
 
 logger.info('Started')
@@ -68,6 +70,7 @@ def multiple_size_build(option_config, mypath,target,xsize,ysize,debug):
     lcc1802_compiler_opts, \
     gcc4ti99_compiler_opts, \
     vbcc_compiler_opts, \
+    ack_compiler_opts, \
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
@@ -166,6 +169,7 @@ def multiple_build(option_config, mypath,target,threads,zsdcc_extra_optimization
     lcc1802_compiler_opts, \
     gcc4ti99_compiler_opts, \
     vbcc_compiler_opts, \
+    ack_compiler_opts, \
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
@@ -240,12 +244,13 @@ def multiple_build(option_config, mypath,target,threads,zsdcc_extra_optimization
 
 
 # Run a project natively (terminal with ncurses) with a given XSize and YSize
+# size can handle both ascii and terminal
 def size(option_config, params, debug = False):
     GNU_MAKE = option_config.build_config.gnu_make
 
     verbose = option_config.terminal_config.verbose
     if len(params)<2:
-        game_dir = "helloworld"
+        game_dir = DEFAULT_PROJECT
     else:
         game_dir = params[1]
 
@@ -353,11 +358,13 @@ def build(option_config, params, reset_flag = False):
     # sized terminal
     if len(params)>=4 and params[2].startswith("terminal") and params[3].isnumeric() \
                       and params[4].isnumeric():
+        if reset_flag:
+            reset(option_config, params)
         size(option_config, ["size"] + params[1:],0)
         return
 
     if len(params)<2:
-        game_dir = "helloworld"
+        game_dir = DEFAULT_PROJECT
     else:
         game_dir = params[1]
 
@@ -366,7 +373,6 @@ def build(option_config, params, reset_flag = False):
     elif len(params)>=1 and game_dir.endswith("_tools"):
         partial_tools(option_config, game_dir)
     else:
-
         files_before = len(files_in_path("../build"))-1
 
         project_type = project_category(game_dir)
@@ -376,7 +382,7 @@ def build(option_config, params, reset_flag = False):
             if option_config.build_config.default_target is not None:
                 target = option_config.build_config.default_target
             else:
-                target = "ncurses"
+                target = "stdio"
         else:
             target = params[2]
             if target == "ascii":
@@ -388,7 +394,7 @@ def build(option_config, params, reset_flag = False):
                 else:
                     target = "ncurses"
 
-        if target in ["cc65", "z88dk", "cmoc", "lcc1802", "cc6303", "gcc4ti", "vbcc"]:
+        if target in ["cc65", "z88dk", "cmoc", "lcc1802", "cc6303", "gcc4ti", "vbcc", "ack"]:
             target = target + "_targets"
 
         gnu_make, \
@@ -404,6 +410,7 @@ def build(option_config, params, reset_flag = False):
         lcc1802_compiler_opts, \
         gcc4ti99_compiler_opts, \
         vbcc_compiler_opts, \
+        ack_compiler_opts, \
         native_compiler_opts, \
         native_compiler, \
         tool_compiler, \
@@ -455,6 +462,7 @@ def build(option_config, params, reset_flag = False):
             print("lcc1802_compiler_opts   : " + lcc1802_compiler_opts)
             print("gcc4ti99_compiler_opts  : " + gcc4ti99_compiler_opts)
             print("vbcc_compiler_opts      : " + vbcc_compiler_opts)
+            print("ack_compiler_opts       : " + ack_compiler_opts)
             print("native_compiler_opts    : " + native_compiler_opts)
 
             print("")
