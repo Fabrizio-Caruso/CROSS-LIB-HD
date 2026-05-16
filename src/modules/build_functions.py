@@ -71,7 +71,8 @@ def multiple_size_build(option_config, mypath,target,xsize,ysize,debug):
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
-    use_tools \
+    use_tools, \
+    default_target, \
     = option_config.build_config.get_opts()
     
     if option_config.build_config.parallelize_multi_build:
@@ -168,7 +169,8 @@ def multiple_build(option_config, mypath,target,threads,zsdcc_extra_optimization
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
-    use_tools \
+    use_tools, \
+    default_target, \
     = option_config.build_config.get_opts()
 
     if use_tools:
@@ -371,7 +373,10 @@ def build(option_config, params, reset_flag = False):
         parent_dir = project_type + "s"
 
         if len(params)<3:
-            target = "ncurses"
+            if option_config.build_config.default_target is not None:
+                target = option_config.build_config.default_target
+            else:
+                target = "ncurses"
         else:
             target = params[2]
             if target == "ascii":
@@ -402,7 +407,8 @@ def build(option_config, params, reset_flag = False):
         native_compiler_opts, \
         native_compiler, \
         tool_compiler, \
-        use_tools \
+        use_tools, \
+        default_target, \
         = option_config.build_config.get_opts()
 
 
@@ -525,7 +531,10 @@ def slow(option_config, params):
         target = params[2]
         slowdown = params[3]
     elif len(params)==3:
-        target = NATIVE_TARGET
+        if option_config.build_config.default_target is not None:
+            target = option_config.build_config.default_target
+        else:
+            target = "ncurses"
         slowdown = params[2]
     else:
         printc(option_config, bcolors.FAIL, "Wrong number of arguments")

@@ -38,7 +38,7 @@ def get_size_params(params):
     if len(params)<5:
         xsize = params[2]
         ysize = params[3]
-        target = NATIVE_TARGET
+        target = 'ncurses'
     else:
         xsize = params[3]
         ysize = params[4]
@@ -47,7 +47,7 @@ def get_size_params(params):
     if target == 'terminal':
         target = 'terminal8x8'
 
-    if target in [NATIVE_TARGET,'stdio'] or target.startswith('terminal'):
+    if target in ['ascii', 'ncurses','stdio'] or target.startswith('terminal'):
         target = target + '_sized'
         
     return target, xsize, ysize

@@ -74,7 +74,8 @@ class BuildConfig():
         native_compiler_opts = "",
         native_compiler = "gcc",
         tool_compiler = "gcc",
-        use_tools = "1"
+        use_tools = "1",
+        default_target = "stdio"
         ):
 
         # build
@@ -95,6 +96,7 @@ class BuildConfig():
         self.native_compiler            = native_compiler
         self.tool_compiler              = tool_compiler
         self.use_tools                  = use_tools
+        self.default_target             = default_target
 
     def get_opts(self):
         return \
@@ -114,7 +116,8 @@ class BuildConfig():
             self.native_compiler_opts, \
             self.native_compiler, \
             self.tool_compiler, \
-            self.use_tools
+            self.use_tools, \
+            self.default_target
 
 
 class OptionConfig:
@@ -156,7 +159,8 @@ def all_compilers_opts(option_config, zsdcc_extra_optimization, compiler_opts):
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
-    use_tools \
+    use_tools, \
+    default_target, \
     = option_config.build_config.get_opts()
     
     if z88dk_compiler in ('zsdcc','sdcc'):
@@ -215,7 +219,8 @@ def config(option_config):
     native_compiler_opts, \
     native_compiler, \
     tool_compiler, \
-    use_tools \
+    use_tools, \
+    default_target, \
     = option_config.build_config.get_opts()
 
     compilation_threads = option_config.build_config.compilation_threads
@@ -243,6 +248,8 @@ def config(option_config):
     print("use_tools:               " + str(use_tools))
 
     print("tool_compiler:           " +  tool_compiler)
+    
+    print("default target           " + default_target)
 
     print("")
     printc(option_config, bcolors.BOLD,"[run]\n")
@@ -396,6 +403,8 @@ def read_config(config_file="./config.ini"):
         
 
         use_tools = read_config_option(config,"build", "use_tools")
+        
+        default_target = read_config_option(config,"build", "default_target")
 
         if replace_shapes!="":
             replace_shapes = int(replace_shapes)
@@ -423,7 +432,8 @@ def read_config(config_file="./config.ini"):
             native_compiler_opts,
             native_compiler,
             tool_compiler,
-            use_tools
+            use_tools,
+            default_target
             )
 
         option_config = OptionConfig(terminal_config, build_config, rom_config, extend_config)
