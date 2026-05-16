@@ -54,20 +54,45 @@ NATIVE_COMPILER_COMMAND_EXPECTED = \
 
 TOOL_COMMAND = \
     {
-    'f2k5'     : '../tools/cmoc/mo5/f2k5.' + NATIVE_EXTENSION + '',
-    'sapfs'    : '../tools/cmoc/mo5/sapfs.' + NATIVE_EXTENSION + '',
-    'file2dsk' : '../tools/cmoc/coco/file2dsk/file2dsk.' + NATIVE_EXTENSION + ' -h',
-    'makewzd'  : '../tools/z88dk/oz/makewzd.' + NATIVE_EXTENSION + ' -h',
-    'fixcart'  : '../tools/cc65/gamate/gamate-fixcart.' + NATIVE_EXTENSION + '',
+    'abcwrite' : '../tools/z88dk/abc80/abcdisk-2.7/abcwrite -h',
     'bbcim'    : '../tools/bbc/bbcim.' + NATIVE_EXTENSION + ' -h',
-    'nocart'   : '../tools/z88dk/cpc/nocart/nocart.' + NATIVE_EXTENSION + ' -h',
+    'bin2abc'  : '../tools/z88dk/abc80/abcdisk-2.7/bin2abc -h',
+    'cc1541'   : '../tools/generic/CC1541/cc1541 -h',
+    'f2k5'     : '../tools/cmoc/mo5/f2k5.' + NATIVE_EXTENSION + '',
+    'file2dsk' : '../tools/cmoc/coco/file2dsk/file2dsk.' + NATIVE_EXTENSION + ' -h',
+    'fixcart'  : '../tools/cc65/gamate/gamate-fixcart.' + NATIVE_EXTENSION + '',
     'm20'      : '../tools/olivetti_m20/m20.' + NATIVE_EXTENSION + ' -h',
-    'elf2ea5'  : '../tools/ti99/elf2ea5.' + NATIVE_EXTENSION + ' -h',
+    'mkatr'    : '../tools/cc65/atari/mkatr-master/mkatr -h',
+    'makewzd'  : '../tools/z88dk/oz/makewzd.' + NATIVE_EXTENSION + ' -h',
+    'nocart'   : '../tools/z88dk/cpc/nocart/nocart.' + NATIVE_EXTENSION + ' -h',
+    'old2mfm'  : '../tools/cc65/telestrat/old2mfm',
     'ea5split' : '../tools/ti99/ea5split.' + NATIVE_EXTENSION + ' -h',
+    'elf2ea5'  : '../tools/ti99/elf2ea5.' + NATIVE_EXTENSION + ' -h',
+    'exomizer' : '../tools/generic/exomizer/exomizer -h',
+    'sapfs'    : '../tools/cmoc/mo5/sapfs.' + NATIVE_EXTENSION + '',
+    'tap2dsk'  : '../tools/cc65/telestrat/tap2dsk',
     }
+
+
+LIGHT_TOOL_COMMAND = \
+    {
+    'bbcim'    : '../tools/bbc/bbcim.' + NATIVE_EXTENSION + ' -h',
+    'f2k5'     : '../tools/cmoc/mo5/f2k5.' + NATIVE_EXTENSION + '',
+    'file2dsk' : '../tools/cmoc/coco/file2dsk/file2dsk.' + NATIVE_EXTENSION + ' -h',
+    'fixcart'  : '../tools/cc65/gamate/gamate-fixcart.' + NATIVE_EXTENSION + '',
+    'mkatr'    : '../tools/cc65/atari/mkatr-master/mkatr -h',
+    'makewzd'  : '../tools/z88dk/oz/makewzd.' + NATIVE_EXTENSION + ' -h',
+    'ea5split' : '../tools/ti99/ea5split.' + NATIVE_EXTENSION + ' -h',
+    'elf2ea5'  : '../tools/ti99/elf2ea5.' + NATIVE_EXTENSION + ' -h',
+    'sapfs'    : '../tools/cmoc/mo5/sapfs.' + NATIVE_EXTENSION + '',
+    }
+    
 
 TOOL_COMMAND_EXPECTED = \
     {
+    'abcwrite' : 256,
+    'bin2abc'  : 0,
+    'cc1541'   : 65280,
     'f2k5'     : 0,
     'sapfs'    : 256,
     'file2dsk' : 256,
@@ -76,8 +101,12 @@ TOOL_COMMAND_EXPECTED = \
     'bbcim'    : 256,
     'nocart'   : 256,
     'm20'      : 256,
+    'mkatr'    : 0,
     'elf2ea5'  : 256,
     'ea5split' : 256,
+    'exomizer' : 256,
+    'tap2dsk'  : 256,
+    'old2mfm'  : 256,
     }
 
 
@@ -106,17 +135,25 @@ EMULATOR_COMMAND_EXPECTED = \
 
 BUILDABLE_TOOLS = \
 {
+    'abcwrite',
+    'bin2abc',
+    'cc1541',
     'f2k5',
     'sapfs',
     'file2dsk',
     'makewzd',
+    'mkatr',
     'fixcart',
     'bbcim',
     'nocart',
     'm20',
     'elf2ea5',
     'ea5split',
+    'exomizer',
+    'tap2dsk',
+    'old2mfm',
 }
+
 
 
 INTERPRETER_COMMAND = \
@@ -282,6 +319,9 @@ def test_native_compilers(option_config):
 def test_make(option_config, silent):
     return check_programs(option_config, "MAKE", MAKE_COMMAND,MAKE_COMMAND_EXPECTED, silent)
 
+def test_light_tools(option_config, silent=False):
+    return check_programs(option_config, "LIGHT_TOOLS", LIGHT_TOOL_COMMAND,TOOL_COMMAND_EXPECTED, silent)
+
 def test_tools(option_config, silent=False):
     return check_programs(option_config, "TOOLS", TOOL_COMMAND,TOOL_COMMAND_EXPECTED, silent)
 
@@ -427,7 +467,12 @@ def check_clean(option_config, target):
     return not(len(files)-1)
 
 def check_tools(option_config, target):
-    tools_result_map=test_tools(option_config, silent=True)
+    # tools_result_map=test_tools(option_config, silent=True)
+    if option_config.terminal_config.fast_test:
+        tools_result_map=test_light_tools(option_config, silent=True)
+    else:
+        tools_result_map=test_tools(option_config, silent=True)
+
     number_of_tools = len(tools_result_map.keys())
 
     built_tools = 0
@@ -571,12 +616,13 @@ def test_self(option_config, target = "stdio"):
     max_len = 0
     self_tests = STANDARD_SELF_TESTS 
     self_tests += MAKE_SELF_TESTS
+    self_tests += TOOLS_SELF_TESTS
+
     if option_config.terminal_config.interactive_test:
         self_tests += INTERACTIVE_TESTS
     if option_config.terminal_config.terminal_test:
         self_tests += TERMINAL_BUILD_TESTS
     if not option_config.terminal_config.fast_test:
-        self_tests += TOOLS_SELF_TESTS
         self_tests += COMPLEX_SELF_TESTS
         self_tests += PARALLEL_BUILD_TESTS
 
