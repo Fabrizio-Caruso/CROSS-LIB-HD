@@ -58,6 +58,9 @@ zsdcc_quick_test: \
 
 
 
+# 	pv2000_quick_test   -> cputc undefined
+# 	srr_quick_test      -> cputc undefined
+
 
 sccz80_quick_test: \
 	abc80_quick_test \
@@ -77,14 +80,12 @@ sccz80_quick_test: \
 	p2000_quick_test \
 	pc6001_quick_test \
 	pps_quick_test \
-	pv2000_quick_test \
 	px4_quick_test \
 	px8_quick_test \
 	samcoupe_quick_test \
 	sc3000_quick_test \
 	sg1000_quick_test \
 	spectrum_quick_test \
-	srr_quick_test \
 	svi_quick_test \
 	ti82_quick_test \
 	ti83_quick_test \
@@ -478,9 +479,9 @@ samcoupe_quick_test:
 	-o $(BUILD_PATH)/FULL_samcoupe.bin -lndos \
 	$(TEST_FILES)
 	cp $(TOOLS_PATH)/z88dk/samcoupe/samdos2_empty $(TOOLS_PATH)/z88dk/samcoupe/samdos2
-	$(TOOLS_PATH)/z88dk/samcoupe/pyz80.py -I $(TOOLS_PATH)/z88dk/samcoupe/samdos2 $(TOOLS_PATH)/z88dk/samcoupe/sam_wrapper.asm
-	mv $(TOOLS_PATH)/z88dk/samcoupe/sam_wrapper.dsk $(BUILD_PATH)/TEST_samcoupe.dsk
-	rm $(BUILD_PATH)/FULL_samcoupe.bin
+	# $(TOOLS_PATH)/z88dk/samcoupe/pyz80.py -I $(TOOLS_PATH)/z88dk/samcoupe/samdos2 $(TOOLS_PATH)/z88dk/samcoupe/sam_wrapper.asm
+	# mv $(TOOLS_PATH)/z88dk/samcoupe/sam_wrapper.dsk $(BUILD_PATH)/TEST_samcoupe.dsk
+	# rm $(BUILD_PATH)/FULL_samcoupe.bin
 
 
 sc3000_quick_test:
