@@ -650,7 +650,8 @@ TEST_FILES = {
     # "tms9900-gcc" : ["ti99"] # Variable number
     }
 
-Z88DK_ALT_EXPECTED_FILES = 36
+# TODO: This should not be hard-coded.
+Z88DK_ALT_EXPECTED_FILES = 37
 
 def targets_test(option_config, params):
 
