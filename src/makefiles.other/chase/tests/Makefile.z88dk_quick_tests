@@ -57,11 +57,6 @@ zsdcc_quick_test: \
 # 	cpc_quick_test (Unix)
 
 
-
-	# pv2000_quick_test   -> cputc undefined
-	# srr_quick_test      -> cputc undefined
-
-
 sccz80_quick_test: \
 	abc80_quick_test \
 	ace_quick_test \
@@ -87,6 +82,7 @@ sccz80_quick_test: \
 	sg1000_quick_test \
 	spectrum_quick_test \
 	pv2000_quick_test \
+	srr_quick_test \
 	svi_quick_test \
 	ti82_quick_test \
 	ti83_quick_test \
@@ -104,7 +100,7 @@ sccz80_quick_test: \
 
 z88dk_quick_test: \
 	sccz80_quick_test
-	
+
 
 ####################################################################################################################
 
@@ -182,9 +178,6 @@ cpc_quick_test: $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/cpc/cpc_cpcrslib_init_graphics.c \
 	$(TEST_FILES) $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
 	$(TOOLS_PATH)/z88dk/cpc/2cdt.exe -n -r cross_chase $(BUILD_PATH)/TEST_cpc.cpc  $(BUILD_PATH)/TEST_cpc.cdt
-	# $(TOOLS_PATH)/z88dk/cpc/cpcxfsw -nd TEST_cpc.dsk
-	# $(TOOLS_PATH)/z88dk/cpc/cpcxfsw TEST_cpc.dsk -p $(BUILD_PATH)/TEST_cpc.cpc xchase
-	# mv TEST_cpc.dsk $(BUILD_PATH)/
 	rm $(BUILD_PATH)/TEST_cpc.cpc 
 	rm $(BUILD_PATH)/TEST_cpc.prg	
 
@@ -438,23 +431,6 @@ pv2000_quick_test:
 	rm -rf $(BUILD_PATH)/TEST_pv2000_DATA.bin
 	rm -rf $(BUILD_PATH)/TEST_pv2000_BSS.bin
 
-# pv2000_quick_test:
-	# $(Z88DK_PATH)$(MYZ88DK) +pv2000 -pragma-redirect:fputc_cons=fputc_cons_generic \
-	# -D__SRR__ -vn \
-	# -D__CONIO_GRAPHICS \
-	# -D__NO_INIT_GRAPHICS \
-	# -D__NO_WAIT \
-	# -D__VT52 \
-	# -lndos \
-	# $(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
-	# -create-app -o pv2kt.bin \
-	# $(TEST_FILES)
-	# mv pv2kt.rom $(BUILD_PATH)/TEST_pv2000.rom
-	# rm pv2kt.bin
-	# rm pv2kt_BSS.bin
-	# rm pv2kt_DATA.bin
-
-
 px4_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +cpm -lpx4 \
 	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
@@ -494,9 +470,6 @@ samcoupe_quick_test:
 	-o $(BUILD_PATH)/FULL_samcoupe.bin -lndos \
 	$(TEST_FILES)
 	cp $(TOOLS_PATH)/z88dk/samcoupe/samdos2_empty $(TOOLS_PATH)/z88dk/samcoupe/samdos2
-	# $(TOOLS_PATH)/z88dk/samcoupe/pyz80.py -I $(TOOLS_PATH)/z88dk/samcoupe/samdos2 $(TOOLS_PATH)/z88dk/samcoupe/sam_wrapper.asm
-	# mv $(TOOLS_PATH)/z88dk/samcoupe/sam_wrapper.dsk $(BUILD_PATH)/TEST_samcoupe.dsk
-	# rm $(BUILD_PATH)/FULL_samcoupe.bin
 
 
 sc3000_quick_test:
@@ -541,22 +514,6 @@ spectrum_quick_test:
 	rm -rf $(BUILD_PATH)/TEST_spectrum_BANK_7.bin
 
 
-# srr_quick_test:
-	# $(Z88DK_PATH)$(MYZ88DK) +srr -pragma-redirect:fputc_cons=fputc_cons_generic \
-	# -D__SRR__ -vn \
-	# -D__CONIO_GRAPHICS \
-	# -D__NO_INIT_GRAPHICS \
-	 # \
-	# -D__NO_WAIT \
-	# -D__VT52 \
-	# $(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
-	# -lndos \
-	# -create-app -o srrt.bin \
-	# $(TEST_FILES)
-	# rm srrt.srr
-	# rm srrt.bin
-	# mv srrt.wav $(BUILD_PATH)/TEST_srr.wav
-
 srr_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +srr $(SCCZ80_OPTS) $(INCLUDE_OPTS) -pragma-redirect:fputc_cons=fputc_cons_generic \
 	-D__SRR__ -vn --generic-console \
@@ -564,28 +521,14 @@ srr_quick_test:
 	-D__CONIO_GRAPHICS -D__INCLUDE_CONIO_H \
 	-lndos -D_XL_NO_JOYSTICK \
 	-clib=default -pragma-redirect:fputc_cons=fputc_cons_generic \
-	-create-app -o srrt.bin \
+	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
 	-D__NO_INIT_GRAPHICS \
+	-create-app -o srr \
 	$(TEST_FILES)
-	rm srrt.srr
-	rm srrt.bin
-	mv srrt.wav $(BUILD_PATH)/TEST_srr.wav
+	rm -rf srr
+	rm -rf srr.wav
+	mv srr.srr $(BUILD_PATH)/X$(GAME_NAME)_srr.srr
 
-# pv2000_quick_test:
-	# $(Z88DK_PATH)$(MYZ88DK) +pv2000 $(SCCZ80_ROM_OPTS) \
-	# $(INCLUDE_OPTS) \
-	# -D__PV2000__ \
-	# $(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS)  \
-	# -D__NO_INIT_GRAPHICS \
-	# -D__VT52 -D_XL_NO_JOYSTICK \
-	# -D__CONIO_GRAPHICS \
-	# -lndos \
-	# -clib=default -pragma-redirect:fputc_cons=fputc_cons_generic \
-	# $(TEST_FILES) \
-	# -create-app -o$(BUILD_PATH)/TEST_pv2000.bin
-	# rm -rf $(BUILD_PATH)/TEST_pv2000.bin
-	# rm -rf $(BUILD_PATH)/TEST_pv2000_DATA.bin
-	# rm -rf $(BUILD_PATH)/TEST_pv2000_BSS.bin
 
 svi_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +svi \
