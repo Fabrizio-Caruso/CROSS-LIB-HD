@@ -467,7 +467,7 @@ samcoupe_quick_test:
 	-D__NO_INIT_GRAPHICS \
 	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
 	-clib=ansi -pragma-define:ansicolumns=32 -vn \
-	-o $(BUILD_PATH)/FULL_samcoupe.bin -lndos \
+	-o $(BUILD_PATH)/TEST_samcoupe.bin -lndos \
 	$(TEST_FILES)
 	cp $(TOOLS_PATH)/z88dk/samcoupe/samdos2_empty $(TOOLS_PATH)/z88dk/samcoupe/samdos2
 
@@ -527,7 +527,7 @@ srr_quick_test:
 	$(TEST_FILES)
 	rm -rf srr
 	rm -rf srr.wav
-	mv srr.srr $(BUILD_PATH)/X$(GAME_NAME)_srr.srr
+	mv srr.srr $(BUILD_PATH)/TEST_srr.srr
 
 
 svi_quick_test:
