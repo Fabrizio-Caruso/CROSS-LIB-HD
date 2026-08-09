@@ -50,8 +50,6 @@ zsdcc_quick_test: \
 
 # TODO: Fix
 # 	c128_z80_quick_test 
-#	msx_quick_test 
-#   	nc100_quick_test 
 # 	cpm_quick_test 
 # 	x1_quick_test 
 # 	cpc_quick_test (Unix)
@@ -61,7 +59,8 @@ sccz80_quick_test: \
 	abc80_quick_test \
 	ace_quick_test \
 	aquarius_quick_test \
- 	eg2k_quick_test \
+	c128_z80_quick_test \
+	eg2k_quick_test \
 	einstein_quick_test \
 	gal_quick_test \
 	kc_quick_test \
@@ -69,8 +68,10 @@ sccz80_quick_test: \
 	m5_quick_test \
 	mc1000_quick_test \
 	microbee_quick_test \
+	msx_quick_test \
 	mtx_quick_test \
 	mz_quick_test \
+	nc100_quick_test \
 	nascom_quick_test \
 	p2000_quick_test \
 	pc6001_quick_test \
@@ -148,23 +149,17 @@ aquarius_quick_test:
 	mv _TEST_aquarius.caq $(BUILD_PATH)	
 
 
-c128_z80_quick_test:	
+c128_z80_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +c128 \
 	-lndos -subtype=disk \
 	-D__C128_Z80__ -DXSize=40 \
 	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
-	-D__INCLUDE_CONIO_H \
 	-D__CONIO_GRAPHICS \
 	-D__NO_INIT_GRAPHICS \
 	$(TEST_FILES) \
-	-create-app -o c128t.bin
-	$(TOOLS_PATH)/generic/c1541 -format "crosschase,0" d64 TEST_c128_z80.d64
-	$(TOOLS_PATH)/generic/c1541 -attach TEST_c128_z80.d64 -write c128t.ldr
-	$(TOOLS_PATH)/generic/c1541 -attach TEST_c128_z80.d64 -write c128t
-	mv TEST_c128_z80.d64 $(BUILD_PATH)/
-	rm C128T.LDR
-	rm C128T
-	rm c128t.bin
+	-create-app -o $(BUILD_PATH)/c128t.bin
+	rm -rf $(BUILD_PATH)/c128t
+	rm -rf $(BUILD_PATH)/c128t.ldr
 
 
 cpc_quick_test: $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
@@ -177,9 +172,9 @@ cpc_quick_test: $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
 	$(CROSS_LIB_PATH)/sound/z88dk/psg/ay-3-8910_psg_sounds.c \
 	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/cpc/cpc_cpcrslib_init_graphics.c \
 	$(TEST_FILES) $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
-	$(TOOLS_PATH)/z88dk/cpc/2cdt.exe -n -r cross_chase $(BUILD_PATH)/TEST_cpc.cpc  $(BUILD_PATH)/TEST_cpc.cdt
+	# $(TOOLS_PATH)/z88dk/cpc/2cdt.exe -n -r cross_chase $(BUILD_PATH)/TEST_cpc.cpc  $(BUILD_PATH)/TEST_cpc.cdt
 	rm $(BUILD_PATH)/TEST_cpc.cpc 
-	rm $(BUILD_PATH)/TEST_cpc.prg	
+	# rm $(BUILD_PATH)/TEST_cpc.prg	
 
 
 cpm_quick_test:
@@ -312,13 +307,12 @@ msx_quick_test: $(ASSETS_PATH)/8x8_chars.h
 	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
 	-D__MEMORY_MAPPED_GRAPHICS -D__INCLUDE_CONIO_H \
 	-DUSE_MSX_BIOS \
-	 \
 	-vn \
 	-lndos \
 	-DZ88DK_JOYSTICK \
 	-create-app -o $(BUILD_PATH)/TEST_msx.prg \
 	$(CROSS_LIB_PATH)/sound/z88dk/psg/ay-3-8910_psg_sounds.c \
-	$(CROSS_LIB_PATH)/display/init_graphics/z88dk/msx/msx_redefined_chars_init_graphics.c \
+	-D__NO_INIT_GRAPHICS \
 	$(TEST_FILES)
 	rm $(BUILD_PATH)/TEST_msx.prg 	
 
@@ -362,16 +356,30 @@ nascom_quick_test:
 	rm $(BUILD_PATH)/TEST_nascom.prg
 
 
+# px4_quick_test:
+	# $(Z88DK_PATH)$(MYZ88DK) +cpm -lpx4 \
+	# $(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
+	# -D__PX4__ \
+	# -subtype=px4 -Cz--32k \
+	# -create-app \
+	# -vn -lndos -o px4.bin \
+	# -D__ALT_PRINT \
+	# -D__Z88DK_SPRITES_GRAPHICS -D__NO_INIT_GRAPHICS \
+	# $(CROSS_LIB_PATH)/display/alt_print/memory_mapped_alt_print.c \
+	# $(TEST_FILES)
+	# rm px4.bin
+	# mv PX4.ROM $(BUILD_PATH)/TEST_px4.ROM
+
 nc100_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +nc -lgfxnc100 \
 	-D__NO_INIT_GRAPHICS \
 	-D__NC100__ \
 	-D__NO_PRINT  \
 	-D__Z88DK_SPRITES_GRAPHICS \
-	-DLESS_TEXT \
 	-D_XL_NO_SLEEP \
 	-D__NO_WAIT \
-	 \
+	-D__ALT_PRINT \
+	-vn -lndos \
 	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
 	-create-app -o$(BUILD_PATH)/TEST_nc100.bin \
 	$(TEST_FILES)
