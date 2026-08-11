@@ -646,7 +646,9 @@ TEST_FILES = {
     "lcc1802"     : ["comx", "tmc600"],
     "ack"         : ["msdos", "pc86"],
     "cc6303"      : ["mc10"],
-    "vbcc"        : ["bbc", "bbcmaster"],
+    # "vbcc"        : ["bbc", "bbcmaster"], # Not enough memory for XL HD
+    "vbcc"        : ["bbcmaster"],
+
     # "tms9900-gcc" : ["ti99"] # Variable number
     }
 
