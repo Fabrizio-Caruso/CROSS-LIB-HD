@@ -734,6 +734,17 @@ def test(option_config, params):
             test_self(option_config)
         else:
             test_self(option_config, params[2])
+    elif params[1]=="everything":
+        test_emulators(option_config)
+        test_cross_compilers(option_config)
+        test_native_compilers(option_config)
+        test_roms(option_config)
+        test_make(option_config, silent=False)
+        
+        for target in ["native", "cc65", "z88dk", "z88dk_alt", "cmoc", "lcc1802", "ack", "cc6303", "vbcc"]:
+            targets_test(option_config, ["", target])
+        
+        test_self(option_config)
     elif params[1]=="compilers":
         test_compilers(option_config)
     elif params[1]=="tools":
