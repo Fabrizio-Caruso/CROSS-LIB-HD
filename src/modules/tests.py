@@ -651,7 +651,7 @@ TEST_FILES = {
     }
 
 # TODO: This should not be hard-coded.
-Z88DK_ALT_EXPECTED_FILES = 41
+Z88DK_ALT_EXPECTED_FILES = 44
 
 def targets_test(option_config, params):
 

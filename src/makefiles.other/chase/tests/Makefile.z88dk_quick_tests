@@ -49,10 +49,7 @@ zsdcc_quick_test: \
 	zx81_zsdcc_quick_test 
 
 # TODO: Fix
-# 	c128_z80_quick_test 
-# 	cpm_quick_test 
-# 	x1_quick_test 
-# 	cpc_quick_test (Unix)
+# 	cpc_quick_test (Unix) -> depends on assets
 
 
 sccz80_quick_test: \
@@ -60,6 +57,8 @@ sccz80_quick_test: \
 	ace_quick_test \
 	aquarius_quick_test \
 	c128_z80_quick_test \
+	cpc_quick_test \
+	cpm_quick_test \
 	eg2k_quick_test \
 	einstein_quick_test \
 	gal_quick_test \
@@ -91,6 +90,7 @@ sccz80_quick_test: \
 	trs80_quick_test \
 	vg5k_quick_test \
 	vz200_quick_test \
+	x1_quick_test \
 	z1013_quick_test \
 	z9001_quick_test \
 	zx80_quick_test \
@@ -100,7 +100,7 @@ sccz80_quick_test: \
 # 	zsdcc_quick_test	
 
 z88dk_quick_test: \
-	sccz80_quick_test
+	sccz80_quick_test \
 
 
 ####################################################################################################################
@@ -157,9 +157,9 @@ c128_z80_quick_test:
 	-D__CONIO_GRAPHICS \
 	-D__NO_INIT_GRAPHICS \
 	$(TEST_FILES) \
-	-create-app -o $(BUILD_PATH)/c128t.bin
-	rm -rf $(BUILD_PATH)/c128t
-	rm -rf $(BUILD_PATH)/c128t.ldr
+	-create-app -o $(BUILD_PATH)/TEST_c128.bin
+	rm -rf $(BUILD_PATH)/TEST_c128
+	rm -rf $(BUILD_PATH)/TEST_c128.ldr
 
 
 cpc_quick_test: $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
