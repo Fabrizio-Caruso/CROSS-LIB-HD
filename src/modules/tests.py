@@ -628,6 +628,11 @@ def test_self(option_config, target = "stdio"):
     return total_success
 
 
+# These tests include:
+# - Some dependencies (compilers, tools, libraries, interpreters)
+# - Unit-tests for Python script 
+# - Tests on C output for the stdio target
+# - Pything script tests of the XL script commands 
 def test_all(option_config, params):
 
     test_compilers(option_config)
@@ -635,7 +640,28 @@ def test_all(option_config, params):
     test_libraries(option_config)
     test_interpreters(option_config)
     _unit_tests(option_config)
+    test_output(option_config)
     return test_self(option_config, params)
+
+
+def test_compilation(option_config):
+    for target in ["native", "cc65", "z88dk", "z88dk_alt", "cmoc", "lcc1802", "ack", "cc6303", "vbcc"]:
+        targets_test(option_config, ["", target])
+
+
+# These tests include
+# - Some more dependencies (emulators, cross-compilers, native compilers, roms, make)
+# - Tests in "test_all"
+# - Compilation tests for most compilers
+def test_everything(option_config):
+    test_emulators(option_config)
+    test_cross_compilers(option_config)
+    test_native_compilers(option_config)
+    test_roms(option_config)
+    test_make(option_config, silent=False)
+    
+    test_all(option_config, "stdio")
+    test_compilation(option_config)
 
 
 TEST_FILES = {
@@ -648,7 +674,7 @@ TEST_FILES = {
     "cc6303"      : ["mc10"],
     # "vbcc"        : ["bbc", "bbcmaster"], # Not enough memory for XL HD
     "vbcc"        : ["bbcmaster"],
-
+    "gcc4ti"      : ["ti99"],
     # "tms9900-gcc" : ["ti99"] # Variable number
     }
 
@@ -676,6 +702,7 @@ def targets_test(option_config, params):
     if params[1] in TEST_FILES.keys():
         devkit_test_files = TEST_FILES[params[1]]
         print("Testing: " + str(devkit_test_files)[1:][:-1])
+        print("Targets: " + str(devkit_test_files))
         
         expected_files = 0
         for test_file in devkit_test_files:
@@ -713,7 +740,7 @@ def targets_test(option_config, params):
     if params[1] in TEST_FILES.keys() or params[1] in ("z88dk_alt"):
         printc(option_config, bcolors.OKCYAN, "Built files: " + str(built_files)+"\n")
         printc(option_config, bcolors.OKBLUE, "Expected files: " + str(expected_files)+"\n")
-        if built_files != expected_files:
+        if params[1] != "gcc4ti" and built_files != expected_files:
             printc(option_config, bcolors.FAIL, "binaries KO\n")
             success=0
 
@@ -722,6 +749,47 @@ def targets_test(option_config, params):
 
     return success
 
+
+EXPECTED_OUTPUT = \
+{
+    "clear":      ['\n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n'],
+    "hello":      ['\n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '           HELLO WORLD          \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n'],
+    "target":     ['\n', 'TARGET INFORMATION              \n', '                                \n', 'XSIZE 32  YSIZE 24              \n', '                                \n', 'TILES 91  8X8                   \n', '                                \n', 'GRAPHICS      ON                \n', '                                \n', 'COLOR         OFF               \n', '                                \n', 'TEXT COLOR    OFF               \n', '                                \n', 'JOYSTICK      OFF               \n', '                                \n', 'SOUND         OFF               \n', '                                \n', 'SMALL CHARS   ON                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n'],
+    "display":    ['\n', '                                \n', '                                \n', '  0 1 2 3 4 5 6 7               \n', '  8 9 0 1 2 3 4 5               \n', '  6 7 8 9 0 1 2 3               \n', '  4 5 6 7 8 9 0 1               \n', '  2 3 4 5 6 7 8 9               \n', '  0 1 2 3 4 5 6 7               \n', '  8 9 0 1 2 3 4 5               \n', '  6 7 8 9 0 1 2 3               \n', '  4 5 6 7 8 9 0 1               \n', '  2 3 4 5 6 7 8 9               \n', '  0 1 2 3 4 5 6 7               \n', '  8 9 0                         \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '  END OF DEMO                   \n', '                                \n', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ      \n', '0123456789                      \n', '                                \n'],
+    "boundary":   ['\n', '00000000000000000000000000HI1234\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0                              0\n', '0         HELLO WORLD          0\n', '00000000000000000000000000000000\n'],
+    "numbers":    ['\n', '                                \n', '                                \n', '             9                  \n', '                                \n', '             99                 \n', '                                \n', '             999                \n', '                                \n', '             5000               \n', '                                \n', '             20000              \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n'],
+    "characters": ['\n', '                    01234567890 \n', '       PRINTD                   \n', '       0123456789               \n', '                                \n', '       BLUE                     \n', '                                \n', '                                \n', '        ABCDEFG HIJKLM          \n', '                                \n', '        NOPQRST UVWXYZ          \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', '                                \n', 'A B C D E F G H I J K L M N O P \n', '                                \n', 'Q R S T U V W X Y Z             \n', '                                \n', '                                \n', '                                \n', '       END OF DEMO              \n'],
+}
+
+
+def test_project_output(option_config, project_name, expected_output):
+    clean(option_config, [])
+    build(option_config, ["", project_name])
+    run(option_config,["",project_name, "stdio"])
+    with open("../logs/output.txt","r") as output_file:
+        text_content = output_file.readlines()
+    if text_content==expected_output:
+        print("OUTPUT OK for " + project_name)
+        return True
+    else:
+        print("OUTPUT KO for " + project_name)
+        print(str(text_content))
+        return False
+
+OUTPUT_TEST_PROJECTS = ["clear", "hello", "target", "display", "boundary", "numbers", "characters"]
+# OUTPUT_TEST_PROJECTS = ["text"]
+
+def test_output(option_config):
+    result = {}
+    option_config.terminal_config.test = 1
+    for project_name in OUTPUT_TEST_PROJECTS:
+        result[project_name] = test_project_output(option_config, project_name, EXPECTED_OUTPUT[project_name])
+    option_config.terminal_config.test = 0
+
+
+    for project_name in OUTPUT_TEST_PROJECTS:
+        print(project_name + " -> " + ("OK" if result[project_name] else "KO"))
+    
 
 # Self-test xl and native build
 def test(option_config, params):
@@ -736,17 +804,10 @@ def test(option_config, params):
             test_self(option_config)
         else:
             test_self(option_config, params[2])
-    elif params[1]=="everything":
-        test_emulators(option_config)
-        test_cross_compilers(option_config)
-        test_native_compilers(option_config)
-        test_roms(option_config)
-        test_make(option_config, silent=False)
-        
-        for target in ["native", "cc65", "z88dk", "z88dk_alt", "cmoc", "lcc1802", "ack", "cc6303", "vbcc"]:
-            targets_test(option_config, ["", target])
-        
-        test_self(option_config)
+    elif params[1]=="output":
+        test_output(option_config)
+    elif params[1] in ["everything", "every", "complete", "e"]:
+        test_everything(option_config)
     elif params[1]=="compilers":
         test_compilers(option_config)
     elif params[1]=="tools":

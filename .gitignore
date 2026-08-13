@@ -201,6 +201,7 @@ tools/ti99/elf2ea5.out
 tools/ti99/ea5split.exe
 tools/ti99/ea5split.out
 logs/*.log
+logs/output.txt
 tools/z88dk/abc80/abcdisk-2.7/conftest.c
 tools/z88dk/abc80/abcdisk-2.7/abcwrite
 tools/z88dk/abc80/abcdisk-2.7/bin2abc
