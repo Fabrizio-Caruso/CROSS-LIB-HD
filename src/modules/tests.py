@@ -610,7 +610,7 @@ def test_self(option_config, target = "stdio"):
     
     print("")
     print("-------------------------------")
-    printc(option_config, bcolors.OKBLUE, "SUMMARY TEST RESULTS\n")
+    printc(option_config, bcolors.OKBLUE, "SUMMARY SELF TEST RESULTS\n")
     print("-------------------------------")
 
     for test in self_tests:
@@ -786,10 +786,25 @@ def test_output(option_config):
         result[project_name] = test_project_output(option_config, project_name, EXPECTED_OUTPUT[project_name])
     option_config.terminal_config.test = 0
 
-
-    for project_name in OUTPUT_TEST_PROJECTS:
-        print(project_name + " -> " + ("OK" if result[project_name] else "KO"))
+    print("")
     
+    print("-------------------------------")
+    printc(option_config, bcolors.OKBLUE, "SUMMARY OUTPUT TEST RESULTS\n")
+    print("-------------------------------")
+    max_len = 0
+    for project_name in OUTPUT_TEST_PROJECTS:
+        if len(project_name)>max_len:
+            max_len = len(project_name)
+    for project_name in OUTPUT_TEST_PROJECTS:
+        success = result[project_name]
+        (success_color, success_string) = (bcolors.OKGREEN, "OK") if success else  (bcolors.FAIL, "KO")
+        
+        
+        spaces = " " * (max_len+5-len(project_name)) 
+        printc(option_config, bcolors.OKCYAN,f"{project_name} " + spaces)
+        
+        printc(option_config, success_color, success_string + "\n")
+        print("-------------------------------")
 
 # Self-test xl and native build
 def test(option_config, params):
@@ -799,7 +814,7 @@ def test(option_config, params):
         else:
             printc(option_config, bcolors.FAIL, "\nTEST KO\n")
         return
-    if params[1]=="self":
+    if params[1] in ["self", "xl", "script", "scripts"]:
         if len(params)<3:
             test_self(option_config)
         else:
