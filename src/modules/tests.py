@@ -571,7 +571,7 @@ TERMINAL_BUILD_TESTS =  \
 
 INTERACTIVE_TESTS = \
     [ \
-        ("xl run",              RUN_TEST,       no_check,      CLEANUP_RUN_TEST), \
+        ("xl run",              RUN_TEST,       no_check), \
     ]
     
 
