@@ -631,8 +631,8 @@ def test_self(option_config, target = "stdio"):
 # These tests include:
 # - Some dependencies (compilers, tools, libraries, interpreters)
 # - Unit-tests for Python script 
-# - Tests on C output for the stdio target
-# - Pything script tests of the XL script commands 
+# - Tests the output for the stdio target
+# - Tests of the `xl` script commands 
 def test_standard_cases(option_config, params):
 
     test_compilers(option_config)
