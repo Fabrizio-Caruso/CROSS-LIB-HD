@@ -340,7 +340,7 @@ def test_roms(option_config):
 
 def test_compilers(option_config):
     test_native_compilers(option_config)
-    test_cross_compilers(option_config)
+    return test_cross_compilers(option_config)
 
 
 def run_single_unit_test(option_config, test_file_name, path="unit_tests"):
@@ -633,7 +633,7 @@ def test_self(option_config, target = "stdio"):
 # - Unit-tests for Python script 
 # - Tests on C output for the stdio target
 # - Pything script tests of the XL script commands 
-def test_all(option_config, params):
+def test_standard_cases(option_config, params):
 
     test_compilers(option_config)
     test_tools(option_config)
@@ -644,15 +644,20 @@ def test_all(option_config, params):
     return test_self(option_config, params)
 
 
+# ["native", "cc65", "z88dk", "z88dk_alt", "cmoc", "lcc1802", "ack", "cc6303", "vbcc"]:\
 def test_compilation(option_config):
-    for target in ["native", "cc65", "z88dk", "z88dk_alt", "cmoc", "lcc1802", "ack", "cc6303", "vbcc"]:
-        targets_test(option_config, ["", target])
-
+    compilers_check = test_compilers(option_config)
+    test_targets(option_config,["", "native"])
+    for compiler in compilers_check.keys():
+        if compilers_check[compiler]:
+            print(compiler)
+            test_targets(option_config, ["", compiler])
+    test_targets(option_config,["", "z88dk_alt"])
 
 # These tests include
 # - Some more dependencies (emulators, cross-compilers, native compilers, roms, make)
-# - Tests in "test_all"
-# - Compilation tests for most compilers
+# - Tests in "test_standard_cases" including terminal target
+# - Compilation tests for most installed compilers
 def test_everything(option_config):
     test_emulators(option_config)
     test_cross_compilers(option_config)
@@ -660,7 +665,9 @@ def test_everything(option_config):
     test_roms(option_config)
     test_make(option_config, silent=False)
     
-    test_all(option_config, "stdio")
+    # Also check terminal target
+    option_config.terminal_config.terminal_test = 1
+    test_standard_cases(option_config, "stdio")
     test_compilation(option_config)
 
 
@@ -674,14 +681,14 @@ TEST_FILES = {
     "cc6303"      : ["mc10"],
     # "vbcc"        : ["bbc", "bbcmaster"], # Not enough memory for XL HD
     "vbcc"        : ["bbcmaster"],
-    "gcc4ti"      : ["ti99"],
+    "tms9900-gcc"      : ["ti99"],
     # "tms9900-gcc" : ["ti99"] # Variable number
     }
 
 # TODO: This should not be hard-coded.
 Z88DK_ALT_EXPECTED_FILES = 45
 
-def targets_test(option_config, params):
+def test_targets(option_config, params):
 
     verbose = option_config.terminal_config.verbose
     success = clean_test(option_config)
@@ -740,12 +747,15 @@ def targets_test(option_config, params):
     if params[1] in TEST_FILES.keys() or params[1] in ("z88dk_alt"):
         printc(option_config, bcolors.OKCYAN, "Built files: " + str(built_files)+"\n")
         printc(option_config, bcolors.OKBLUE, "Expected files: " + str(expected_files)+"\n")
-        if params[1] != "gcc4ti" and built_files != expected_files:
-            printc(option_config, bcolors.FAIL, "binaries KO\n")
+        if params[1] != "tms9900-gcc" and built_files != expected_files:
+            printc(option_config, bcolors.FAIL, "Number of binaries KO\n")
             success=0
-
         else:
-            printc(option_config, bcolors.OKGREEN, "binaries OK\n")
+            if params[1] == "tms9900-gcc":
+                printc(option_config, bcolors.OKGREEN, "Variable number of binaries OK\n")
+
+            else:
+                printc(option_config, bcolors.OKGREEN, "Number of binaries OK\n")
 
     return success
 
@@ -780,6 +790,8 @@ OUTPUT_TEST_PROJECTS = ["clear", "hello", "target", "display", "boundary", "numb
 # OUTPUT_TEST_PROJECTS = ["text"]
 
 def test_output(option_config):
+    prev_interactive_config = option_config.terminal_config.interactive_test
+    option_config.terminal_config.interactive_test = 0
     result = {}
     option_config.terminal_config.test = 1
     for project_name in OUTPUT_TEST_PROJECTS:
@@ -805,11 +817,12 @@ def test_output(option_config):
         
         printc(option_config, success_color, success_string + "\n")
         print("-------------------------------")
+    option_config.terminal_config.interactive_test = prev_interactive_config
 
 # Self-test xl and native build
 def test(option_config, params):
     if (len(params)<=1) or ((len(params)==2) and (params[1]=="check")):
-        if test_all(option_config, "stdio"):
+        if test_standard_cases(option_config, "stdio"):
             printc(option_config, bcolors.OKGREEN, "\nTEST OK\n")
         else:
             printc(option_config, bcolors.FAIL, "\nTEST KO\n")
@@ -821,7 +834,9 @@ def test(option_config, params):
             test_self(option_config, params[2])
     elif params[1]=="output":
         test_output(option_config)
-    elif params[1] in ["everything", "every", "complete", "e"]:
+    elif params[1] in ["targets", "compilation"]:
+        test_compilation(option_config)
+    elif params[1] in ["everything", "every", "complete", "e", "all", "a"]:
         test_everything(option_config)
     elif params[1]=="compilers":
         test_compilers(option_config)
@@ -844,7 +859,7 @@ def test(option_config, params):
     elif params[1] in ("unit-tests", "unit_tests", "unit-test", "unit_test", "u"):
         _unit_tests(option_config)
     elif params[1] in TEST_FILES.keys() or params[1].endswith('_alt'):
-        if targets_test(option_config, params):
+        if test_targets(option_config, params):
             printc(option_config, bcolors.OKGREEN, "TEST OK\n")
         else:
             printc(option_config, bcolors.FAIL, "TEST KO\n")
@@ -878,7 +893,7 @@ def test(option_config, params):
             else:
                 printc(option_config, bcolors.FAIL, "TEST KO\n")
         else:
-            test_all(option_config, params[1])
+            test_standard_cases(option_config, params[1])
         return
 
 
