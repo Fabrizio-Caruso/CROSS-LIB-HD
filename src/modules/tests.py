@@ -654,9 +654,10 @@ def test_compilation(option_config):
             test_targets(option_config, ["", compiler])
     test_targets(option_config,["", "z88dk_alt"])
 
+
 # These tests include
 # - Some more dependencies (emulators, cross-compilers, native compilers, roms, make)
-# - Tests in "test_standard_cases" including terminal target
+# - Tests in "test_standard_cases" with forced terminal target
 # - Compilation tests for most installed compilers
 def test_everything(option_config):
     test_emulators(option_config)
@@ -667,8 +668,10 @@ def test_everything(option_config):
     
     # Also check terminal target
     option_config.terminal_config.terminal_test = 1
+    print("-------------------------------------------------")
     test_standard_cases(option_config, "stdio")
     test_compilation(option_config)
+    clean(option_config, [])
 
 
 TEST_FILES = {
@@ -682,7 +685,6 @@ TEST_FILES = {
     # "vbcc"        : ["bbc", "bbcmaster"], # Not enough memory for XL HD
     "vbcc"        : ["bbcmaster"],
     "tms9900-gcc"      : ["ti99"],
-    # "tms9900-gcc" : ["ti99"] # Variable number
     }
 
 # TODO: This should not be hard-coded.
