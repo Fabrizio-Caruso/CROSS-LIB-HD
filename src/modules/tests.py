@@ -777,7 +777,8 @@ def _test_compilation(option_config):
             success, built_binaries, expected_binaries = test_targets(option_config, ["", compiler])
             result_map[compiler] = success, built_binaries, expected_binaries
     success, built_binaries, expected_binaries = test_targets(option_config,["", "z88dk_alt"])
-    result_map["z88dk_alt"] = success, built_binaries, expected_binaries
+    if "z88dk" in compilers_check.keys():
+        result_map["z88dk_alt"] = success, built_binaries, expected_binaries
     clean(option_config, [])
     return result_map
 
