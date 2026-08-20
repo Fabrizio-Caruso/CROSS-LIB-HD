@@ -980,7 +980,7 @@ def test_project_output(option_config, project_name):
     else:
         expected_output = EXPECTED_KD_OUTPUT[project_name]
     
-    with open("../logs/output.txt","r") as output_file:
+    with open("../logs/output_" + project_name + ".log","r") as output_file:
         text_content = output_file.readlines()
     if text_content==expected_output:
         print("OUTPUT OK for " + project_name)
