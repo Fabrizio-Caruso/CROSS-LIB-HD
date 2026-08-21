@@ -981,7 +981,7 @@ def test_project_output(option_config, project_name):
     if option_config.build_config.hd:
         expected_output = EXPECTED_HD_OUTPUT[project_name]
     else:
-        expected_output = EXPECTED_KD_OUTPUT[project_name]
+        expected_output = EXPECTED_LD_OUTPUT[project_name]
     
     with open("../logs/output_" + project_name + ".log","r") as output_file:
         text_content = output_file.readlines()
