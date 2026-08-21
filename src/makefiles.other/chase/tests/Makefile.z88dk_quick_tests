@@ -164,18 +164,6 @@ c128_z80_quick_test:
 	rm -rf $(BUILD_PATH)/test_c128
 	rm -rf $(BUILD_PATH)/test_c128.ldr
 
-# cpc_quick_test: $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
-	# $(Z88DK_PATH)$(MYZ88DK) +cpc  -vn  -clib=ansi \
-	# -D__CPC__  \
-	# $(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
-	# -D__CPCRSLIB_GRAPHICS \
-	# -pragma-define:REGISTER_SP=-1 \
-	# -lndos -create-app -o 	$(BUILD_PATH)/TEST_cpc.prg \
-	# $(CROSS_LIB_PATH)/sound/z88dk/psg/ay-3-8910_psg_sounds.c \
-	# $(CROSS_LIB_PATH)/display/init_graphics/z88dk/cpc/cpc_cpcrslib_init_graphics.c \
-	# $(TEST_FILES) $(ASSETS_PATH)/z88dk_cpc_Chars8.asm
-	# rm $(BUILD_PATH)/TEST_cpc.cpc 
-
 
 cpc_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +cpc \
@@ -799,7 +787,6 @@ spectrum_zsdcc_quick_test: $(ASSETS_PATH)/z88dk_xchase.asm
 	-D__CONIO_GRAPHICS \
 	$(TEST_FILES)
 	rm $(BUILD_PATH)/TEST_ZSDCC_spectrum.prg 
-	# rm $(BUILD_PATH)/TEST_ZSDCC_spectrum_BANK_7.bin
 
 
 svi_zsdcc_quick_test:
@@ -814,7 +801,6 @@ svi_zsdcc_quick_test:
 	-pragma-include:$(CFG_PATH)/z88dk/zpragma_clib.inc \
 	-vn -lndos -o svizt.bin \
 	-D__SVI__ \
-	 \
 	-D__BIT_BANG_SOUND \
 	-D__CONIO_GRAPHICS -D__NO_INIT_GRAPHICS \
 	-create-app \
@@ -829,10 +815,8 @@ vg5k_zsdcc_quick_test:
 	-compiler=sdcc \
 	--reserve-regs-iy \
 	-pragma-include:$(CFG_PATH)/z88dk/zpragma_clib.inc \
-	 \
 	-vn -D__VG5K__ \
 	-DLESS_TEXT \
-	 \
 	-D__CONIO_GRAPHICS \
 	-D__NO_INIT_GRAPHICS \
 	$(FAST_ZSDCC_TEST_OPTS) $(INCLUDE_OPTS) \
