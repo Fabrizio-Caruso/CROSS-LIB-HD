@@ -49,7 +49,8 @@ zsdcc_quick_test: \
 	zx81_zsdcc_quick_test 
 
 # TODO: Fix
-# 	cpc_quick_test (Unix) -> depends on assets
+# cpm_quick_test
+# msx_quick_test
 
 
 sccz80_quick_test: \
@@ -180,7 +181,6 @@ cpc_quick_test:
 
 cpm_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +cpm \
-	-D__ADM3A \
 	-D__CONIO_GRAPHICS \
 	-D__NO_INIT_GRAPHICS \
 	-D__CPM_80X24__ \
@@ -301,21 +301,18 @@ microbee_quick_test:
 	$(TEST_FILES)
 	rm $(BUILD_PATH)/TEST_microbee.prg
 
-
-msx_quick_test: $(ASSETS_PATH)/8x8_chars.h
+msx_quick_test:
 	$(Z88DK_PATH)$(MYZ88DK) +msx -zorg=49200 \
-	  -create-app -vn -DMSX_VPOKE -D__MSX__ -lndos \
-	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
-	-D__MEMORY_MAPPED_GRAPHICS -D__INCLUDE_CONIO_H \
-	-DUSE_MSX_BIOS \
-	-vn \
-	-lndos \
-	-DZ88DK_JOYSTICK \
-	-create-app -o $(BUILD_PATH)/TEST_msx.prg \
+	-D__MSX__ -create-app -o $(BUILD_PATH)/TEST_msx.cas -vn \
 	$(CROSS_LIB_PATH)/sound/z88dk/psg/ay-3-8910_psg_sounds.c \
+	-D__CONIO_GRAPHICS \
 	-D__NO_INIT_GRAPHICS \
+	$(FAST_SCCZ80_TEST_OPTS) $(INCLUDE_OPTS) \
+	-lndos \
 	$(TEST_FILES)
-	rm $(BUILD_PATH)/TEST_msx.prg 	
+	# rm $(BUILD_PATH)/TEST_msx.bin
+	# mv TEST_msx.wav $(BUILD_PATH)/TEST_msx.wav
+	# mv .mtx $(BUILD_PATH)/TEST_msx.mtx
 
 
 mtx_quick_test:
