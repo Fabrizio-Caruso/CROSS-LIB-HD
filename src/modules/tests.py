@@ -345,7 +345,7 @@ def test_compilers(option_config):
 
 def run_single_unit_test(option_config, test_file_name, path="unit_tests"):
     log_file_path  = "../logs/" + test_file_name + "_unit_test.log"
-    command_string = "python -t " + path + "/" + test_file_name + " &> " + log_file_path
+    command_string = "python -t " + path + "/" + test_file_name + " > " + log_file_path + " 2>&1"
     printc(option_config, bcolors.OKBLUE,"----------------------------------------\n")
     printc(option_config, bcolors.OKCYAN,test_file_name + "\n")
     printc(option_config, bcolors.OKBLUE,"--------------------------------\n")
@@ -355,7 +355,10 @@ def run_single_unit_test(option_config, test_file_name, path="unit_tests"):
     option_config.terminal_config.verbose = verbosity
     with open(log_file_path) as log_file:
         log_content = log_file.read()
-        print(log_content)
+        print("--start of log content--", flush=True)
+        print(log_content, flush=True)
+        print("--end of log content--", flush=True)
+        
     return log_content
 
 
@@ -776,7 +779,7 @@ def _test_compilation(option_config):
         if compilers_check[compiler]:
             success, built_binaries, expected_binaries = test_targets(option_config, ["", compiler])
             result_map[compiler] = success, built_binaries, expected_binaries
-    if compilers_check["z88dk"] in compilers_check.keys():
+    if compilers_check["z88dk"]:
         success, built_binaries, expected_binaries = test_targets(option_config,["", "z88dk_alt"])
         result_map["z88dk_alt"] = success, built_binaries, expected_binaries
     clean(option_config, [])
