@@ -208,3 +208,6 @@ clean_tools:
     
 clean_logs:
 	rm -rf ../logs/*.log
+    
+clean_output:
+	rm -rf ../logs/output*.log
