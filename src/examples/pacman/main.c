@@ -2,7 +2,7 @@
 
 /* ============================================================
    PAC-MAN CLONE — Cross-Lib API only, no heap, uint8_t/uint16_t
-   Open maze with minimal wall structure
+   Ghosts do NOT delete dots when they move over them.
    ============================================================ */
 
 #define MW 20
@@ -27,26 +27,7 @@
 #define PELLET_TILE _TILE_3
 #define WALL_TILE   _TILE_4
 
-
-/* ---- open maze: only short pillars, wide corridors ---- */
-
-// static uint8_t maze_layout[MH][MW] = {
-// { T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL}, /* 0  border */
-// { T_WALL,T_EMPTY,T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_EMPTY,T_WALL}, /* 1 */
-// { T_WALL,T_DOT,   T_DOT,   T_WALL,T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_WALL,T_DOT,   T_DOT,  T_WALL}, /* 2 */
-// { T_WALL,T_PELLET,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_PELLET,T_WALL}, /* 3 */
-// { T_WALL,T_DOT,   T_EMPTY,T_EMPTY,T_WALL,T_EMPTY,T_EMPTY,T_EMPTY,T_WALL,T_WALL,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_WALL,T_EMPTY,T_DOT }, /* 4 */
-// { T_WALL,T_DOT,   T_DOT,   T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_DOT,  T_WALL}, /* 5 */
-// { T_WALL,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_WALL}, /* 6 */
-// { T_WALL,T_PELLET,T_DOT,   T_DOT,   T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_DOT,   T_DOT,   T_PELLET,T_WALL}, /* 7 */
-// { T_WALL,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_WALL}, /* 8 */
-// { T_WALL,T_DOT,   T_DOT,   T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_DOT,  T_WALL}, /* 9 */
-// { T_WALL,T_DOT,   T_EMPTY,T_EMPTY,T_WALL,T_EMPTY,T_EMPTY,T_EMPTY,T_WALL,T_WALL,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_WALL,T_EMPTY,T_DOT }, /*10 */
-// { T_WALL,T_PELLET,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_EMPTY,T_PELLET,T_WALL}, /*11 */
-// { T_WALL,T_DOT,   T_DOT,   T_WALL,T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_WALL,T_DOT,   T_DOT,  T_WALL}, /*12 */
-// { T_WALL,T_EMPTY,T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_EMPTY,T_WALL}, /*13 */
-// { T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL} /* 14 border */
-// };
+/* ---- open maze: short pillars, wide corridors ---- */
 
 static uint8_t maze_layout[MH][MW] = {
 { T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL}, /* 0 */
@@ -65,7 +46,6 @@ static uint8_t maze_layout[MH][MW] = {
 { T_WALL,T_EMPTY,T_DOT,   T_DOT,   T_EMPTY,T_DOT,   T_DOT,   T_EMPTY,T_DOT,   T_DOT,   T_DOT,   T_DOT,   T_EMPTY,T_DOT,   T_DOT,   T_EMPTY,T_DOT,   T_DOT,   T_EMPTY,T_WALL}, /*13 */
 { T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL,T_WALL} /*14 */
 };
-
 
 
 /* ---- runtime state ---- */
@@ -87,12 +67,15 @@ static uint8_t prev_gx[NGHOSTS];
 static uint8_t prev_gy[NGHOSTS];
 static uint8_t first_draw = 1;
 
-static uint8_t ghost_clr[NGHOSTS] = { _XL_RED, _XL_GREEN, _XL_MAGENTA, _XL_WHITE};
+static uint8_t ghost_clr[NGHOSTS] = { _XL_RED, _XL_GREEN, _XL_MAGENTA, _XL_WHITE };
+
+#define PACMAN_COLOR _XL_YELLOW
 
 static uint16_t score;
 static uint16_t dots_left;
 static uint8_t fright_tick;
 
+#define FRIGHT_TIME 100
 
 /* ---- helpers ---- */
 
@@ -153,7 +136,7 @@ static void render_delta(void)
     if (prev_px != px || prev_py != py) {
         _XL_DELETE(prev_px, prev_py);
     }
-    _XL_DRAW(px, py, PACMAN_TILE, _XL_YELLOW);
+    _XL_DRAW(px, py, PACMAN_TILE, PACMAN_COLOR);
 
     for (i = 0; i < NGHOSTS; i++) {
         if (prev_gx[i] != gx[i] || prev_gy[i] != gy[i]) {
@@ -179,8 +162,30 @@ static void render_delta(void)
 
 static void draw_score(void)
 {
+    static char buf[6];
+    uint16_t tmp = score;
+    uint8_t n = 0;
+    uint8_t p;
+
+    while (tmp > 0 && n < 5) {
+        buf[n] = (char)((uint8_t)(tmp % 10) + '0');
+        tmp /= 10;
+        n++;
+    }
+    if (n == 0) {
+        buf[0] = '0';
+        n = 1;
+    }
+    buf[n] = '\0';
+
+    for (p = 0; p < n / 2; p++) {
+        char t = buf[p];
+        buf[p] = buf[n - 1 - p];
+        buf[n - 1 - p] = t;
+    }
+
     _XL_SET_TEXT_COLOR(_XL_GREEN);
-    _XL_PRINTD(2, MH + 2, 5, score);
+    _XL_PRINT(2, MH + 2, buf);
 }
 
 
@@ -203,7 +208,7 @@ static void read_input(uint8_t *dir)
 }
 
 
-/* ---- player movement ---- */
+/* ---- player movement (only Pac-Man eats dots) ---- */
 
 static void try_move_player(uint8_t dir)
 {
@@ -222,13 +227,14 @@ static void try_move_player(uint8_t dir)
     }
 
     if (!is_wall(nx, ny)) {
+        /* Only Pac-Man deletes dots */
         if (g_maze[ny][nx] == T_DOT || g_maze[ny][nx] == T_PELLET) {
             score++;
             dots_left--;
             _XL_TICK_SOUND();
             _XL_DELETE(nx, ny);
             if (g_maze[ny][nx] == T_PELLET) {
-                fright_tick = 10;
+                fright_tick = FRIGHT_TIME;
                 { uint8_t i; for (i = 0; i < NGHOSTS; i++) fright[i] = 1; }
                 _XL_ZAP_SOUND();
             }
@@ -278,7 +284,7 @@ static void update_player(void)
 }
 
 
-/* ---- ghost AI ---- */
+/* ---- ghost AI (ghosts do NOT delete dots) ---- */
 
 static void move_ghost(uint8_t i)
 {
@@ -303,6 +309,7 @@ static void move_ghost(uint8_t i)
         else if (d == DIR_UP)   { nx = gx[i];    ny = gy[i] - 1; }
         else                    { nx = gx[i];    ny = gy[i] + 1; }
 
+        /* Ghosts pass over dots without eating them */
         if (!is_wall(nx, ny)) {
             uint8_t rev;
             if (d == DIR_LEFT)      rev = DIR_RIGHT;
@@ -359,6 +366,7 @@ static void move_ghost(uint8_t i)
         else if (dd == DIR_UP)   { cx = gx[i];    cy = gy[i] - 1; }
         else                     { cx = gx[i];    cy = gy[i] + 1; }
 
+        /* Ghosts ignore dots — only walls block them */
         if (is_wall(cx, cy)) continue;
 
         dist = 0;
@@ -381,6 +389,7 @@ static void move_ghost(uint8_t i)
     else if (d == DIR_UP)   { nx = gx[i];    ny = gy[i] - 1; }
     else                    { nx = gx[i];    ny = gy[i] + 1; }
 
+    /* Ghosts do NOT modify g_maze — dots stay until Pac-Man eats them */
     if (is_wall(nx, ny)) {
         uint8_t fb;
         if (d == DIR_LEFT)      fb = DIR_RIGHT;
@@ -459,20 +468,20 @@ static void reset_positions(void)
 int main(void)
 {
     uint8_t counter;
-
+    
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
     _XL_INIT_SOUND();
+    
 
-
-    while(1)
+    for(;;)
     {
         _XL_CLEAR_SCREEN();
         lives = 3;
         score = 0;
+        counter = 0;
         first_draw = 1;
 
-        counter = 0;
         init_maze();
         reset_positions();
         render_full();
@@ -488,10 +497,10 @@ int main(void)
             update_player();
             tick_fright();
             ++counter;
-            
-            if(!(counter&7))
+            if(!(counter&3))
             {
                 update_ghosts();
+                counter=0;
             }
             if (ghost_hit_player()) {
                 if (fright[0]) {
@@ -504,7 +513,7 @@ int main(void)
                     _XL_EXPLOSION_SOUND();
                     if (lives == 0) {
                         _XL_SET_TEXT_COLOR(_XL_RED);
-                        _XL_PRINT(5, MH + 1, "GAME OVER");
+                        _XL_PRINT(5, MH + 3, "GAME OVER");
                         _XL_SLEEP(3);
                         break;
                     }
@@ -514,7 +523,7 @@ int main(void)
 
             if (dots_left == 0) {
                 _XL_SET_TEXT_COLOR(_XL_GREEN);
-                _XL_PRINT(5, MH + 1, "YOU WIN");
+                _XL_PRINT(5, MH + 3, "YOU WIN");
                 _XL_TOCK_SOUND();
                 _XL_SLEEP(2);
                 break;
