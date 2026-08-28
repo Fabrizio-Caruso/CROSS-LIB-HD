@@ -2,7 +2,7 @@
 
 /* ============================================================
    PAC-MAN CLONE — Cross-Lib API only, no heap, uint8_t/uint16_t
-   Ghosts do NOT delete dots when they move over them.
+   Ghosts do NOT erase dots. Dots remain visible when ghosts move away.
    ============================================================ */
 
 #define MW 20
@@ -26,6 +26,8 @@
 #define DOT_TILE    _TILE_2
 #define PELLET_TILE _TILE_3
 #define WALL_TILE   _TILE_4
+
+#define PACMAN_COLOR _XL_YELLOW
 
 /* ---- open maze: short pillars, wide corridors ---- */
 
@@ -69,13 +71,10 @@ static uint8_t first_draw = 1;
 
 static uint8_t ghost_clr[NGHOSTS] = { _XL_RED, _XL_GREEN, _XL_MAGENTA, _XL_WHITE };
 
-#define PACMAN_COLOR _XL_YELLOW
-
 static uint16_t score;
 static uint16_t dots_left;
 static uint8_t fright_tick;
 
-#define FRIGHT_TIME 100
 
 /* ---- helpers ---- */
 
@@ -116,7 +115,7 @@ static void render_full(void)
             }
         }
     }
-    _XL_DRAW(px, py, 7, _XL_WHITE);
+    _XL_DRAW(px, py, PACMAN_TILE, PACMAN_COLOR);
     for (i = 0; i < NGHOSTS; i++) {
         if (fright[i]) {
             _XL_DRAW(gx[i], gy[i], GHOST_TILE, _XL_CYAN);
@@ -127,25 +126,53 @@ static void render_full(void)
 }
 
 
-/* ---- incremental render: only changed tiles ---- */
+/* ---- incremental render: only changed tiles ----
+   Key fix: when a ghost leaves a cell containing a dot/pellet in g_maze,
+   we must re-draw the dot BEFORE deleting the old ghost position.
+   When a ghost arrives at a new cell, we draw the ghost on top of any dot
+   that is still present (dot remains in g_maze until Pac-Man eats it). */
 
 static void render_delta(void)
 {
     uint8_t i;
 
+    /* Player: delete old position only if no dot exists there anymore */
     if (prev_px != px || prev_py != py) {
         _XL_DELETE(prev_px, prev_py);
+        /* If a dot is still in g_maze at the player's old cell, redraw it */
+        if (g_maze[prev_py][prev_px] == T_DOT) {
+            _XL_DRAW(prev_px, prev_py, DOT_TILE, _XL_YELLOW);
+        } else if (g_maze[prev_py][prev_px] == T_PELLET) {
+            _XL_DRAW(prev_px, prev_py, PELLET_TILE, _XL_MAGENTA);
+        }
     }
-    _XL_DRAW(px, py, PACMAN_TILE, PACMAN_COLOR);
 
+    /* Ghosts */
     for (i = 0; i < NGHOSTS; i++) {
         if (prev_gx[i] != gx[i] || prev_gy[i] != gy[i]) {
+            /* Delete the ghost's old position */
             _XL_DELETE(prev_gx[i], prev_gy[i]);
-        }
-        if (fright[i]) {
-            _XL_DRAW(gx[i], gy[i], GHOST_TILE, _XL_CYAN);
+
+            /* If a dot/pellet still exists in g_maze at that cell, redraw it */
+            if (g_maze[prev_gy[i]][prev_gx[i]] == T_DOT) {
+                _XL_DRAW(prev_gx[i], prev_gy[i], DOT_TILE, _XL_YELLOW);
+            } else if (g_maze[prev_gy[i]][prev_gx[i]] == T_PELLET) {
+                _XL_DRAW(prev_gx[i], prev_gy[i], PELLET_TILE, _XL_MAGENTA);
+            }
+
+            /* Draw the ghost at its new position */
+            if (fright[i]) {
+                _XL_DRAW(gx[i], gy[i], GHOST_TILE, _XL_CYAN);
+            } else {
+                _XL_DRAW(gx[i], gy[i], GHOST_TILE, ghost_clr[i]);
+            }
         } else {
-            _XL_DRAW(gx[i], gy[i], GHOST_TILE, ghost_clr[i]);
+            /* Ghost didn't move: just redraw (colour may have changed) */
+            if (fright[i]) {
+                _XL_DRAW(gx[i], gy[i], GHOST_TILE, _XL_CYAN);
+            } else {
+                _XL_DRAW(gx[i], gy[i], GHOST_TILE, ghost_clr[i]);
+            }
         }
     }
 
@@ -155,6 +182,7 @@ static void render_delta(void)
         prev_gx[i] = gx[i];
         prev_gy[i] = gy[i];
     }
+
 }
 
 
@@ -205,10 +233,16 @@ static void read_input(uint8_t *dir)
     } else {
         *dir = DIR_NONE;
     }
+    // if(*dir != DIR_NONE)
+    // {
+        // _XL_DRAW(px,py,PACMAN_TILE,PACMAN_COLOR);
+    // }
 }
 
 
 /* ---- player movement (only Pac-Man eats dots) ---- */
+
+#define FRIGHT_DURATION 50
 
 static void try_move_player(uint8_t dir)
 {
@@ -232,9 +266,9 @@ static void try_move_player(uint8_t dir)
             score++;
             dots_left--;
             _XL_TICK_SOUND();
-            _XL_DELETE(nx, ny);
+            _XL_DELETE(nx, ny);  /* remove the dot from screen */
             if (g_maze[ny][nx] == T_PELLET) {
-                fright_tick = FRIGHT_TIME;
+                fright_tick = FRIGHT_DURATION;
                 { uint8_t i; for (i = 0; i < NGHOSTS; i++) fright[i] = 1; }
                 _XL_ZAP_SOUND();
             }
@@ -284,7 +318,7 @@ static void update_player(void)
 }
 
 
-/* ---- ghost AI (ghosts do NOT delete dots) ---- */
+/* ---- ghost AI (ghosts do NOT modify g_maze or delete dots) ---- */
 
 static void move_ghost(uint8_t i)
 {
@@ -309,7 +343,7 @@ static void move_ghost(uint8_t i)
         else if (d == DIR_UP)   { nx = gx[i];    ny = gy[i] - 1; }
         else                    { nx = gx[i];    ny = gy[i] + 1; }
 
-        /* Ghosts pass over dots without eating them */
+        /* Ghosts only check walls — dots stay in g_maze */
         if (!is_wall(nx, ny)) {
             uint8_t rev;
             if (d == DIR_LEFT)      rev = DIR_RIGHT;
@@ -366,7 +400,7 @@ static void move_ghost(uint8_t i)
         else if (dd == DIR_UP)   { cx = gx[i];    cy = gy[i] - 1; }
         else                     { cx = gx[i];    cy = gy[i] + 1; }
 
-        /* Ghosts ignore dots — only walls block them */
+        /* Ghosts only check walls, not dots */
         if (is_wall(cx, cy)) continue;
 
         dist = 0;
@@ -389,7 +423,7 @@ static void move_ghost(uint8_t i)
     else if (d == DIR_UP)   { nx = gx[i];    ny = gy[i] - 1; }
     else                    { nx = gx[i];    ny = gy[i] + 1; }
 
-    /* Ghosts do NOT modify g_maze — dots stay until Pac-Man eats them */
+    /* Ghosts do NOT modify g_maze */
     if (is_wall(nx, ny)) {
         uint8_t fb;
         if (d == DIR_LEFT)      fb = DIR_RIGHT;
@@ -472,14 +506,12 @@ int main(void)
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
     _XL_INIT_SOUND();
-    
 
     for(;;)
     {
         _XL_CLEAR_SCREEN();
         lives = 3;
         score = 0;
-        counter = 0;
         first_draw = 1;
 
         init_maze();
@@ -492,7 +524,7 @@ int main(void)
         { uint8_t i; for (i = 0; i < NGHOSTS; i++) { prev_gx[i] = gx[i]; prev_gy[i] = gy[i]; } }
 
         first_draw = 0;
-
+        counter = 0;
         for (;;) {
             update_player();
             tick_fright();
@@ -500,7 +532,6 @@ int main(void)
             if(!(counter&3))
             {
                 update_ghosts();
-                counter=0;
             }
             if (ghost_hit_player()) {
                 if (fright[0]) {
@@ -538,6 +569,7 @@ int main(void)
             } else {
                 render_delta();
             }
+            _XL_DRAW(px,py,PACMAN_TILE,PACMAN_COLOR);
 
             draw_score();
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
