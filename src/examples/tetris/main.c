@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include "cross_lib.h"
 
-#define GRID_W 8
-#define GRID_H 18
+#define GRID_W 9
+#define GRID_H YSize-4
 #define BLOCK_TILE _TILE_8
 
 /* Piece cell offsets: [type][rotation][cell] = {dx, dy} */
@@ -166,8 +166,58 @@ static void update_display(void)
     uint8_t cy;
     uint8_t color;
     
-    for (y = 0; y < GRID_H; y++) {
-        for (x = 0; x < GRID_W; x++) {
+    uint8_t start_y, end_y;
+    uint8_t start_x, end_x;
+    
+    if(cur_x>0)
+    {
+        if(cur_x > GRID_W -4)
+        {
+            end_x = GRID_W;
+        }
+        else
+        {
+            end_x = cur_x+4;
+        }
+    }
+    else
+    {
+        start_x = 0;
+        end_x = cur_x+4;
+    }
+    
+    if(cur_y>0)
+    {
+        if(cur_y>3)
+        {
+            start_y = cur_y-3;
+        }
+        else
+        {
+        
+            start_y = 0;
+        }
+        if(cur_y > GRID_H -4)
+        {
+            end_y = GRID_H;
+        }
+        else
+        {
+            end_y = cur_y+4;
+        }
+    }
+    else
+    {
+        start_y = 0;
+        end_y = cur_y+4;
+    }
+
+// TODO: TO fix        
+    end_y = GRID_H;
+    end_x = GRID_W;
+    
+    for (y = start_y; y < end_y; y++) {
+        for (x = start_x; x < end_x; x++) {
             uint8_t should_show = grid[y][x];
 
             /* overlay current piece */
