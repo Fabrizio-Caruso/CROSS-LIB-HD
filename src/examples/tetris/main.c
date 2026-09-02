@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "cross_lib.h"
 
-#define GRID_W 9
+#define GRID_W 8
 #define GRID_H YSize-4
 #define BLOCK_TILE _TILE_8
 
@@ -103,6 +103,9 @@ static int can_place(uint8_t px, uint8_t py, uint8_t ptype, uint8_t rot)
 static void spawn_piece(void)
 {
     cur_piece = (uint8_t)(_XL_RAND() % 7);
+    
+    // cur_piece = 0;
+    
     cur_rot   = 0;
     cur_x     = 3;
     cur_y     = 0;
@@ -110,6 +113,71 @@ static void spawn_piece(void)
         game_over_flag = 1;
     }
 }
+
+/* Only issue _XL_DRAW / _XL_DELETE for cells whose state actually changed. */
+static void update_display(void)
+{
+    uint8_t x, y, i;
+    uint8_t cx;
+    uint8_t cy;
+    uint8_t color;
+    
+    // uint8_t start_y;
+    uint8_t start_x;
+    
+
+    if(cur_x<=4)
+    {
+        start_x = 0;
+        // end_x = cur_x+4;
+    }
+    else //if(cur_x>=GRID_W-4)
+    {
+        start_x = cur_x-4;
+        // end_x = GRID_W;
+    }
+        
+
+    // if (cur_y<=5)
+    // {
+        // start_y = 0;
+    // }
+    // {
+        // start_y = cur_y-5;
+    // }
+
+// TODO: TO fix        
+    // end_y = GRID_H;
+    
+    for (y = 0; y < GRID_H; y++) {
+        for (x = start_x; x < GRID_W; x++) {
+            uint8_t should_show = grid[y][x];
+
+            /* overlay current piece */
+            if (!game_over_flag) {
+                for (i = 0; i < 4; i++) {
+                    cx = cur_x + PIECE_CELLS[cur_piece][cur_rot][i][0];
+                    cy = cur_y + PIECE_CELLS[cur_piece][cur_rot][i][1];
+                    if (cx == x && cy == y) {
+                        should_show = cur_piece + 1;
+                        break;
+                    }
+                }
+            }
+
+            if (should_show != screen_state[y][x]) {
+                if (should_show == 0) {
+                    _XL_DELETE(x, y);
+                } else {
+                    color = PIECE_COLORS[should_show - 1];
+                    _XL_DRAW(x, y, BLOCK_TILE, color);
+                }
+                screen_state[y][x] = should_show;
+            }
+        }
+    }
+}
+
 
 static void lock_piece(void)
 {
@@ -121,6 +189,7 @@ static void lock_piece(void)
             grid[cy][cx] = cur_piece + 1;
         }
     }
+    // update_display();
 }
 
 
@@ -158,92 +227,7 @@ static void clear_lines(void)
     }
 }
 
-/* Only issue _XL_DRAW / _XL_DELETE for cells whose state actually changed. */
-static void update_display(void)
-{
-    uint8_t x, y, i;
-    uint8_t cx;
-    uint8_t cy;
-    uint8_t color;
-    
-    uint8_t start_y, end_y;
-    uint8_t start_x, end_x;
-    
-    if(cur_x>0)
-    {
-        if(cur_x > GRID_W -4)
-        {
-            end_x = GRID_W;
-        }
-        else
-        {
-            end_x = cur_x+4;
-        }
-    }
-    else
-    {
-        start_x = 0;
-        end_x = cur_x+4;
-    }
-    
-    if(cur_y>0)
-    {
-        if(cur_y>3)
-        {
-            start_y = cur_y-3;
-        }
-        else
-        {
-        
-            start_y = 0;
-        }
-        if(cur_y > GRID_H -4)
-        {
-            end_y = GRID_H;
-        }
-        else
-        {
-            end_y = cur_y+4;
-        }
-    }
-    else
-    {
-        start_y = 0;
-        end_y = cur_y+4;
-    }
 
-// TODO: TO fix        
-    end_y = GRID_H;
-    end_x = GRID_W;
-    
-    for (y = start_y; y < end_y; y++) {
-        for (x = start_x; x < end_x; x++) {
-            uint8_t should_show = grid[y][x];
-
-            /* overlay current piece */
-            if (!game_over_flag) {
-                for (i = 0; i < 4; i++) {
-                    cx = cur_x + PIECE_CELLS[cur_piece][cur_rot][i][0];
-                    cy = cur_y + PIECE_CELLS[cur_piece][cur_rot][i][1];
-                    if (cx == x && cy == y) {
-                        should_show = cur_piece + 1;
-                        break;
-                    }
-                }
-            }
-
-            if (should_show != screen_state[y][x]) {
-                if (should_show == 0) {
-                    _XL_DELETE(x, y);
-                } else {
-                    color = PIECE_COLORS[should_show - 1];
-                    _XL_DRAW(x, y, BLOCK_TILE, color);
-                }
-                screen_state[y][x] = should_show;
-            }
-        }
-    }
-}
 
 /* ---------- main ---------- */
 
@@ -282,23 +266,24 @@ int main(void)
                         cur_x = nx;
                 }
             }
-            if (_XL_RIGHT(input)) {
+            else if (_XL_RIGHT(input)) {
                 uint8_t nx = cur_x + 1;
                 if (nx < GRID_W && can_place(nx, cur_y, cur_piece, cur_rot))
                     cur_x = nx;
             }
-            if (_XL_DOWN(input)) {
+            else if (_XL_DOWN(input)) {
                 uint8_t ny = cur_y + 1;
                 if (can_place(cur_x, ny, cur_piece, cur_rot))
                     cur_y = ny;
             }
-
-            /* rotate on FIRE */
-            if (_XL_FIRE(input)) {
+            else if (_XL_FIRE(input)) {
                 uint8_t nr = (uint8_t)((cur_rot + 1) % 4);
                 if (can_place(cur_x, cur_y, cur_piece, nr))
                     cur_rot = nr;
             }
+
+            update_display();
+
 
             /* gravity: fall one row each tick */
             {
@@ -312,7 +297,6 @@ int main(void)
                 }
             }
 
-            update_display();
 
             if (game_over_flag) {
                 _XL_SET_TEXT_COLOR(_XL_RED);
