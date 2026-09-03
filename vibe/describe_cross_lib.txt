@@ -7,8 +7,8 @@ void _XL_INIT_INPUT(void);
 void _XL_INIT_SOUND(void);
 
 Coordinates have to respect the following limits with 
-0<=x<=XSize-1
-0<=y<=YSize-1
+0<=x<=XSize
+0<=y<=YSize
 
 where XSize and YSize are macros.
 
