@@ -7,6 +7,7 @@ No need to include stdint.h. You have to include cross_lib.h.
 All variable declarations are at the beginning of their enclosing functions.
 For signed integer variables use short.
 
+Do not redefine _XL_DRAW, _XL_DELETE, _XL_SLOW_DOWN_FACTOR, XSize, YSize.
 
 Write an infinite main loop so that the game restarts after the game is over.
 Do not use _XL_DRAW or _XL_DELETE on tiles that have not changed.
