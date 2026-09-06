@@ -6,6 +6,8 @@ with only Cross-Lib APIs for input and output as described in the attachment
 No need to include stdint.h. You have to include cross_lib.h.
 All variable declarations are at the beginning of their enclosing functions.
 For signed integer variables use short.
+Do not redefine _XL_DRAW, _XL_DELETE, XSize, YSize, _XL_SLOW_DOWN_FACTOR.
+Use _XL_PRINTD to display any integer value, e.g., score, lives, etc.
 
 
 Write an infinite main loop so that the game restarts after the game is over.
