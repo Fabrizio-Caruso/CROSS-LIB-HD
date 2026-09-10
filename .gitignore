@@ -209,3 +209,4 @@ tools/z88dk/abc80/abcdisk-2.7/confdefs.h
 **/*.sym
 src/examples/graphics/tools/tiles/**
 src/examples/graphics/tools/shapes/**
+**/*.DS_Store
