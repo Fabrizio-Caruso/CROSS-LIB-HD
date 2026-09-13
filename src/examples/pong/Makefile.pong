@@ -1,12 +1,12 @@
 ######################################################################
-# Makefile for CROSS-RAIGUE
+# Makefile for CROSS-PONG
 
 FULL_FILES ?= \
 	$(BASIC_CROSS_LIB_FILES) \
 	$(CROSS_LIB_PATH)/sleep/sleep_macros.c \
 	$(SOURCE_PATH)/main.c 
 
-GAME_NAME := raigue
+GAME_NAME := pong
 
 PARENT_DIR = examples
 

@@ -1,12 +1,12 @@
 ######################################################################
-# Makefile for CROSS-PLAITFORM2
+# Makefile for CROSS-FRUZZLE
 
 FULL_FILES ?= \
 	$(BASIC_CROSS_LIB_FILES) \
 	$(CROSS_LIB_PATH)/sleep/sleep_macros.c \
 	$(SOURCE_PATH)/main.c 
 
-GAME_NAME := plaitform2
+GAME_NAME := fruzzle
 
 PARENT_DIR = examples
 

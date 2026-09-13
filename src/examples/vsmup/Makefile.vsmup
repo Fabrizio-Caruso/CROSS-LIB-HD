@@ -1,12 +1,12 @@
 ######################################################################
-# Makefile for CROSS-PAING
+# Makefile for CROSS-VSMUP
 
 FULL_FILES ?= \
 	$(BASIC_CROSS_LIB_FILES) \
 	$(CROSS_LIB_PATH)/sleep/sleep_macros.c \
 	$(SOURCE_PATH)/main.c 
 
-GAME_NAME := paing
+GAME_NAME := vsmup
 
 PARENT_DIR = examples
 

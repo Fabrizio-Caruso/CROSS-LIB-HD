@@ -1,12 +1,12 @@
 ######################################################################
-# Makefile for CROSS-FRAIZZLE
+# Makefile for CROSS-ROGUE2
 
 FULL_FILES ?= \
 	$(BASIC_CROSS_LIB_FILES) \
 	$(CROSS_LIB_PATH)/sleep/sleep_macros.c \
 	$(SOURCE_PATH)/main.c 
 
-GAME_NAME := fraizzle
+GAME_NAME := rogue2
 
 PARENT_DIR = examples
 

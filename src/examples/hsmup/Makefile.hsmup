@@ -1,12 +1,12 @@
 ######################################################################
-# Makefile for CROSS-PLAITFORM
+# Makefile for CROSS-HSMUP
 
 FULL_FILES ?= \
 	$(BASIC_CROSS_LIB_FILES) \
 	$(CROSS_LIB_PATH)/sleep/sleep_macros.c \
 	$(SOURCE_PATH)/main.c 
 
-GAME_NAME := plaitform
+GAME_NAME := hsmup
 
 PARENT_DIR = examples
 
