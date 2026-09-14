@@ -140,6 +140,18 @@ void place_monsters(void) {
     }
 }
 
+
+void display_hud(void)
+{
+    // HUD
+    _XL_SET_TEXT_COLOR(_XL_WHITE);
+    _XL_PRINT(0, 0, "LEVEL ");
+    _XL_PRINTD(6, 0, 1, level);
+    _XL_PRINT(10, 0, "SCORE ");
+    _XL_PRINTD(16, 0, 1, score);
+}
+
+
 // --- Draw Screen ---
 void draw_screen(void) {
     uint8_t i, j;
@@ -151,14 +163,7 @@ void draw_screen(void) {
     uint8_t tile, color;
     uint8_t m;
 
-    _XL_CLEAR_SCREEN();
-
-    // HUD
-    _XL_SET_TEXT_COLOR(_XL_WHITE);
-    _XL_PRINT(0, 0, "LEVEL ");
-    _XL_PRINTD(6, 0, 1, level);
-    _XL_PRINT(10, 0, "SCORE ");
-    _XL_PRINTD(16, 0, 1, score);
+//    _XL_CLEAR_SCREEN();
 
     screen_off_x = XSize / 2 - VIEW_DIST;
     screen_off_y = YSize / 2 - VIEW_DIST;
@@ -167,6 +172,12 @@ void draw_screen(void) {
     view_max_x = (player_x + VIEW_DIST < MAZE_SIZE - 1) ? (player_x + VIEW_DIST) : (MAZE_SIZE - 1);
     view_min_y = (player_y > VIEW_DIST) ? (player_y - VIEW_DIST) : 0;
     view_max_y = (player_y + VIEW_DIST < MAZE_SIZE - 1) ? (player_y + VIEW_DIST) : (MAZE_SIZE - 1);
+
+    if((view_min_x==0)||(view_min_y==0)||(view_max_x==MAZE_SIZE-1)||(view_max_y==MAZE_SIZE-1))
+    {
+        _XL_CLEAR_SCREEN();
+        display_hud();
+    }
 
     for (i = view_min_x; i <= view_max_x; i++) {
         for (j = view_min_y; j <= view_max_y; j++) {
@@ -318,6 +329,7 @@ void move_bullet(void) {
             monster_y[m] = monster_y[num_monsters - 1];
             num_monsters--;
             score += 10;
+            display_hud();
             hit_monster = 1;
             _XL_EXPLOSION_SOUND();
             break;
@@ -507,6 +519,8 @@ int main(void) {
         _XL_PRINT(XSize / 4, YSize / 4 + 8, "PRESS ANY KEY");
         _XL_WAIT_FOR_INPUT();
 
+        _XL_CLEAR_SCREEN();
+        display_hud();
         while (!game_over) {
             // Draw
             draw_screen();
@@ -545,6 +559,7 @@ int main(void) {
                 score += 50;
                 _XL_SLEEP(1);
                 next_level();
+                display_hud();
                 if (game_over) {
                     show_end_screen();
                     break;
