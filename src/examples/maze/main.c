@@ -173,6 +173,7 @@ void draw_screen(void) {
     view_min_y = (player_y > VIEW_DIST) ? (player_y - VIEW_DIST) : 0;
     view_max_y = (player_y + VIEW_DIST < MAZE_SIZE - 1) ? (player_y + VIEW_DIST) : (MAZE_SIZE - 1);
 
+    // TODO: This should be improved by avoiding clearing the screen and just deleting left over cells
     if((view_min_x==0)||(view_min_y==0)||(view_max_x==MAZE_SIZE-1)||(view_max_y==MAZE_SIZE-1))
     {
         _XL_CLEAR_SCREEN();
