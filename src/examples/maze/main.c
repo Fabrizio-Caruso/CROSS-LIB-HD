@@ -117,6 +117,7 @@ void place_monsters(void) {
 
     for (i = 0; i < num_monsters; i++) {
         do {
+            uint8_t k;
             mx = (_XL_RAND() % MAZE_SIZE);
             my = (_XL_RAND() % MAZE_SIZE);
             valid = 1;
@@ -127,7 +128,7 @@ void place_monsters(void) {
             // Not on exit
             if (mx == MAZE_SIZE - 1 && my == MAZE_SIZE - 1) valid = 0;
             // Not on another monster
-            for (uint8_t k = 0; k < i; k++) {
+            for (k = 0; k < i; k++) {
                 if (mx == monster_x[k] && my == monster_y[k]) valid = 0;
             }
             // Not too close to start (at least 3 tiles away)
@@ -148,6 +149,7 @@ void draw_screen(void) {
     uint8_t sx, sy;
     uint8_t dist;
     uint8_t tile, color;
+    uint8_t m;
 
     _XL_CLEAR_SCREEN();
 
@@ -201,7 +203,7 @@ void draw_screen(void) {
             }
 
             // Monsters
-            for (uint8_t m = 0; m < num_monsters; m++) {
+            for (m = 0; m < num_monsters; m++) {
                 if (monster_x[m] == i && monster_y[m] == j) {
                     tile = T_MONSTER;
                     color = C_MONSTER;
@@ -288,6 +290,7 @@ void shoot(void) {
 void move_bullet(void) {
     uint8_t nx, ny;
     uint8_t hit_monster;
+    uint8_t m;
 
     if (!bullet_active) return;
 
@@ -308,7 +311,7 @@ void move_bullet(void) {
 
     // Hit monster?
     hit_monster = 0;
-    for (uint8_t m = 0; m < num_monsters; m++) {
+    for (m = 0; m < num_monsters; m++) {
         if (monster_x[m] == nx && monster_y[m] == ny) {
             // Kill monster: swap with last
             monster_x[m] = monster_x[num_monsters - 1];
@@ -339,6 +342,8 @@ void move_monsters(void) {
     uint8_t cur_dist;
     uint8_t d;
     uint8_t tx, ty;
+    uint8_t k;
+    uint8_t blocked;
 
     for (i = 0; i < num_monsters; i++) {
         // Try to move toward player
@@ -357,8 +362,8 @@ void move_monsters(void) {
             if (maze[nx][ny] == 1) continue;
 
             // Don't move onto another monster
-            uint8_t blocked = 0;
-            for (uint8_t k = 0; k < num_monsters; k++) {
+            blocked = 0;
+            for (k = 0; k < num_monsters; k++) {
                 if (k != i && monster_x[k] == nx && monster_y[k] == ny) {
                     blocked = 1;
                     break;
@@ -472,79 +477,84 @@ int main(void) {
     _XL_INIT_INPUT();
     _XL_INIT_SOUND();
 
-    // Initial state
-    level = 1;
-    score = 0;
-    game_over = 0;
-    level_complete = 0;
-    player_dead = 0;
-    monster_timer = 0;
-    frame_count = 0;
-    bullet_active = 0;
+    while(1)
+    {
+        _XL_CLEAR_SCREEN();
+        // Initial state
+        level = 1;
+        score = 0;
+        game_over = 0;
+        level_complete = 0;
+        player_dead = 0;
+        monster_timer = 0;
+        frame_count = 0;
+        bullet_active = 0;
 
-    player_x = 0;
-    player_y = 0;
-    player_dir = 1;
+        player_x = 0;
+        player_y = 0;
+        player_dir = 1;
 
-    generate_maze();
-    place_monsters();
+        generate_maze();
+        place_monsters();
 
-    // Title
-    _XL_CLEAR_SCREEN();
-    _XL_SET_TEXT_COLOR(_XL_WHITE);
-    _XL_PRINT(XSize / 4, YSize / 4, "MAZE RUNNER");
-    _XL_PRINT(XSize / 4, YSize / 4 + 2, "20 LEVELS");
-    _XL_PRINT(XSize / 4, YSize / 4 + 4, "FIND THE EXIT");
-    _XL_PRINT(XSize / 4, YSize / 4 + 6, "AVOID MONSTERS");
-    _XL_PRINT(XSize / 4, YSize / 4 + 8, "PRESS ANY KEY");
-    _XL_WAIT_FOR_INPUT();
+        // Title
+        _XL_CLEAR_SCREEN();
+        _XL_SET_TEXT_COLOR(_XL_WHITE);
+        _XL_PRINT(XSize / 4, YSize / 4, "MAZE RUNNER");
+        _XL_PRINT(XSize / 4, YSize / 4 + 2, "20 LEVELS");
+        _XL_PRINT(XSize / 4, YSize / 4 + 4, "FIND THE EXIT");
+        _XL_PRINT(XSize / 4, YSize / 4 + 6, "AVOID MONSTERS");
+        _XL_PRINT(XSize / 4, YSize / 4 + 8, "PRESS ANY KEY");
+        _XL_WAIT_FOR_INPUT();
 
-    while (!game_over) {
-        // Draw
-        draw_screen();
+        while (!game_over) {
+            // Draw
+            draw_screen();
 
-        // Input
-        input = _XL_INPUT();
+            // Input
+            input = _XL_INPUT();
 
-        // Move player
-        move_player(input);
+            // Move player
+            move_player(input);
 
-        // Shoot
-        fire_pressed = _XL_FIRE(input);
-        if (fire_pressed && !bullet_active) {
-            shoot();
-        }
+            // Shoot
+            fire_pressed = _XL_FIRE(input);
+            if (fire_pressed && !bullet_active) {
+                shoot();
+            }
 
-        // Move bullet
-        move_bullet();
+            // Move bullet
+            move_bullet();
 
-        // Monster timer
-        monster_timer++;
-        if (monster_timer >= MONSTER_MOVE_INTERVAL) {
-            monster_timer = 0;
-            move_monsters();
-        }
+            // Monster timer
+            monster_timer++;
+            if (monster_timer >= MONSTER_MOVE_INTERVAL) {
+                monster_timer = 0;
+                move_monsters();
+            }
 
-        // Check collisions
-        check_collisions();
+            // Check collisions
+            check_collisions();
 
-        if (player_dead) {
-            show_end_screen();
-            break;
-        }
-
-        if (level_complete) {
-            score += 50;
-            _XL_SLEEP(1);
-            next_level();
-            if (game_over) {
+            if (player_dead) {
                 show_end_screen();
                 break;
             }
-        }
 
-        // Slow down for game pacing
-        _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            if (level_complete) {
+                score += 50;
+                _XL_SLEEP(1);
+                next_level();
+                if (game_over) {
+                    show_end_screen();
+                    break;
+                }
+            }
+
+            // Slow down for game pacing
+            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+        }
+        _XL_SLEEP(1);
     }
 
     return 0;
