@@ -1,0 +1,533 @@
+static uint8_t center_x_len(uint8_t len) {
+ short x;
+ uint16_t max_x;
+ if (XSize < 1) {
+   return 0;
+ }
+ if (len > 255) {
+   max_x = 0;
+ } else {
+   max_x = (uint16_t)(255 - len);
+ }
+ if (XSize > 511 + len) {
+   x = 255;
+ } else {
+   x = (short)XSize - (short)len;
+   if (x < 0) {
+     x = 0;
+   }
+   x = x / 2;
+ }
+ if ((uint16_t)x > max_x) {
+   x = (short)max_x;
+ }
+ if (x < 0) {
+   x = 0;
+ }
+ return (uint8_t)x;
+}
+If XSize small e.g. 4,len6: XSize >517? false, x=4-6=-2 ->0. max_x=249. return0. But draw guard XSize>=len false.
+okay.
+If XSize=6,len6: x=0. max249. return0.
+If XSize=10,len6: x=2. return2.
+If XSize=1000,len6: XSize>517 true x=255, max249, x=249. Good, prints len 6 at 249..254. within uint8.
+If XSize=256,len6: XSize>517 false, x=250/2=125. max249. return125. Good.
+If XSize=520,len6: XSize>517 true, x=255 cap249. Actual center (514)/2=257, cap 249. Good.
+
+reset_board.
+setup_game:
+static void setup_game(void) {
+ uint8_t n;
+ uint16_t ox16, oy16, max_ox, max_oy;
+ if (XSize < 1 || YSize < 1) {
+   g_n = 0;
+   g_ox = 0;
+   g_oy = 0;
+   reset_board();
+   return;
+ }
+ n = MAX_BOARD;
+ if (n > XSize) {
+   n = (uint8_t)XSize;
+ }
+ if (n > YSize) {
+   n = (uint8_t)YSize;
+ }
+ g_n = n;
+ if (XSize > n) {
+   if (XSize > n + 511) {
+     ox16 = 255;
+   } else {
+     ox16 = (uint16_t)((XSize - n) / 2);
+   }
+ } else {
+   ox16 = 0;
+ }
+ if (g_n > 255) {
+   max_ox = 0;
+ } else {
+   max_ox = (uint16_t)(255 - g_n);
+ }
+ if (ox16 > max_ox) {
+   ox16 = max_ox;
+ }
+ if (YSize > n) {
+   if (YSize > n + 511) {
+     oy16 = 255;
+   } else {
+     oy16 = (uint16_t)((YSize - n) / 2);
+   }
+ } else {
+   oy16 = 0;
+ }
+ if (g_n > 255) {
+   max_oy = 0;
+ } else {
+   max_oy = (uint16_t)(255 - g_n);
+ }
+ if (oy16 > max_oy) {
+   oy16 = max_oy;
+ }
+ g_ox = (uint8_t)ox16;
+ g_oy = (uint8_t)oy16;
+ reset_board();
+}
+If n=0? XSize>=1, n at least 1 because n=15, if XSize=1, n=1, YSize=1, n=1. Good.
+If XSize=1,YSize=10, n=1, ox: XSize>n false 0, max_ox=254, oy: YSize>n, if YSize>512? no, oy=(9)/2=4, max254.
+Board at (0,4). Good.
+If XSize=10,YSize=1, board at (4,0). Good.
+
+check_win. Need if g_n=0? It won't be called if g_n=0. But if, board[0][0]? no.
+static uint8_t check_win(uint8_t r, uint8_t c) { ... }
+If r,c <g_n. Good.
+
+is_full. If g_n=0, loops none return1. But play_game returns before. okay.
+
+move_cursor:
+static void move_cursor(short dr, short dc) {
+ uint8_t x, y;
+ short nr, nc;
+ if (g_n == 0) {
+   return;
+ }
+ nr = (short)g_cur_r + dr;
+ nc = (short)g_cur_c + dc;
+ if (nr < 0 || nr >= (short)g_n || nc < 0 || nc >= (short)g_n) {
+   return;
+ }
+ if (g_cur_shown) {
+   if (g_board[g_cur_r][g_cur_c] == EMPTY) {
+     x = g_ox + g_cur_c;
+     y = g_oy + g_cur_r;
+     _XL_DRAW(x, y, EMPTY_TILE, EMPTY_COLOR);
+   }
+   g_cur_shown = 0;
+ }
+ g_cur_r = (uint8_t)nr;
+ g_cur_c = (uint8_t)nc;
+ if (g_board[g_cur_r][g_cur_c] == EMPTY) {
+   x = g_ox + g_cur_c;
+   y = g_oy + g_cur_r;
+   _XL_DRAW(x, y, CURSOR_TILE, CURSOR_COLOR);
+   g_cur_shown = 1;
+ }
+}
+If g_cur_shown and board cell not empty, no draw. Good.
+
+place_human:
+static void place_human(void) {
+ uint8_t x, y;
+ if (g_n == 0) return;
+ if (g_cur_shown) {
+   g_cur_shown = 0;
+ }
+ g_board[g_cur_r][g_cur_c] = HUMAN;
+ x = g_ox + g_cur_c;
+ y = g_oy + g_cur_r;
+ _XL_DRAW(x, y, HUMAN_TILE, HUMAN_COLOR);
+ _XL_PING_SOUND();
+ if (check_win(g_cur_r, g_cur_c)) {
+   g_winner = HUMAN;
+ } else if (is_full()) {
+   g_draw = 1;
+ }
+}
+Good.
+
+place_ai similar.
+
+add_capped.
+
+total_score:
+static uint16_t total_score(uint8_t level, uint16_t attack, uint16_t defense) {
+ uint16_t total;
+ if (attack >= WIN_SCORE) {
+   return (uint16_t)WIN_SCORE;
+ }
+ if (defense >= WIN_SCORE) {
+   return (uint16_t)(WIN_SCORE - 1);
+ }
+ if (level == 0) {
+   return 0;
+ }
+ total = attack;
+ if (total > 9990) {
+   total = 9990;
+ }
+ total = add_capped(total, defense, 9990);
+ if (level >= 2) {
+   total = add_capped(total, defense, 9990);
+ }
+ return total;
+}
+Good.
+
+eval_point:
+Need `add` uint16. Good.
+In while, `g_board[(uint8_t)rr][(uint8_t)cc] == p`. rr/cc short valid. Good.
+After forward while, open=0; if valid empty open=1. Then backward. Good.
+Potential bug: For backward, after while, rr/cc point to first non-p in negative direction. We check empty and
+open++. Good.
+If count>=5, return WIN_SCORE before adding. Good.
+`if (total > 9999) total = 9999;` total uint16. Good.
+
+gen_candidates:
+static uint8_t gen_candidates(uint8_t radius) {
+ uint8_t r, c, near, count, cr, cc;
+ short sr, sc, rr, cc2;
+ if (g_n == 0) return 0;
+ count = 0;
+ for (r=0; r<g_n; r++) {
+  for (c=0; c<g_n; c++) {
+   if (g_board[r][c] != EMPTY) continue;
+   near=0;
+   sr = -(short)radius;
+   while (sr <= (short)radius && near == 0) {
+    sc = -(short)radius;
+    while (sc <= (short)radius && near == 0) {
+     rr = (short)r + sr;
+     cc2 = (short)c + sc;
+     if (rr >= 0 && rr < (short)g_n && cc2 >= 0 && cc2 < (short)g_n && g_board[(uint8_t)rr][(uint8_t)cc2] !=
+EMPTY) {
+      near=1;
+     }
+     sc++;
+    }
+    sr++;
+   }
+   if (near != 0) {
+    g_cand_r[count]=r;
+    g_cand_c[count]=c;
+    count++;
+   }
+  }
+ }
+ if (count == 0) {
+  cr = g_n / 2;
+  cc = g_n / 2;
+  if (cr < g_n && cc < g_n && g_board[cr][cc] == EMPTY) {
+   g_cand_r[count]=cr;
+   g_cand_c[count]=cc;
+   count++;
+  } else {
+   for (r=0; r<g_n && count==0; r++) {
+    for (c=0; c<g_n && count==0; c++) {
+     if (g_board[r][c] == EMPTY) {
+      g_cand_r[count]=r;
+      g_cand_c[count]=c;
+      count++;
+     }
+    }
+   }
+  }
+ }
+ return count;
+}
+Variable `cc` uint8 and `cc2` short. okay.
+If radius=1, sr=-1..1. Good.
+If radius=2. Good.
+
+ai_move:
+static void ai_move(uint8_t level) {
+ uint8_t count, i, best, radius;
+ uint16_t best_score, score, attack, defense;
+ if (g_n == 0) {
+  g_ai_r = 0;
+  g_ai_c = 0;
+  return;
+ }
+ radius = 2;
+ if (level == 0) {
+  radius = 1;
+ }
+ count = gen_candidates(radius);
+ if (count == 0) {
+  g_ai_r = g_n / 2;
+  g_ai_c = g_n / 2;
+  return;
+ }
+ if (level == 0) {
+  i = (uint8_t)(_XL_RAND() % count);
+  g_ai_r = g_cand_r[i];
+  g_ai_c = g_cand_c[i];
+  return;
+ }
+ best = 0;
+ best_score = 0;
+ for (i = 0; i < count; i++) {
+  attack = eval_point(g_cand_r[i], g_cand_c[i], AI);
+  defense = eval_point(g_cand_r[i], g_cand_c[i], HUMAN);
+  score = total_score(level, attack, defense);
+  if (score > best_score) {
+   best_score = score;
+   best = i;
+  } else if (score == best_score) {
+   if (((uint16_t)_XL_RAND() & 1u) != 0) {
+    best = i;
+   }
+  }
+ }
+ g_ai_r = g_cand_r[best];
+ g_ai_c = g_cand_c[best];
+}
+Good.
+Potential: If best_score 0 and score 0 for first, random may set best=0. For second, random may set. Good.
+
+draw_initial_board:
+static uint8_t draw_initial_board(void) {
+ uint8_t r, c, shown;
+ _XL_CLEAR_SCREEN();
+ g_cur_r = 0;
+ g_cur_c = 0;
+ g_cur_shown = 0;
+ if (g_n == 0) {
+  return 0;
+ }
+ for (r=0; r<g_n; r++) {
+  for (c=0; c<g_n; c++) {
+   _XL_DRAW(g_ox + c, g_oy + r, EMPTY_TILE, EMPTY_COLOR);
+  }
+ }
+ g_cur_r = g_n / 2;
+ g_cur_c = g_n / 2;
+ shown = 0;
+ if (g_cur_r < g_n && g_cur_c < g_n && g_board[g_cur_r][g_cur_c] == EMPTY) {
+  _XL_DRAW(g_ox + g_cur_c, g_oy + g_cur_r, CURSOR_TILE, CURSOR_COLOR);
+  shown = 1;
+ }
+ g_cur_shown = shown;
+ return shown;
+}
+Good.
+
+draw_menu:
+static void draw_menu(uint8_t level) {
+ uint8_t y;
+ _XL_CLEAR_SCREEN();
+ if (XSize >= 6 && YSize >= 1) {
+  _XL_SET_TEXT_COLOR(_XL_YELLOW);
+  _XL_PRINT(0, 0, "GOMOKU");
+ }
+ if (XSize >= 5 && YSize >= 3) {
+  _XL_SET_TEXT_COLOR(_XL_WHITE);
+  _XL_PRINT(0, 2, "LEVEL");
+ }
+ if (YSize >= 4) {
+  _XL_SET_TEXT_COLOR(_XL_YELLOW);
+  if (XSize >= 7) {
+   _XL_PRINTD(6, 3, 1, (uint16_t)(level + 1));
+  } else if (XSize >= 1) {
+   _XL_PRINTD(0, 3, 1, (uint16_t)(level + 1));
+  }
+ }
+ y = 5;
+ if (XSize >= 6 && YSize >= 6) {
+  if (level == 0) {
+   _XL_SET_TEXT_COLOR(_XL_YELLOW);
+  } else {
+   _XL_SET_TEXT_COLOR(_XL_WHITE);
+  }
+  _XL_PRINT(0, y, "1 EASY");
+ }
+ y = 6;
+ if (XSize >= 5 && YSize >= 7) {
+  if (level == 1) {
+   _XL_SET_TEXT_COLOR(_XL_YELLOW);
+  } else {
+   _XL_SET_TEXT_COLOR(_XL_WHITE);
+  }
+  _XL_PRINT(0, y, "2 MID");
+ }
+ y = 7;
+ if (XSize >= 6 && YSize >= 8) {
+  if (level == 2) {
+   _XL_SET_TEXT_COLOR(_XL_YELLOW);
+  } else {
+   _XL_SET_TEXT_COLOR(_XL_WHITE);
+  }
+  _XL_PRINT(0, y, "3 HARD");
+ }
+ y = 9;
+ if (XSize >= 13 && YSize >= 10) {
+  _XL_SET_TEXT_COLOR(_XL_CYAN);
+  _XL_PRINT(0, y, "FIRE TO START");
+ }
+ y = 10;
+ if (XSize >= 11 && YSize >= 11) {
+  _XL_SET_TEXT_COLOR(_XL_WHITE);
+  _XL_PRINT(0, y, "ARROWS MOVE");
+ }
+ y = 11;
+ if (XSize >= 10 && YSize >= 12) {
+  _XL_SET_TEXT_COLOR(_XL_WHITE);
+  _XL_PRINT(0, y, "FIRE PLACE");
+ }
+}
+String "ARROWS MOVE" length 11? A R R O W S space M O V E = 11. X>=11. "FIRE PLACE" length 10. Good.
+YSize guards: y=10 requires YSize >= 11 (0..10). y=11 requires YSize >= 12. Good.
+If screen small, okay.
+
+show_game_over:
+static void show_game_over(void) {
+ uint8_t x, y, y2;
+ uint16_t y16;
+ _XL_CLEAR_SCREEN();
+ if (YSize < 1) {
+  _XL_WAIT_FOR_INPUT();
+  return;
+ }
+ if (YSize > 510) {
+  y16 = 255;
+ } else {
+  y16 = (uint16_t)(YSize / 2);
+ }
+ if (y16 > 254) {
+  y16 = 254;
+ }
+ y = (uint8_t)y16;
+ if (y > 1) {
+  y = (uint8_t)(y - 1);
+ }
+ if (g_draw != 0) {
+  if (XSize >= 4) {
+   x = center_x_len(4);
+   _XL_SET_TEXT_COLOR(_XL_CYAN);
+   _XL_PRINT(x, y, "DRAW");
+  }
+ } else if (g_winner == HUMAN) {
+  if (XSize >= 10) {
+   x = center_x_len(10);
+   _XL_SET_TEXT_COLOR(_XL_GREEN);
+   _XL_PRINT(x, y, "HUMAN WINS");
+  }
+ } else if (g_winner == AI) {
+  if (XSize >= 7) {
+   x = center_x_len(7);
+   _XL_SET_TEXT_COLOR(_XL_RED);
+   _XL_PRINT(x, y, "AI WINS");
+  }
+ }
+ y2 = (uint8_t)(y + 1);
+ if (XSize >= 9 && y2 < YSize) {
+  x = center_x_len(9);
+  _XL_SET_TEXT_COLOR(_XL_WHITE);
+  _XL_PRINT(x, y2, "PRESS ANY");
+ }
+ _XL_WAIT_FOR_INPUT();
+}
+If y=254, y2=255. If YSize=256, y2<256 true, y=255 within uint8. If YSize=255, y16=254? YSize/2=127, not. Actually
+if YSize=255, y16=127, y=126, y2=127. Good. If YSize=512, y16=255 cap254, y=253, y2=254. Good.
+If YSize=1, y16=0,y=0,y2=1, y2<1 false.
+Good.
+
+select_level:
+static uint8_t select_level(void) {
+ uint8_t level;
+ uint8_t input;
+ level = 1;
+ draw_menu(level);
+ while (1) {
+  input = _XL_INPUT();
+  if (_XL_LEFT(input) && level > 0) {
+   level = (uint8_t)(level - 1);
+   _XL_TICK_SOUND();
+   draw_menu(level);
+  } else if (_XL_RIGHT(input) && level < 2) {
+   level = (uint8_t)(level + 1);
+   _XL_TICK_SOUND();
+   draw_menu(level);
+  } else if (_XL_UP(input) && level > 0) {
+   level = (uint8_t)(level - 1);
+   _XL_TICK_SOUND();
+   draw_menu(level);
+  } else if (_XL_DOWN(input) && level < 2) {
+   level = (uint8_t)(level + 1);
+   _XL_TICK_SOUND();
+   draw_menu(level);
+  } else if (_XL_FIRE(input)) {
+   _XL_PING_SOUND();
+   break;
+  }
+  _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+ }
+ return level;
+}
+Good.
+
+play_game:
+static void play_game(uint8_t level) {
+ uint8_t turn;
+ uint8_t input;
+ setup_game();
+ if (g_n == 0) {
+  show_game_over();
+  return;
+ }
+ draw_initial_board();
+ turn = HUMAN;
+ g_winner = 0;
+ g_draw = 0;
+ while (g_winner == 0 && g_draw == 0) {
+  if (turn == HUMAN) {
+   input = _XL_INPUT();
+   if (_XL_LEFT(input)) {
+    move_cursor(0, -1);
+   } else if (_XL_RIGHT(input)) {
+    move_cursor(0, 1);
+   } else if (_XL_UP(input)) {
+    move_cursor(-1, 0);
+   } else if (_XL_DOWN(input)) {
+    move_cursor(1, 0);
+   } else if (_XL_FIRE(input)) {
+    if (g_board[g_cur_r][g_cur_c] == EMPTY) {
+     place_human();
+     turn = AI;
+    }
+   }
+  } else {
+   ai_move(level);
+   if (g_ai_r < g_n && g_ai_c < g_n && g_board[g_ai_r][g_ai_c] == EMPTY) {
+    place_ai();
+    turn = HUMAN;
+   } else {
+    g_draw = 1;
+   }
+  }
+  _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+ }
+ show_game_over();
+}
+Good.
+
+main:
+int main(void) {
+ uint8_t level;
+ _XL_INIT_GRAPHICS();
+ _XL_INIT_INPUT();
+ _XL_INIT_SOUND();
+ while (1) {
+  level = select_level();
+  play_game(level);
+ }
+ return 0;
+}
