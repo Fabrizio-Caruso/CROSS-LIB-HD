@@ -8,12 +8,14 @@
   bezerk
   bomberman
   cairnaval
+  candycrush
   cannibals
   catch
   dodge
   dungeon
   frogger
   fruzzle
+  gomoku
   hanoi
   headon
   hsmup
