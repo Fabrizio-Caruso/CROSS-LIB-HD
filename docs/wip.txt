@@ -1,5 +1,6 @@
   4inarow
   adventure
+  adventure100
   ai2048
   ainvaders
   aiwari
@@ -11,6 +12,7 @@
   candycrush
   cannibals
   catch
+  centipede
   dodge
   dungeon
   frogger
@@ -20,6 +22,7 @@
   headon
   hsmup
   hsmup2
+  mastermind
   maze
   maze2
   memory
@@ -29,6 +32,7 @@
   pacman2
   platform
   platform2
+  platform3
   pong
   raicer
   raicer2
