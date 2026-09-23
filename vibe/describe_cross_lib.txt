@@ -92,14 +92,14 @@ which produces a non-negative integer number in the range [0, 32767]
 
 
 No need to include stdint.h. You have to include cross_lib.h.
-All variable declarations are at the beginning of their enclosing functions.
 For signed integer variables use short.
 Do not redefine _XL_DRAW, _XL_DELETE, XSize, YSize, _XL_SLOW_DOWN_FACTOR.
 Use _XL_PRINTD to display any integer value, e.g., score, lives, etc.
 Do not prototype _XL_INIT_GRAPHICS(), _XL_INIT_INPUT(), _XL_INIT_SOUND().
 Do not redefine _XL_DRAW, _XL_DELETE, _XL_SLOW_DOWN_FACTOR, XSize, YSize.
 
-Use ANSI C89, with no heap, when possible with just uint8_t and uint16_t types for integers.
+Use strict ANSI C89, with no heap, when possible with just uint8_t and uint16_t types for integers.
+All local variable declarations must be at the beginning of functions.
 
 Write an infinite main loop so that the game restarts after the game is over.
 Do not use _XL_DRAW or _XL_DELETE on tiles that have not changed.
