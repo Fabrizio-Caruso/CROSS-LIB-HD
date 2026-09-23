@@ -227,7 +227,7 @@ void update_game(void)
     for (i=0;i<MAX_ENEMIES;i++){
         if (!enemy_active[i]) continue;
         if (_XL_RAND()%ENEMY_MOVE_CHANCE!=0) continue;
-        // enemy_active[i]=0;
+        enemy_active[i]=0;
         nx = enemy_x[i]; ny = enemy_y[i];
         dx = (player_x>enemy_x[i])?1:(player_x<enemy_x[i])?-1:0;
         dy = (player_y>enemy_y[i])?1:(player_y<enemy_y[i])?-1:0;
@@ -235,7 +235,7 @@ void update_game(void)
             nx=enemy_x[i]+dx; else dx=0;
         if (dy && enemy_y[i]+dy<YSize-1 && enemy_y[i]+dy>=PLAY_TOP && !enemy_occupies(enemy_x[i],enemy_y[i]+dy))
             ny=enemy_y[i]+dy; else dy=0;
-        // enemy_active[i]=1;
+        enemy_active[i]=1;
         occupied = 0;
         for (j=0;j<MAX_ENEMIES;j++) if (j!=i && enemy_active[j]){
             if ((enemy_x[j]==nx && enemy_y[j]==ny) || (enemy_x[j]==nx && enemy_y[j]+1==ny)){occupied=1;break;}
