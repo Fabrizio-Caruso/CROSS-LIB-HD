@@ -89,82 +89,11 @@ uint8_t player_right_col(void)
     }
 }
 
-/*
- * Determine the specific tile ID for a player cell based on:
- * 1. Parity (Even = 2-wide, Odd = 3-wide)
- * 2. Position within that shape (Left/Middle/Right column, Top/Bottom row)
- */
-uint8_t get_player_tile_id(uint8_t x, uint8_t y)
-{
-    uint8_t left_col;
-    uint8_t col_offset;
-    uint16_t top_y;
-    uint16_t bottom_y;
-
-    left_col = player_left_col();
-    
-    /* Calculate relative column index (0 for leftmost, 1 for next, etc.) */
-    if (x < left_col) return _TILE_5; /* Fallback, shouldn't happen */
-    col_offset = (uint8_t)(x - left_col);
-
-    top_y = (uint16_t)(YSize - 2u);
-    bottom_y = (uint16_t)(YSize - 1u);
-
-    if (!(player_hx & 1u)) {
-        /* --- EVEN POSITION: 2 Columns Wide --- */
-        /* Uses _TILE_5, _TILE_6, _TILE_7, _TILE_8 */
-        
-        if (y == top_y) {
-            /* Top Row */
-            if (col_offset == 0u) return _TILE_5; /* Top-Left */
-            else                  return _TILE_6; /* Top-Right */
-        } 
-        else if (y == bottom_y) {
-            /* Bottom Row */
-            if (col_offset == 0u) return _TILE_7; /* Bottom-Left */
-            else                  return _TILE_8; /* Bottom-Right */
-        }
-    } 
-    else {
-        /* --- ODD POSITION: 3 Columns Wide --- */
-        /* Uses _TILE_9, _TILE_10, _TILE_11, _TILE_12, _TILE_13, _TILE_14 */
-        
-        if (y == top_y) {
-            /* Top Row */
-            if (col_offset == 0u)      return _TILE_9;  /* Top-Left */
-            else if (col_offset == 1u) return _TILE_10; /* Top-Middle */
-            else                       return _TILE_11; /* Top-Right */
-        } 
-        else if (y == bottom_y) {
-            /* Bottom Row */
-            if (col_offset == 0u)      return _TILE_12; /* Bottom-Left */
-            else if (col_offset == 1u) return _TILE_13; /* Bottom-Middle */
-            else                       return _TILE_14; /* Bottom-Right */
-        }
-    }
-
-    return _TILE_5; /* Fallback */
-}
-
-/* Draw one vertical car column at x. 
- * This function now checks the parity and position to pick the correct tile.
- */
+/* Draw one vertical car column at x: top and bottom tile. */
 void draw_player_column(uint8_t x)
 {
-    uint8_t y_top;
-    uint8_t y_bottom;
-    uint8_t tile_id_top;
-    uint8_t tile_id_bottom;
-
-    y_top = (uint8_t)(YSize - 2);
-    y_bottom = (uint8_t)(YSize - 1);
-
-    /* Get the specific unique tiles for this exact cell */
-    tile_id_top = get_player_tile_id(x, y_top);
-    tile_id_bottom = get_player_tile_id(x, y_bottom);
-
-    _XL_DRAW(x, y_top, tile_id_top, _XL_CYAN);     /* top tile   */
-    _XL_DRAW(x, y_bottom, tile_id_bottom, _XL_CYAN);/* bottom tile*/
+    _XL_DRAW(x, (uint8_t)(YSize - 2), _TILE_6, _XL_CYAN); /* top tile   */
+    _XL_DRAW(x, (uint8_t)(YSize - 1), _TILE_5, _XL_CYAN); /* bottom tile*/
 }
 
 /* Delete one vertical car column at x and restore road underneath. */
@@ -208,40 +137,50 @@ void delete_player(void)
 
 /*
  * Move player one half-tile to the left.
- * Because the tile IDs change when parity changes (Even->Odd or Odd->Even),
- * we must redraw all visible columns of the new shape to ensure correct tiles are displayed.
+ *   even(2n)  -> odd(2n-1):  old [n, n+1]       new [n-1, n, n+1]   => add col n-1
+ *   odd (2n+1)-> even(2n) :  old [n, n+1, n+2]  new [n, n+1]         => del col n+2
  */
 void player_move_left(void)
 {
+    uint8_t old_right;
+
     if (player_hx == ROAD_LEFT * 2u) return;
 
-    /* 
-     * Optimization: We could delete only specific columns and add others, 
-     * but because parity changes swap tile IDs for existing columns, 
-     * the safest way to ensure "Do not draw unchanged tiles" is respected 
-     * in a simple manner is to delete the old shape entirely and draw the new one.
-     * However, strictly speaking, if we move from Even->Odd, the 2 old columns 
-     * change tile IDs, so they ARE changed visually. The 1 new column is added.
-     * If we move Odd->Even, the rightmost column disappears, and the remaining 
-     * 2 columns change tile IDs. 
-     * Therefore, effectively all visible player tiles change or disappear on every move.
-     */
-    
-    delete_player();
-    player_hx--;
-    draw_player();
+    old_right = player_right_col();
+
+    if (player_hx & 1u) {
+        /* Odd -> Even: remove the rightmost column */
+        player_hx--;
+        delete_player_column(old_right);
+    } else {
+        /* Even -> Odd: add a new leftmost column */
+        player_hx--;
+        draw_player_column(player_left_col());
+    }
 }
 
 /*
  * Move player one half-tile to the right.
+ *   even(2n)  -> odd(2n+1):  old [n, n+1]       new [n, n+1, n+2]   => add col n+2
+ *   odd (2n+1)-> even(2n+2): old [n, n+1, n+2]  new [n+1, n+2]      => del col n
  */
 void player_move_right(void)
 {
+    uint8_t old_left;
+
     if (player_hx >= (uint16_t)((ROAD_RIGHT - 1u) * 2u)) return;
 
-    delete_player();
-    player_hx++;
-    draw_player();
+    old_left = player_left_col();
+
+    if (!(player_hx & 1u)) {
+        /* Even -> Odd: add a new rightmost column */
+        player_hx++;
+        draw_player_column(player_right_col());
+    } else {
+        /* Odd -> Even: remove the leftmost column */
+        delete_player_column(old_left);
+        player_hx++;
+    }
 }
 
 /* ------------------------------------------------------------------ */

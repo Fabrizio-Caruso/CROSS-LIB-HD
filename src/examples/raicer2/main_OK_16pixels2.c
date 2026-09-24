@@ -54,29 +54,8 @@
 #define OBSTACLE_TILE _TILE_6
 #define BORDER_TILE _TILE_5
 
-/*
- * Player tiles.
- *
- * Even player position: 2 columns x 2 rows = 4 cells
- *   top-left,   top-right
- *   bottom-left,bottom-right
- */
-#define P_EVEN_TL _TILE_5
-#define P_EVEN_TR _TILE_6
-#define P_EVEN_BL _TILE_7
-#define P_EVEN_BR _TILE_8
-
-/*
- * Odd player position: 3 columns x 2 rows = 6 cells
- *   top-left,     top-middle,    top-right
- *   bottom-left,  bottom-mid,    bottom-right
- */
-#define P_ODD_TL  _TILE_9
-#define P_ODD_TM  _TILE_10
-#define P_ODD_TR  _TILE_11
-#define P_ODD_BL  _TILE_12
-#define P_ODD_BM  _TILE_13
-#define P_ODD_BR  _TILE_14
+#define PLAYER_TOP _TILE_0
+#define PLAYER_BOT _TILE_1
 
 #define ENEMY_TOP _TILE_2
 #define ENEMY_BOT _TILE_3
@@ -184,35 +163,28 @@ static uint8_t get_player_width(uint16_t px)
 /*
  * Draws the new wider player car.
  *
- * even: 2 columns x 2 rows, using _TILE_5.._TILE_8
- * odd : 3 columns x 2 rows, using _TILE_9.._TILE_14
+ * even: 2 columns x 2 rows
+ * odd : 3 columns x 2 rows
  */
 static void draw_player(uint16_t px)
 {
     uint8_t left;
     uint8_t right;
-    uint8_t y_bottom;
+    uint8_t col;
+    uint8_t y;
 
     left = get_left_col(px);
     right = get_right_col(px);
-    y_bottom = (uint8_t)(PLAYER_Y + 1);
 
-    if ((px & 1u) == 0u) {
-        /* Even position: normal tile position, width 2. */
-        _XL_DRAW(left, PLAYER_Y, P_EVEN_TL, _XL_GREEN);
-        _XL_DRAW(right, PLAYER_Y, P_EVEN_TR, _XL_GREEN);
+    /* Top row */
+    for (col = left; col <= right; col++) {
+        _XL_DRAW(col, PLAYER_Y, PLAYER_TOP, _XL_GREEN);
+    }
 
-        _XL_DRAW(left, y_bottom, P_EVEN_BL, _XL_GREEN);
-        _XL_DRAW(right, y_bottom, P_EVEN_BR, _XL_GREEN);
-    } else {
-        /* Odd position: half-tile between tiles, width 3. */
-        _XL_DRAW(left, PLAYER_Y, P_ODD_TL, _XL_GREEN);
-        _XL_DRAW((uint8_t)(left + 1), PLAYER_Y, P_ODD_TM, _XL_GREEN);
-        _XL_DRAW(right, PLAYER_Y, P_ODD_TR, _XL_GREEN);
-
-        _XL_DRAW(left, y_bottom, P_ODD_BL, _XL_GREEN);
-        _XL_DRAW((uint8_t)(left + 1), y_bottom, P_ODD_BM, _XL_GREEN);
-        _XL_DRAW(right, y_bottom, P_ODD_BR, _XL_GREEN);
+    /* Bottom row */
+    y = (uint8_t)(PLAYER_Y + 1);
+    for (col = left; col <= right; col++) {
+        _XL_DRAW(col, y, PLAYER_BOT, _XL_GREEN);
     }
 }
 
