@@ -67,31 +67,15 @@ static uint8_t bullet_hits_enemy(uint8_t bx, uint8_t by, uint8_t ex, uint8_t ey)
     if (by==ey || by==ey+1) return 1;
     return 0;
 }
-static void check_player_enemy_collision(void)
-{
-    uint8_t i;
-    uint8_t e_top,e_bottom,p_top,p_bottom;
-    for (i=0;i<MAX_ENEMIES;i++){
-        if (!enemy_active[i]) continue;
-        if (enemy_x[i]!=player_x) continue;
-        e_top = enemy_y[i];
-        e_bottom = enemy_y[i]+1;
-        p_top = player_y;
-        p_bottom = player_y+1;
-        if (e_bottom < p_top || e_top > p_bottom) continue;
-        if (invincible_timer){
-            del_enemy(enemy_x[i],enemy_y[i]); enemy_active[i]=0; score+=20;
-        }else{
-            lives--; del_enemy(enemy_x[i],enemy_y[i]); enemy_active[i]=0; _XL_EXPLOSION_SOUND();
-        }
-    }
-}
-void init_game(void)
+
+
+
+void restart_gameplay(void)
 {
     uint8_t i,side;
     _XL_CLEAR_SCREEN();
     player_x = XSize/2; player_y = PLAY_TOP + (YSize-PLAY_TOP-2)/2;
-    player_dir = 1; last_move_dir = 3; lives = 3; score = 0; score_last = 0xFFFF;
+    player_dir = 1; last_move_dir = 3; 
     fire_mode = 0; fire_upgrade_cnt = 0; max_bullets_allowed = MIN_BULLETS;
     invincible_timer = 0; fire_tick = 0;
     player_prev_x = player_x; player_prev_y = player_y; player_prev_dir = player_dir;
@@ -111,8 +95,47 @@ void init_game(void)
     }
     draw_player(player_x,player_y,player_dir);
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-    _XL_PRINT(UI_ROW,0,"SCORE"); _XL_PRINTD(6,UI_ROW,4,score);
+    _XL_PRINT(UI_ROW,0,"SCORE"); 
+    _XL_PRINTD(6,UI_ROW,4,score);
+    _XL_PRINT(XSize-1-6,0,"LIVES");
+    _XL_PRINTD(XSize-1,0,1,lives);
 }
+
+static void check_player_enemy_collision(void)
+{
+    uint8_t i;
+    uint8_t e_top,e_bottom,p_top,p_bottom;
+    for (i=0;i<MAX_ENEMIES;i++){
+        if (!enemy_active[i]) continue;
+        if (enemy_x[i]!=player_x) continue;
+        e_top = enemy_y[i];
+        e_bottom = enemy_y[i]+1;
+        p_top = player_y;
+        p_bottom = player_y+1;
+        if (e_bottom < p_top || e_top > p_bottom) continue;
+        if (invincible_timer){
+            del_enemy(enemy_x[i],enemy_y[i]); enemy_active[i]=0; score+=20;
+        }else{
+            lives--; del_enemy(enemy_x[i],enemy_y[i]); enemy_active[i]=0; 
+            draw_player(player_x,player_y,player_dir);
+            _XL_EXPLOSION_SOUND();
+            _XL_SLEEP(1);
+            _XL_WAIT_FOR_INPUT();
+            restart_gameplay();
+        }
+    }
+}
+
+
+void init_game(void)
+{
+    score = 0;
+    lives = 3;
+    restart_gameplay();
+    lives = 3; score = 0; score_last = 0xFFFF;
+}
+
+
 static uint8_t count_active_bullets(void)
 {
     uint8_t i,c;
@@ -120,6 +143,8 @@ static uint8_t count_active_bullets(void)
     for(i=0;i<MAX_BULLETS;i++) if(bullet_active[i]) c++;
     return c;
 }
+
+
 void update_game(void)
 {
     uint8_t inp,i,j,k;
@@ -243,8 +268,6 @@ void update_game(void)
         if (!occupied){if (dx<0) enemy_dir[i]=0; else if (dx>0) enemy_dir[i]=1; enemy_x[i]=nx; enemy_y[i]=ny;}
     }
 
-    check_player_enemy_collision();
-
     for (i=0;i<MAX_ENEMIES;i++){
         if (enemy_active[i]!=enemy_prev_active[i]){
             if (enemy_prev_active[i]) del_enemy(enemy_prev_x[i],enemy_prev_y[i]);
@@ -258,6 +281,7 @@ void update_game(void)
             }
         }
     }
+    
     check_player_enemy_collision();
 
     for (i=0;i<MAX_ITEMS;i++) if (item_active[i]){
@@ -301,13 +325,27 @@ void update_game(void)
         }
     }
 }
+
+
 int main(void)
 {
-    _XL_INIT_GRAPHICS(); _XL_INIT_INPUT(); _XL_INIT_SOUND();
+    _XL_INIT_GRAPHICS(); 
+    _XL_INIT_INPUT(); 
+    _XL_INIT_SOUND();
+    
     init_game();
+    
     while (1){
-        update_game(); _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
-        if (lives<=0){_XL_SET_TEXT_COLOR(_XL_WHITE);_XL_PRINT(XSize/2-4,YSize/2,"GAME OVER");_XL_WAIT_FOR_INPUT();init_game();}
+        update_game(); 
+        _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+        if (lives<=0)
+        {
+            _XL_SET_TEXT_COLOR(_XL_WHITE);
+            _XL_PRINT(XSize/2-4,YSize/2,"GAME OVER");
+            _XL_SLEEP(1);
+            _XL_WAIT_FOR_INPUT();
+            init_game();
+        }
     }
     return 0;
 }
