@@ -17,7 +17,7 @@
 #endif
 
 #define CENTER_X (ROAD_L + ROAD_W / 2)
-#define PLAYER_Y (YSize - 4)
+#define PLAYER_Y (YSize - 3)
 
 /*
  * The player moves in half-tile units.
@@ -48,11 +48,9 @@
     #define PLAYER_MAX_X PLAYER_MAX_EVEN_X
 #endif
 
-#define MAX_ENEMIES 8
-#define MAX_BLOCKS 16
+#define MAX_ENEMIES 4
+#define MAX_BLOCKS 12
 
-#define OBSTACLE_TILE _TILE_6
-#define BORDER_TILE _TILE_5
 
 /*
  * Player tiles.
@@ -78,11 +76,18 @@
 #define P_ODD_BM  _TILE_13
 #define P_ODD_BR  _TILE_14
 
-#define ENEMY_TOP _TILE_2
-#define ENEMY_BOT _TILE_3
+#define ENEMY_TOP _TILE_3
+#define ENEMY_BOT _TILE_4
 
-#define BIG_ENEMY_TOP _TILE_4
-#define BIG_ENEMY_BOT _TILE_7
+#define BIG_ENEMY_TL _TILE_5
+#define BIG_ENEMY_TR _TILE_6
+#define BIG_ENEMY_BL _TILE_7
+#define BIG_ENEMY_BR _TILE_8
+
+
+#define OBSTACLE_TILE _TILE_2
+#define BORDER_TILE _TILE_1
+
 
 typedef struct {
     uint8_t x;
@@ -90,6 +95,8 @@ typedef struct {
     uint8_t w;
     uint8_t h;
 } Car;
+
+
 
 typedef struct {
     uint8_t x;
@@ -102,7 +109,7 @@ static void draw_car(Car *c, uint8_t top_tile, uint8_t bot_tile)
 {
     uint8_t i, j;
 
-    for (i = 0; i < c->h; i++) {
+    for (i = 0; i < 2; i++) {
         if ((uint16_t)c->y + i >= YSize) break;
         for (j = 0; j < c->w; j++) {
             if (i == 0) {
@@ -113,6 +120,44 @@ static void draw_car(Car *c, uint8_t top_tile, uint8_t bot_tile)
         }
     }
 }
+
+static void draw_big_car(Car *c, uint8_t topl_tile, uint8_t topr_tile, uint8_t botl_tile, uint8_t botr_tile)
+{
+    uint8_t i, j;
+    uint8_t tile;
+
+    for (i = 0; i < 2; i++) {
+        if ((uint16_t)c->y + i >= YSize) break;
+        for (j = 0; j < c->w; j++) {
+            if (i == 0) 
+            {
+                if(j==0)
+                {
+                    tile = topl_tile;
+                }
+                else
+                {
+                    tile = topr_tile;
+                }
+                _XL_DRAW(c->x + j, c->y, tile, _XL_RED);
+            } 
+            else 
+            {
+                if(j==0)
+                {
+                    tile = botl_tile;
+                }
+                else
+                {
+                    tile = botr_tile;
+                }
+                _XL_DRAW(c->x + j, c->y + i, tile, _XL_CYAN);
+            }
+        }
+    }
+}
+
+
 
 static void erase_car(Car *c)
 {
@@ -741,9 +786,12 @@ static void game_loop(void)
                 }
             }
 
-            if (enemies[idx].w == 2) {
-                draw_car(&enemies[idx], BIG_ENEMY_TOP, BIG_ENEMY_BOT);
-            } else {
+            if (enemies[idx].w == 2) 
+            {
+                draw_big_car(&enemies[idx], BIG_ENEMY_TL, BIG_ENEMY_TR, BIG_ENEMY_BL, BIG_ENEMY_BR );
+            } 
+            else 
+            {
                 draw_car(&enemies[idx], ENEMY_TOP, ENEMY_BOT);
             }
         }
