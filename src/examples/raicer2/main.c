@@ -491,7 +491,7 @@ static void game_loop(void)
         }
 
         /* Move obstacle blocks. */
-        if (frame % 4 == 0) {
+        // if (frame % 4 == 0) {
             for (i = block_count; i > 0; i--) {
                 uint8_t idx;
                 idx = i - 1;
@@ -520,7 +520,7 @@ static void game_loop(void)
                     block_count--;
                 }
             }
-        }
+        // }
 
         /* Spawn obstacle blocks. */
         if (frame % 60 == 0) {
