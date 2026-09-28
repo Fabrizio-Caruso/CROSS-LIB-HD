@@ -1,3 +1,4 @@
+
 #include "cross_lib.h"
 
 #define BOARD_TOP 1
@@ -20,7 +21,6 @@ static uint8_t g_frame;
 static uint16_t g_score;
 static uint8_t g_fleft;
 static uint8_t g_fw;
-static uint8_t g_next_type;
 
 static short g_piece_base[7][4][2] =
 {
@@ -50,8 +50,6 @@ static void render_diff(void);
 static void update_gravity(void);
 static void process_playing(uint8_t input);
 static void reset_game(void);
-static void draw_borders(void);
-static void draw_next_piece(void);
 
 static uint8_t color_for_value(uint8_t value)
 {
@@ -206,8 +204,7 @@ static int spawn_piece(void)
     short raw_x;
     short right;
 
-    g_type = g_next_type;
-    g_next_type = (uint8_t)(_XL_RAND() % 7);
+    g_type = (uint8_t)(_XL_RAND() % 7);
     g_rot = 0;
 
     raw_x = (short)(g_fleft + (g_fw / 2) - 2);
@@ -637,96 +634,6 @@ static void process_playing(uint8_t input)
     }
 }
 
-static void draw_borders(void)
-{
-    short x;
-    short y;
-    short right;
-
-    right = (short)g_fleft + (short)g_fw;
-
-    /* Top border: row BOARD_TOP - 1 */
-    for (x = (short)g_fleft; x < right; x++)
-    {
-        _XL_DRAW((uint8_t)x, (uint8_t)(BOARD_TOP - 1), _TILE_26, _XL_WHITE);
-    }
-
-    /* Left border: column g_fleft - 1 */
-    if (g_fleft > 0)
-    {
-        for (y = (short)BOARD_TOP; y < (short)YSize; y++)
-        {
-            _XL_DRAW((uint8_t)(g_fleft - 1), (uint8_t)y, _TILE_26, _XL_WHITE);
-        }
-    }
-
-    /* Right border: column g_fleft + g_fw */
-    if (right < (short)XSize)
-    {
-        for (y = (short)BOARD_TOP; y < (short)YSize; y++)
-        {
-            _XL_DRAW((uint8_t)right, (uint8_t)y, _TILE_26, _XL_WHITE);
-        }
-    }
-
-    /* Bottom border: row YSize - 1 is last playable row;
-       draw at the very bottom of the field area */
-    for (x = (short)g_fleft; x < right; x++)
-    {
-        _XL_DRAW((uint8_t)x, (uint8_t)(YSize - 1), _TILE_26, _XL_WHITE);
-    }
-}
-
-static void draw_next_piece(void)
-{
-    short c;
-    short cx;
-    short cy;
-    short px;
-    short py;
-    uint8_t nx;
-    uint8_t ny;
-    uint8_t col;
-
-    if (XSize < 9)
-    {
-        return;
-    }
-
-    nx = (uint8_t)(XSize - 5);
-    ny = (uint8_t)(BOARD_TOP + 1);
-
-    /* Clear the 4x3 preview area first */
-    for (cy = 0; cy < 3; cy++)
-    {
-        for (cx = 0; cx < 4; cx++)
-        {
-            px = (short)nx + cx;
-            py = (short)ny + cy;
-            if (px < (short)XSize && py < (short)YSize)
-            {
-                _XL_DELETE((uint8_t)px, (uint8_t)py);
-            }
-        }
-    }
-
-    /* Draw the next piece in base orientation (rot = 0) */
-    col = color_for_value((uint8_t)(g_next_type + 1));
-
-    for (c = 0; c < 4; c++)
-    {
-        get_cell_coord(g_next_type, 0, (uint8_t)c, &cx, &cy);
-
-        px = (short)nx + cx;
-        py = (short)ny + cy;
-
-        if (px >= 0 && px < (short)XSize && py >= 0 && py < (short)YSize)
-        {
-            _XL_DRAW((uint8_t)px, (uint8_t)py, _TILE_0, col);
-        }
-    }
-}
-
 static void reset_game(void)
 {
     _XL_CLEAR_SCREEN();
@@ -739,17 +646,13 @@ static void reset_game(void)
     g_over = 0;
     g_over_shown = 0;
     g_active = 0;
-    g_next_type = (uint8_t)(_XL_RAND() % 7);
 
     draw_hud_static();
-    draw_borders();
 
     if (!spawn_piece())
     {
         g_over = 1;
     }
-
-    draw_next_piece();
 }
 
 int main(void)
@@ -777,7 +680,6 @@ int main(void)
 
             build_visual();
             render_diff();
-            draw_next_piece();
         }
         else
         {

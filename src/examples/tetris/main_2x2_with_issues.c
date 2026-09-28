@@ -1,8 +1,23 @@
 #include "cross_lib.h"
 
 #define BOARD_TOP 1
-#define FIELD_MAX 10
-#define ROW_MAX 160
+#define FIELD_MAX 16
+#define ROW_MAX 16
+#define SCALE 2
+
+/* 4 unique tiles per colour (value 1..7); index 0 unused */
+static const uint8_t g_tile_map[8][4] = {
+    {  0,  1,  2,  3},   /* [0] unused          */
+    {  4,  5,  6,  7},   /* [1] CYAN            */
+    {  8,  9, 10, 11},   /* [2] RED             */
+    { 12, 13, 14, 15},   /* [3] MAGENTA         */
+    { 16, 17, 18, 19},   /* [4] GREEN           */
+    { 20, 21, 22, 23},   /* [5] BLUE            */
+    { 24, 25, 26, 27},   /* [6] YELLOW          */
+    { 28, 29, 30, 31}    /* [7] WHITE           */
+};
+
+#define BORDER_TILE _TILE_26
 
 static uint8_t g_board[ROW_MAX][FIELD_MAX];
 static uint8_t g_prev[ROW_MAX][FIELD_MAX];
@@ -20,7 +35,7 @@ static uint8_t g_frame;
 static uint16_t g_score;
 static uint8_t g_fleft;
 static uint8_t g_fw;
-static uint8_t g_next_type;
+static uint8_t g_field_h;
 
 static short g_piece_base[7][4][2] =
 {
@@ -50,8 +65,11 @@ static void render_diff(void);
 static void update_gravity(void);
 static void process_playing(uint8_t input);
 static void reset_game(void);
-static void draw_borders(void);
-static void draw_next_piece(void);
+static void draw_border(void);
+static void draw_cell(short ax, short ay, uint8_t value);
+static void erase_cell(short ax, short ay);
+
+/* ─── helpers ─────────────────────────────────────────────────────────── */
 
 static uint8_t color_for_value(uint8_t value)
 {
@@ -64,18 +82,123 @@ static uint8_t color_for_value(uint8_t value)
     return (uint8_t)_XL_WHITE;
 }
 
+/* Draw a 2×2 block of tiles for one logical cell.
+   ax, ay are absolute cell coordinates (g_x / g_y space). */
+static void draw_cell(short ax, short ay, uint8_t value)
+{
+    short px;
+    short py;
+    uint8_t col;
+    uint8_t t0, t1, t2, t3;
+
+    if (value < 1 || value > 7) { return; }
+
+    px = (short)(ax * SCALE);
+    py = (short)(ay * SCALE);
+
+    col = color_for_value(value);
+    t0 = g_tile_map[value][0];
+    t1 = g_tile_map[value][1];
+    t2 = g_tile_map[value][2];
+    t3 = g_tile_map[value][3];
+
+    _XL_DRAW((uint8_t)px,     (uint8_t)py,     t0, col);
+    _XL_DRAW((uint8_t)(px+1), (uint8_t)py,     t1, col);
+    _XL_DRAW((uint8_t)px,     (uint8_t)(py+1), t2, col);
+    _XL_DRAW((uint8_t)(px+1), (uint8_t)(py+1), t3, col);
+}
+
+static void erase_cell(short ax, short ay)
+{
+    short px;
+    short py;
+
+    px = (short)(ax * SCALE);
+    py = (short)(ay * SCALE);
+
+    _XL_DELETE((uint8_t)px,     (uint8_t)py);
+    _XL_DELETE((uint8_t)(px+1), (uint8_t)py);
+    _XL_DELETE((uint8_t)px,     (uint8_t)(py+1));
+    _XL_DELETE((uint8_t)(px+1), (uint8_t)(py+1));
+}
+
+/* Draw a 1-pixel-wide white border around the play field. */
+static void draw_border(void)
+{
+    short left;
+    short right;
+    short top;
+    short bottom;
+    short i;
+
+    left   = (short)(g_fleft * SCALE) - 1;
+    right  = (short)((g_fleft + g_fw) * SCALE);
+    top    = (short)(BOARD_TOP * SCALE) - 1;
+    bottom = (short)((BOARD_TOP + g_field_h) * SCALE);
+
+    /* top edge */
+    if (top >= 0)
+    {
+        for (i = left; i <= right; i++)
+        {
+            if (i >= 0 && i < XSize)
+            {
+                _XL_DRAW((uint8_t)i, (uint8_t)top, BORDER_TILE, (uint8_t)_XL_WHITE);
+            }
+        }
+    }
+
+    /* bottom edge */
+    if (bottom < YSize)
+    {
+        for (i = left; i <= right; i++)
+        {
+            if (i >= 0 && i < XSize)
+            {
+                _XL_DRAW((uint8_t)i, (uint8_t)bottom, BORDER_TILE, (uint8_t)_XL_WHITE);
+            }
+        }
+    }
+
+    /* left edge (skip corners already drawn) */
+    if (left >= 0)
+    {
+        for (i = top + 1; i <= bottom - 1; i++)
+        {
+            if (i >= 0 && i < YSize)
+            {
+                _XL_DRAW((uint8_t)left, (uint8_t)i, BORDER_TILE, (uint8_t)_XL_WHITE);
+            }
+        }
+    }
+
+    /* right edge (skip corners) */
+    if (right < XSize)
+    {
+        for (i = top + 1; i <= bottom - 1; i++)
+        {
+            if (i >= 0 && i < YSize)
+            {
+                _XL_DRAW((uint8_t)right, (uint8_t)i, BORDER_TILE, (uint8_t)_XL_WHITE);
+            }
+        }
+    }
+}
+
+/* ─── core game logic (unchanged except field-height bound) ───────────── */
+
 static void clear_all_grids(void)
 {
     short y;
     short x;
 
-    for (y = 0; y < YSize; y++)
+    for (y = 0; y < ROW_MAX; y++)
     {
         for (x = 0; x < FIELD_MAX; x++)
         {
             g_board[y][x] = 0;
-            g_prev[y][x] = 0;
-            g_cur[y][x] = 0;
+            g_prev[y][x]  = 0;
+            g_cur[y][x]   = 0;
         }
     }
 }
@@ -120,22 +243,19 @@ static void show_game_over(void)
 
 static void setup_field(void)
 {
-    uint8_t width;
-    uint8_t left;
+    uint8_t max_w;
+    uint8_t max_h;
 
-    if (XSize >= 10)
-    {
-        width = 10;
-        left = (uint8_t)((XSize - 10) / 2);
-    }
-    else
-    {
-        width = (uint8_t)XSize;
-        left = 0;
-    }
+    /* field width in cells: at most 10, must fit in XSize pixels (2 per cell) */
+    max_w = (uint8_t)(XSize / SCALE);
+    if (max_w > FIELD_MAX) { max_w = FIELD_MAX; }
+    g_fw = max_w;
+    g_fleft = (uint8_t)((XSize - (uint8_t)(g_fw * SCALE)) / SCALE);
 
-    g_fw = width;
-    g_fleft = left;
+    /* field height in cells: from BOARD_TOP to (YSize-2)/2 inclusive */
+    max_h = (uint8_t)((YSize - 2) / SCALE);
+    if (max_h <= BOARD_TOP) { max_h = BOARD_TOP + 1; }
+    g_field_h = (uint8_t)(max_h - BOARD_TOP + 1);
 }
 
 static void get_cell_coord(uint8_t type, uint8_t rot, uint8_t cell, short *px, short *py)
@@ -175,8 +295,10 @@ static int collision(uint8_t type, uint8_t rot, short px, short py)
     short sy;
     short fx;
     short right;
+    short bottom;
 
-    right = (short)g_fleft + g_fw;
+    right  = (short)g_fleft + g_fw;
+    bottom = (short)(BOARD_TOP + g_field_h);
 
     for (c = 0; c < 4; c++)
     {
@@ -185,7 +307,7 @@ static int collision(uint8_t type, uint8_t rot, short px, short py)
         sx = px + cx;
         sy = py + cy;
 
-        if (sx < g_fleft || sx >= right || sy < BOARD_TOP || sy >= YSize)
+        if (sx < g_fleft || sx >= right || sy < BOARD_TOP || sy >= bottom)
         {
             return 1;
         }
@@ -206,9 +328,8 @@ static int spawn_piece(void)
     short raw_x;
     short right;
 
-    g_type = g_next_type;
-    g_next_type = (uint8_t)(_XL_RAND() % 7);
-    g_rot = 0;
+    g_type = (uint8_t)(_XL_RAND() % 7);
+    g_rot  = 0;
 
     raw_x = (short)(g_fleft + (g_fw / 2) - 2);
 
@@ -233,7 +354,7 @@ static int spawn_piece(void)
     }
 
     g_active = 1;
-    g_frame = 0;
+    g_frame  = 0;
     return 1;
 }
 
@@ -245,12 +366,14 @@ static uint8_t clear_lines(void)
     short shift;
     short lines;
     short fw;
+    short bottom;
 
-    fw = (short)g_fw;
-    y = BOARD_TOP;
-    lines = 0;
+    fw     = (short)g_fw;
+    bottom = (short)(BOARD_TOP + g_field_h);
+    y      = BOARD_TOP;
+    lines  = 0;
 
-    while (y < YSize)
+    while (y < bottom)
     {
         full = 1;
 
@@ -316,10 +439,11 @@ static void lock_piece(void)
         sx = (short)g_x + cx;
         sy = (short)g_y + cy;
 
-        if (sx < g_fleft || sx >= (short)g_fleft + g_fw || sy < BOARD_TOP || sy >= YSize)
+        if (sx < g_fleft || sx >= (short)g_fleft + g_fw ||
+            sy < BOARD_TOP || sy >= (short)(BOARD_TOP + g_field_h))
         {
             g_active = 0;
-            g_over = 1;
+            g_over   = 1;
             return;
         }
 
@@ -384,83 +508,36 @@ static void rotate_piece(void)
     bx = (short)g_x;
     by = (short)g_y;
 
-    tx = bx;
-    ty = by;
+    tx = bx; ty = by;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 
-    tx = bx - 1;
-    ty = by;
+    tx = bx - 1; ty = by;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 
-    tx = bx + 1;
-    ty = by;
+    tx = bx + 1; ty = by;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 
-    tx = bx;
-    ty = by + 1;
+    tx = bx; ty = by + 1;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 
-    tx = bx;
-    ty = by - 1;
+    tx = bx; ty = by - 1;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 
-    tx = bx - 2;
-    ty = by;
+    tx = bx - 2; ty = by;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 
-    tx = bx + 2;
-    ty = by;
+    tx = bx + 2; ty = by;
     if (!collision(g_type, nr, tx, ty))
-    {
-        g_x = (uint8_t)tx;
-        g_y = (uint8_t)ty;
-        g_rot = nr;
-        _XL_PING_SOUND();
-        return;
-    }
+    { g_x = (uint8_t)tx; g_y = (uint8_t)ty; g_rot = nr; _XL_PING_SOUND(); return; }
 }
+
+/* ─── rendering ───────────────────────────────────────────────────────── */
 
 static void build_visual(void)
 {
@@ -473,10 +550,12 @@ static void build_visual(void)
     short sy;
     short fx;
     short fw;
+    short bottom;
 
-    fw = (short)g_fw;
+    fw     = (short)g_fw;
+    bottom = (short)(BOARD_TOP + g_field_h);
 
-    for (y = 0; y < YSize; y++)
+    for (y = 0; y < ROW_MAX; y++)
     {
         for (x = 0; x < FIELD_MAX; x++)
         {
@@ -484,7 +563,7 @@ static void build_visual(void)
         }
     }
 
-    for (y = BOARD_TOP; y < YSize; y++)
+    for (y = BOARD_TOP; y < bottom; y++)
     {
         for (x = 0; x < fw; x++)
         {
@@ -501,7 +580,8 @@ static void build_visual(void)
             sx = (short)g_x + cx;
             sy = (short)g_y + cy;
 
-            if (sx >= g_fleft && sx < g_fleft + g_fw && sy >= BOARD_TOP && sy < YSize)
+            if (sx >= g_fleft && sx < g_fleft + fw &&
+                sy >= BOARD_TOP && sy < bottom)
             {
                 fx = (short)(sx - g_fleft);
                 if (fx >= 0 && fx < fw)
@@ -518,17 +598,17 @@ static void render_diff(void)
     short y;
     short x;
     short fw;
+    short bottom;
     uint8_t oldv;
     uint8_t newv;
-    uint8_t sx;
 
-    fw = (short)g_fw;
+    fw     = (short)g_fw;
+    bottom = (short)(BOARD_TOP + g_field_h);
 
-    for (y = BOARD_TOP; y < YSize; y++)
+    for (y = BOARD_TOP; y < bottom; y++)
     {
         for (x = 0; x < fw; x++)
         {
-            sx = (uint8_t)(g_fleft + x);
             oldv = g_prev[y][x];
             newv = g_cur[y][x];
 
@@ -536,12 +616,12 @@ static void render_diff(void)
             {
                 if (oldv != 0)
                 {
-                    _XL_DELETE(sx, (uint8_t)y);
+                    erase_cell((short)(g_fleft + x), y);
                 }
 
                 if (newv != 0)
                 {
-                    _XL_DRAW(sx, (uint8_t)y, _TILE_0, color_for_value(newv));
+                    draw_cell((short)(g_fleft + x), y, newv);
                 }
 
                 g_prev[y][x] = newv;
@@ -549,6 +629,8 @@ static void render_diff(void)
         }
     }
 }
+
+/* ─── game flow ───────────────────────────────────────────────────────── */
 
 static void update_gravity(void)
 {
@@ -637,120 +719,29 @@ static void process_playing(uint8_t input)
     }
 }
 
-static void draw_borders(void)
-{
-    short x;
-    short y;
-    short right;
-
-    right = (short)g_fleft + (short)g_fw;
-
-    /* Top border: row BOARD_TOP - 1 */
-    for (x = (short)g_fleft; x < right; x++)
-    {
-        _XL_DRAW((uint8_t)x, (uint8_t)(BOARD_TOP - 1), _TILE_26, _XL_WHITE);
-    }
-
-    /* Left border: column g_fleft - 1 */
-    if (g_fleft > 0)
-    {
-        for (y = (short)BOARD_TOP; y < (short)YSize; y++)
-        {
-            _XL_DRAW((uint8_t)(g_fleft - 1), (uint8_t)y, _TILE_26, _XL_WHITE);
-        }
-    }
-
-    /* Right border: column g_fleft + g_fw */
-    if (right < (short)XSize)
-    {
-        for (y = (short)BOARD_TOP; y < (short)YSize; y++)
-        {
-            _XL_DRAW((uint8_t)right, (uint8_t)y, _TILE_26, _XL_WHITE);
-        }
-    }
-
-    /* Bottom border: row YSize - 1 is last playable row;
-       draw at the very bottom of the field area */
-    for (x = (short)g_fleft; x < right; x++)
-    {
-        _XL_DRAW((uint8_t)x, (uint8_t)(YSize - 1), _TILE_26, _XL_WHITE);
-    }
-}
-
-static void draw_next_piece(void)
-{
-    short c;
-    short cx;
-    short cy;
-    short px;
-    short py;
-    uint8_t nx;
-    uint8_t ny;
-    uint8_t col;
-
-    if (XSize < 9)
-    {
-        return;
-    }
-
-    nx = (uint8_t)(XSize - 5);
-    ny = (uint8_t)(BOARD_TOP + 1);
-
-    /* Clear the 4x3 preview area first */
-    for (cy = 0; cy < 3; cy++)
-    {
-        for (cx = 0; cx < 4; cx++)
-        {
-            px = (short)nx + cx;
-            py = (short)ny + cy;
-            if (px < (short)XSize && py < (short)YSize)
-            {
-                _XL_DELETE((uint8_t)px, (uint8_t)py);
-            }
-        }
-    }
-
-    /* Draw the next piece in base orientation (rot = 0) */
-    col = color_for_value((uint8_t)(g_next_type + 1));
-
-    for (c = 0; c < 4; c++)
-    {
-        get_cell_coord(g_next_type, 0, (uint8_t)c, &cx, &cy);
-
-        px = (short)nx + cx;
-        py = (short)ny + cy;
-
-        if (px >= 0 && px < (short)XSize && py >= 0 && py < (short)YSize)
-        {
-            _XL_DRAW((uint8_t)px, (uint8_t)py, _TILE_0, col);
-        }
-    }
-}
-
 static void reset_game(void)
 {
     _XL_CLEAR_SCREEN();
     clear_all_grids();
     setup_field();
 
-    g_score = 0;
-    g_speed = 5;
-    g_frame = 0;
-    g_over = 0;
-    g_over_shown = 0;
-    g_active = 0;
-    g_next_type = (uint8_t)(_XL_RAND() % 7);
+    g_score       = 0;
+    g_speed       = 5;
+    g_frame       = 0;
+    g_over        = 0;
+    g_over_shown  = 0;
+    g_active      = 0;
 
+    draw_border();
     draw_hud_static();
-    draw_borders();
 
     if (!spawn_piece())
     {
         g_over = 1;
     }
-
-    draw_next_piece();
 }
+
+/* ─── main ────────────────────────────────────────────────────────────── */
 
 int main(void)
 {
@@ -777,7 +768,6 @@ int main(void)
 
             build_visual();
             render_diff();
-            draw_next_piece();
         }
         else
         {
