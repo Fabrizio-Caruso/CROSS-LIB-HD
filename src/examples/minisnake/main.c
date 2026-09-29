@@ -4,8 +4,8 @@
 #define SNAKE_MAX_LENGTH (((XSize)-2)*((YSize)-2)/2)
 #define INITIAL_SNAKE_LENGTH 3
 #define TILE_SNAKE_BODY _TILE_2
-#define TILE_FOOD _TILE_3
-#define TILE_BORDER _TILE_26
+#define TILE_FOOD       _TILE_3
+#define TILE_BORDER     _TILE_26
 #define TILE_HEAD_UP    _TILE_1
 #define TILE_HEAD_RIGHT _TILE_4
 #define TILE_HEAD_DOWN  _TILE_5
