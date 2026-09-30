@@ -4,6 +4,10 @@
 #define FIELD_MAX 10
 #define ROW_MAX 160
 
+#define BRICK_TILE   _TILE_0
+#define BORDER_TILE  _TILE_8
+
+
 static uint8_t g_board[ROW_MAX][FIELD_MAX];
 static uint8_t g_prev[ROW_MAX][FIELD_MAX];
 static uint8_t g_cur[ROW_MAX][FIELD_MAX];
@@ -69,7 +73,7 @@ static void clear_all_grids(void)
     short y;
     short x;
 
-    for (y = 0; y < YSize; y++)
+    for (y = 0; y < YSize - 1; y++)
     {
         for (x = 0; x < FIELD_MAX; x++)
         {
@@ -185,7 +189,7 @@ static int collision(uint8_t type, uint8_t rot, short px, short py)
         sx = px + cx;
         sy = py + cy;
 
-        if (sx < g_fleft || sx >= right || sy < BOARD_TOP || sy >= YSize)
+        if (sx < g_fleft || sx >= right || sy < BOARD_TOP || sy >= YSize - 1)
         {
             return 1;
         }
@@ -250,7 +254,7 @@ static uint8_t clear_lines(void)
     y = BOARD_TOP;
     lines = 0;
 
-    while (y < YSize)
+    while (y < YSize - 1)
     {
         full = 1;
 
@@ -316,7 +320,7 @@ static void lock_piece(void)
         sx = (short)g_x + cx;
         sy = (short)g_y + cy;
 
-        if (sx < g_fleft || sx >= (short)g_fleft + g_fw || sy < BOARD_TOP || sy >= YSize)
+        if (sx < g_fleft || sx >= (short)g_fleft + g_fw || sy < BOARD_TOP || sy >= YSize - 1)
         {
             g_active = 0;
             g_over = 1;
@@ -476,7 +480,7 @@ static void build_visual(void)
 
     fw = (short)g_fw;
 
-    for (y = 0; y < YSize; y++)
+    for (y = 0; y < YSize - 1; y++)
     {
         for (x = 0; x < FIELD_MAX; x++)
         {
@@ -484,7 +488,7 @@ static void build_visual(void)
         }
     }
 
-    for (y = BOARD_TOP; y < YSize; y++)
+    for (y = BOARD_TOP; y < YSize - 1; y++)
     {
         for (x = 0; x < fw; x++)
         {
@@ -501,7 +505,7 @@ static void build_visual(void)
             sx = (short)g_x + cx;
             sy = (short)g_y + cy;
 
-            if (sx >= g_fleft && sx < g_fleft + g_fw && sy >= BOARD_TOP && sy < YSize)
+            if (sx >= g_fleft && sx < g_fleft + g_fw && sy >= BOARD_TOP && sy < YSize - 1)
             {
                 fx = (short)(sx - g_fleft);
                 if (fx >= 0 && fx < fw)
@@ -524,7 +528,7 @@ static void render_diff(void)
 
     fw = (short)g_fw;
 
-    for (y = BOARD_TOP; y < YSize; y++)
+    for (y = BOARD_TOP; y < YSize - 1; y++)
     {
         for (x = 0; x < fw; x++)
         {
@@ -541,7 +545,7 @@ static void render_diff(void)
 
                 if (newv != 0)
                 {
-                    _XL_DRAW(sx, (uint8_t)y, _TILE_0, color_for_value(newv));
+                    _XL_DRAW(sx, (uint8_t)y, BRICK_TILE, color_for_value(newv));
                 }
 
                 g_prev[y][x] = newv;
@@ -648,24 +652,24 @@ static void draw_borders(void)
     /* Top border: row BOARD_TOP - 1 */
     for (x = (short)g_fleft; x < right; x++)
     {
-        _XL_DRAW((uint8_t)x, (uint8_t)(BOARD_TOP - 1), _TILE_26, _XL_WHITE);
+        _XL_DRAW((uint8_t)x, (uint8_t)(BOARD_TOP - 1), BORDER_TILE, _XL_WHITE);
     }
 
     /* Left border: column g_fleft - 1 */
     if (g_fleft > 0)
     {
-        for (y = (short)BOARD_TOP; y < (short)YSize; y++)
+        for (y = (short)BOARD_TOP; y < (short)YSize - 1; y++)
         {
-            _XL_DRAW((uint8_t)(g_fleft - 1), (uint8_t)y, _TILE_26, _XL_WHITE);
+            _XL_DRAW((uint8_t)(g_fleft - 1), (uint8_t)y, BORDER_TILE, _XL_WHITE);
         }
     }
 
     /* Right border: column g_fleft + g_fw */
     if (right < (short)XSize)
     {
-        for (y = (short)BOARD_TOP; y < (short)YSize; y++)
+        for (y = (short)BOARD_TOP; y < (short)YSize - 1; y++)
         {
-            _XL_DRAW((uint8_t)right, (uint8_t)y, _TILE_26, _XL_WHITE);
+            _XL_DRAW((uint8_t)right, (uint8_t)y, BORDER_TILE, _XL_WHITE);
         }
     }
 
@@ -673,7 +677,7 @@ static void draw_borders(void)
        draw at the very bottom of the field area */
     for (x = (short)g_fleft; x < right; x++)
     {
-        _XL_DRAW((uint8_t)x, (uint8_t)(YSize - 1), _TILE_26, _XL_WHITE);
+        _XL_DRAW((uint8_t)x, (uint8_t)(YSize - 1), BORDER_TILE, _XL_WHITE);
     }
 }
 
@@ -703,7 +707,7 @@ static void draw_next_piece(void)
         {
             px = (short)nx + cx;
             py = (short)ny + cy;
-            if (px < (short)XSize && py < (short)YSize)
+            if (px < (short)XSize && py < (short)YSize - 1)
             {
                 _XL_DELETE((uint8_t)px, (uint8_t)py);
             }
@@ -720,9 +724,9 @@ static void draw_next_piece(void)
         px = (short)nx + cx;
         py = (short)ny + cy;
 
-        if (px >= 0 && px < (short)XSize && py >= 0 && py < (short)YSize)
+        if (px >= 0 && px < (short)XSize && py >= 0 && py < (short)YSize - 1)
         {
-            _XL_DRAW((uint8_t)px, (uint8_t)py, _TILE_0, col);
+            _XL_DRAW((uint8_t)px, (uint8_t)py, BRICK_TILE, col);
         }
     }
 }
