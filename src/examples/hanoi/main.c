@@ -33,7 +33,7 @@ static void draw_disk(uint8_t peg, uint8_t row, uint8_t size, uint8_t color)
 
 static void delete_disk(uint8_t peg, uint8_t row, uint8_t size)
 {
-    uint8_t cx, w, xs, i, yt, yb;
+    uint8_t cx, w, xs, i, yt, yb, color;
     cx = (uint8_t)(5 + peg * 8);
     w = (uint8_t)(size * 2 + 2);
     xs = (uint8_t)(cx - w / 2);
@@ -43,8 +43,16 @@ static void delete_disk(uint8_t peg, uint8_t row, uint8_t size)
         _XL_DELETE(i, yt);
         _XL_DELETE(i, yb);
     }
-    _XL_DRAW(cx, yt, _TILE_2, _XL_BLUE);
-    _XL_DRAW(cx, yb, _TILE_2, _XL_BLUE);
+    if(peg==2)
+    {
+        color = _XL_WHITE;
+    }
+    else
+    {
+        color = _XL_BLUE;
+    }
+    _XL_DRAW(cx, yt, _TILE_2, color);
+    _XL_DRAW(cx, yb, _TILE_2, color);
 }
 
 static void draw_marker(uint8_t peg, uint8_t color)
@@ -63,7 +71,7 @@ static void delete_marker(uint8_t peg)
 
 static void init_game(void)
 {
-    uint8_t i, j, cx;
+    uint8_t i, j, cx, color;
 
     peg_heights[0] = 4;
     peg_heights[1] = 0;
@@ -95,8 +103,16 @@ static void init_game(void)
 
     for (i = 0; i < 3; i++) {
         cx = (uint8_t)(5 + i * 8);
+        if(i==2)
+        {
+            color = _XL_WHITE;
+        }
+        else
+        {
+            color = _XL_BLUE;
+        }
         for (j = 6; j <= 14; j++) {
-            _XL_DRAW(cx, j, _TILE_2, _XL_BLUE);
+            _XL_DRAW(cx, j, _TILE_2, color);
         }
     }
 
@@ -109,7 +125,7 @@ static void init_game(void)
     }
 
     draw_marker(sel_source, _XL_GREEN);
-    draw_marker(sel_dest, _XL_YELLOW);
+    // draw_marker(sel_dest, _XL_YELLOW);
 
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINT(2, 16, "MOVES");
@@ -172,7 +188,7 @@ int main(void)
                 if (peg_heights[sel_source] > 0) {
                     phase = 1;
                     _XL_PING_SOUND();
-                }
+                } 
             }
         } else {
             if (_XL_LEFT(input)) {
@@ -188,6 +204,11 @@ int main(void)
                 _XL_TICK_SOUND();
             }
             if (_XL_FIRE(input)) {
+                if(sel_source==sel_dest)
+                {
+                    phase = 0;
+                    continue;
+                }
                 src = sel_source;
                 dst = sel_dest;
                 if (dst != src && peg_heights[src] > 0) {
@@ -202,6 +223,7 @@ int main(void)
                         _XL_PRINTD(9, 16, 1, moves);
                         _XL_SHOOT_SOUND();
                         phase = 0;
+                        delete_marker(sel_dest);
                     } else {
                         _XL_TOCK_SOUND();
                     }
