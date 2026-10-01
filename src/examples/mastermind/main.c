@@ -37,7 +37,6 @@ static void draw_static(void)
     _XL_SET_TEXT_COLOR(_XL_MAGENTA);
     _XL_PRINT(0, TITLE_ROW, "MASTERMIND");
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    // _XL_PRINT(0, INSTRUCT_ROW, "LR=POS UD=CLR FIRE=GO");
     for(i = 0; i < NUM_COLORS; i++) {
         _XL_DRAW(i, PALETTE_ROW, _TILE_0, color_to_xl(i));
     }
@@ -85,24 +84,6 @@ static void draw_feedback(uint8_t y, uint8_t ok, uint8_t soft)
     _XL_PRINTD(18, y, 1, soft);
 }
 
-static void clear_feedback(uint8_t y)
-{
-    uint8_t i;
-    for(i = 10; i < 22; i++) {
-        _XL_DELETE(i, y);
-    }
-}
-
-// static void clear_prev_row(uint8_t y)
-// {
-    // uint8_t i;
-    // for(i = 0; i < 8; i++) {
-        // _XL_DELETE(i, y);
-    // }
-    // for(i = 10; i < 22; i++) {
-        // _XL_DELETE(i, y);
-    // }
-// }
 
 static void draw_prev_row(uint8_t y, uint8_t *g, uint8_t ok, uint8_t soft)
 {
@@ -113,18 +94,6 @@ static void draw_prev_row(uint8_t y, uint8_t *g, uint8_t ok, uint8_t soft)
     draw_feedback(y, ok, soft);
 }
 
-// static void clear_gameover_area(void)
-// {
-    // uint8_t i;
-    // for(i = 0; i < 20; i++) {
-        // _XL_DELETE(i, GAMEOVER_ROW);
-        // _XL_DELETE(i, GAMEOVER_ROW + 1);
-        // _XL_DELETE(i, GAMEOVER_ROW + 2);
-    // }
-    // for(i = 0; i < CODE_LEN; i++) {
-        // _XL_DELETE(6 + i * 2, GAMEOVER_ROW + 1);
-    // }
-// }
 
 static void draw_gameover(uint8_t won, uint8_t *secret)
 {
@@ -196,14 +165,11 @@ int main(void)
     uint8_t attempts;
     uint8_t num_prev;
     uint8_t prev_guesses[MAX_ATTEMPTS][CODE_LEN];
-    // uint8_t prev_ok[MAX_ATTEMPTS];
-    // uint8_t prev_soft[MAX_ATTEMPTS];
     uint8_t input;
     uint8_t ok;
     uint8_t soft;
     uint8_t i;
     uint8_t game_over;
-    // uint8_t won;
 
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
@@ -218,7 +184,6 @@ int main(void)
         attempts = MAX_ATTEMPTS;
         num_prev = 0;
         game_over = 0;
-        // won = 0;
 
         _XL_CLEAR_SCREEN();
         draw_static();
@@ -284,8 +249,6 @@ int main(void)
                 for(i = 0; i < CODE_LEN; i++) {
                     prev_guesses[num_prev][i] = guess[i];
                 }
-                // prev_ok[num_prev] = ok;
-                // prev_soft[num_prev] = soft;
                 num_prev++;
 
                 draw_prev_row(FIRST_PREV_ROW + num_prev - 1,
@@ -293,7 +256,6 @@ int main(void)
 
                 if(ok == CODE_LEN) {
                     game_over = 1;
-                    // won = 1;
                     _XL_EXPLOSION_SOUND();
                     clear_guess_tiles(SELECT_ROW, cursor, 1);
                     draw_gameover(1, secret);
@@ -302,7 +264,6 @@ int main(void)
                 }
 
                 attempts--;
-                // _XL_DELETE(8, ATTEMPTS_ROW);
                 _XL_SET_TEXT_COLOR(_XL_WHITE);
                 _XL_PRINTD(8, ATTEMPTS_ROW, 2, attempts);
 
@@ -313,13 +274,9 @@ int main(void)
                 cursor = 0;
                 draw_guess_tiles(SELECT_ROW, guess, cursor, 1);
 
-                // draw_feedback(FEEDBACK_ROW, ok, soft);
-
                 if(attempts == 0) {
                     game_over = 1;
-                    // won = 0;
                     _XL_ZAP_SOUND();
-                    // clear_feedback(FEEDBACK_ROW);
                     draw_gameover(0, secret);
                     _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
                 }
