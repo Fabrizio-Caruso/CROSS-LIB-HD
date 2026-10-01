@@ -1,7 +1,16 @@
 #include "cross_lib.h"
 
 #define NUM_PEGS 3
-#define NUM_DISKS 4
+
+// TODO: Implement different disk numbers in the code
+// #if XSize<30
+    // #define NUM_DISKS 3
+// #elif XSize<=40
+    // #define NUM_DISKS 4
+// #else
+    // #define NUM_DISKS 5
+// #endif
+
 
 static uint8_t pegs[3][4];
 static uint8_t peg_heights[3];
@@ -17,11 +26,12 @@ static void draw_marker(uint8_t peg, uint8_t color);
 static void delete_marker(uint8_t peg);
 static void init_game(void);
 
+
 static void draw_disk(uint8_t peg, uint8_t row, uint8_t size, uint8_t color)
 {
     uint8_t cx, w, xs, i, yt, yb;
     cx = (uint8_t)(5 + peg * 8);
-    w = (uint8_t)(size * 2 + 2);
+    w = (uint8_t)(size * 2 + 1);
     xs = (uint8_t)(cx - w / 2);
     yt = (uint8_t)(12 - row * 2);
     yb = (uint8_t)(13 - row * 2);
@@ -35,7 +45,7 @@ static void delete_disk(uint8_t peg, uint8_t row, uint8_t size)
 {
     uint8_t cx, w, xs, i, yt, yb, color;
     cx = (uint8_t)(5 + peg * 8);
-    w = (uint8_t)(size * 2 + 2);
+    w = (uint8_t)(size * 2 + 1);
     xs = (uint8_t)(cx - w / 2);
     yt = (uint8_t)(12 - row * 2);
     yb = (uint8_t)(13 - row * 2);
@@ -116,8 +126,8 @@ static void init_game(void)
         }
     }
 
-    for (i = 0; i < 32; i++) {
-        _XL_DRAW(i, 14, _TILE_2, _XL_BLUE);
+    for (i = 0; i < XSize; i++) {
+        _XL_DRAW(i, 14, _TILE_4, _XL_BLUE);
     }
 
     for (i = 0; i < 4; i++) {
