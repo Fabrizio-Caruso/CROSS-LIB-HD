@@ -22,10 +22,11 @@ static uint8_t disk_colors[4];
 
 static void draw_disk(uint8_t peg, uint8_t row, uint8_t size, uint8_t color);
 static void delete_disk(uint8_t peg, uint8_t row, uint8_t size);
-static void draw_marker(uint8_t peg, uint8_t color);
+static void draw_marker(uint8_t peg);
 static void delete_marker(uint8_t peg);
 static void init_game(void);
 
+static uint8_t MARKER_COLOR[2] = {_XL_GREEN, _XL_YELLOW};
 
 static void draw_disk(uint8_t peg, uint8_t row, uint8_t size, uint8_t color)
 {
@@ -65,18 +66,19 @@ static void delete_disk(uint8_t peg, uint8_t row, uint8_t size)
     _XL_DRAW(cx, yb, _TILE_2, color);
 }
 
-static void draw_marker(uint8_t peg, uint8_t color)
+static void draw_marker(uint8_t peg)
 {
     uint8_t cx;
+    
     cx = (uint8_t)(5 + peg * 8);
-    _XL_DRAW(cx, 5, _TILE_3, color);
+    _XL_DRAW(cx, 5-phase, _TILE_3, MARKER_COLOR[phase]);
 }
 
 static void delete_marker(uint8_t peg)
 {
     uint8_t cx;
     cx = (uint8_t)(5 + peg * 8);
-    _XL_DELETE(cx, 5);
+    _XL_DELETE(cx, 5-phase);
 }
 
 static void init_game(void)
@@ -134,7 +136,7 @@ static void init_game(void)
         draw_disk(0, i, pegs[0][i], disk_colors[pegs[0][i] - 1]);
     }
 
-    draw_marker(sel_source, _XL_GREEN);
+    draw_marker(sel_source);
     // draw_marker(sel_dest, _XL_YELLOW);
 
     _XL_SET_TEXT_COLOR(_XL_WHITE);
@@ -185,13 +187,13 @@ int main(void)
             if (_XL_LEFT(input)) {
                 delete_marker(sel_source);
                 sel_source = (uint8_t)((sel_source + 2) % 3);
-                draw_marker(sel_source, _XL_GREEN);
+                draw_marker(sel_source);
                 _XL_TICK_SOUND();
             }
             if (_XL_RIGHT(input)) {
                 delete_marker(sel_source);
                 sel_source = (uint8_t)((sel_source + 1) % 3);
-                draw_marker(sel_source, _XL_GREEN);
+                draw_marker(sel_source);
                 _XL_TICK_SOUND();
             }
             if (_XL_FIRE(input)) {
@@ -204,18 +206,19 @@ int main(void)
             if (_XL_LEFT(input)) {
                 delete_marker(sel_dest);
                 sel_dest = (uint8_t)((sel_dest + 2) % 3);
-                draw_marker(sel_dest, _XL_YELLOW);
+                draw_marker(sel_dest);
                 _XL_TICK_SOUND();
             }
             if (_XL_RIGHT(input)) {
                 delete_marker(sel_dest);
                 sel_dest = (uint8_t)((sel_dest + 1) % 3);
-                draw_marker(sel_dest, _XL_YELLOW);
+                draw_marker(sel_dest);
                 _XL_TICK_SOUND();
             }
             if (_XL_FIRE(input)) {
                 if(sel_source==sel_dest)
                 {
+                    delete_marker(sel_dest);
                     phase = 0;
                     continue;
                 }
@@ -232,6 +235,7 @@ int main(void)
                         moves++;
                         _XL_PRINTD(9, 16, 1, moves);
                         _XL_SHOOT_SOUND();
+                        delete_marker(sel_dest);
                         phase = 0;
                         delete_marker(sel_dest);
                     } else {
