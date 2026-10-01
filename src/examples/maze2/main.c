@@ -10,6 +10,17 @@
 #define DRAW_Y_OFFSET 2
 #define NUM_GEMS 10
 
+// Tiles
+#define T_PLAYER  _TILE_0
+//
+//
+//
+#define T_FLOOR   _TILE_4
+#define T_WALL    _TILE_5
+#define T_EXIT    _TILE_6
+#define T_BULLET  _TILE_7
+#define T_MONSTER _TILE_8
+
 uint8_t maze[MAZE_SIZE][MAZE_SIZE];
 uint8_t player_x, player_y;
 uint8_t player_dir;
