@@ -6,13 +6,17 @@
 #define MONSTER_MOVE_INTERVAL 6
 
 // Tiles
-#define T_FLOOR   _TILE_0
-#define T_WALL    _TILE_1
-#define T_PLAYER  _TILE_2
-#define T_MONSTER _TILE_3
-#define T_EXIT    _TILE_4
-#define T_BULLET  _TILE_5
-#define T_DARK    _TILE_6
+#define T_PLAYER  _TILE_0
+//
+//
+//
+#define T_FLOOR   _TILE_4
+#define T_WALL    _TILE_5
+#define T_EXIT    _TILE_6
+#define T_BULLET  _TILE_7
+#define T_MONSTER _TILE_8
+// #define T_DARK    _TILE_9
+
 
 // Colors
 #define C_FLOOR   _XL_BLUE
@@ -198,7 +202,8 @@ void draw_screen(void) {
 
             if (dist > VIEW_DIST) {
                 // Outside visibility - draw dark
-                _XL_DRAW(sx, sy, T_DARK, C_DARK);
+                // _XL_DRAW(sx, sy, T_DARK, C_DARK);
+                _XL_DELETE(sx,sy);
                 continue;
             }
 
