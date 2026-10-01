@@ -37,7 +37,6 @@ static short g_piece_base[7][4][2] =
     {{1,0},{2,0},{3,0},{3,1}}
 };
 
-static uint8_t color_for_value(uint8_t value);
 static void clear_all_grids(void);
 static void show_score(void);
 static void draw_hud_static(void);
@@ -57,6 +56,7 @@ static void reset_game(void);
 static void draw_borders(void);
 static void draw_next_piece(void);
 
+#if !defined(_XL_NO_COLOR)
 static uint8_t color_for_value(uint8_t value)
 {
     if (value == 1) { return (uint8_t)_XL_CYAN; }
@@ -67,6 +67,7 @@ static uint8_t color_for_value(uint8_t value)
     if (value == 6) { return (uint8_t)_XL_YELLOW; }
     return (uint8_t)_XL_WHITE;
 }
+#endif
 
 static void clear_all_grids(void)
 {
@@ -690,8 +691,9 @@ static void draw_next_piece(void)
     short py;
     uint8_t nx;
     uint8_t ny;
+    #if !defined(_XL_NO_COLOR)
     uint8_t col;
-
+    #endif
     if (XSize < 9)
     {
         return;
@@ -715,8 +717,9 @@ static void draw_next_piece(void)
     }
 
     /* Draw the next piece in base orientation (rot = 0) */
+    #if !defined(_XL_NO_COLOR)
     col = color_for_value((uint8_t)(g_next_type + 1));
-
+    #endif
     for (c = 0; c < 4; c++)
     {
         get_cell_coord(g_next_type, 0, (uint8_t)c, &cx, &cy);
