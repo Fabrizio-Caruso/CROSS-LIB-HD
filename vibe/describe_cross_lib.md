@@ -172,3 +172,4 @@ Generates a non-negative integer in the range [0, 32767]
 - Do not redefine `_XL_DRAW`, `_XL_DELETE`, `_XL_SLOW_DOWN_FACTOR`, `XSize`, `YSize`
 - Do not prototype `_XL_INIT_GRAPHICS()`, `_XL_INIT_INPUT()`, `_XL_INIT_SOUND()`
 - Do not redefine any existing constants or functions
+
