@@ -12,12 +12,14 @@
 #define INVINCIBLE_TICKS 300
 #define ENEMY_FIRE_CD   12
 
-/* Tile / colour assignments – each ship is 2 horizontal tiles */
-#define T_PLAYER_L   _TILE_1   /* player rear/body  */
-#define T_PLAYER_R   _TILE_6   /* player nose       */
+/* Tile / colour assignments – player is 2x2, enemy is 2x1 */
+#define T_PLAYER_TL  _TILE_1    /* player top-left       */
+#define T_PLAYER_TR  _TILE_6    /* player top-right      */
+#define T_PLAYER_BL  _TILE_0    /* player bottom-left    */
+#define T_PLAYER_BR  _TILE_26   /* player bottom-right   */
 #define C_PLAYER     _XL_CYAN
-#define T_ENEMY_L    _TILE_2   /* enemy front (faces player) */
-#define T_ENEMY_R    _TILE_7   /* enemy rear/engine         */
+#define T_ENEMY_L    _TILE_2    /* enemy front (faces player) */
+#define T_ENEMY_R    _TILE_7    /* enemy rear/engine         */
 #define C_ENEMY      _XL_RED
 #define T_BULLET     _TILE_3
 #define C_BULLET     _XL_YELLOW
@@ -62,7 +64,7 @@ static Bullet   ebullets[MAX_EBULLETS];
 static PowerUp  powerups[MAX_POWERUPS];
 
 /* ---------- player state ---------- */
-static uint8_t px, py; /* left-edge of player; occupies (px,py) and (px+1,py) */
+static uint8_t px, py; /* top-left of 2x2; occupies (px,py),(px+1,py),(px,py+1),(px+1,py+1) */
 static uint8_t lives;
 static uint8_t power_level;
 static uint8_t fire_timer;
@@ -103,18 +105,63 @@ static void clear_cell(uint8_t x, uint8_t y)
     }
 }
 
-/* Draw a 2-cell horizontal entity at its left-edge position */
-static void draw_ship(uint8_t x, uint8_t y, uint8_t tile_l, uint8_t tile_r, uint8_t color)
+/* Draw 2x2 player at top-left (x,y) */
+static void draw_player(uint8_t x, uint8_t y, uint8_t color)
 {
-    set_cell(x,     y, tile_l, color);
-    set_cell(x + 1, y, tile_r, color);
+    set_cell(x,     y,     T_PLAYER_TL, color);
+    set_cell(x + 1, y,     T_PLAYER_TR, color);
+    set_cell(x,     y + 1, T_PLAYER_BL, color);
+    set_cell(x + 1, y + 1, T_PLAYER_BR, color);
 }
 
-/* Clear both cells of a 2-cell horizontal entity */
-static void clear_ship(uint8_t x, uint8_t y)
+/* Clear all 4 cells of 2x2 player at (x,y) */
+static void clear_player(uint8_t x, uint8_t y)
 {
     clear_cell(x,     y);
     clear_cell(x + 1, y);
+    clear_cell(x,     y + 1);
+    clear_cell(x + 1, y + 1);
+}
+
+/* Clear old 2x2 cells that are NOT inside the new 2x2 at (nx,ny) */
+static void clear_player_diff(uint8_t ox, uint8_t oy, uint8_t nx, uint8_t ny)
+{
+    uint8_t cx, cy;
+    for (cy = 0; cy < 2; cy++) {
+        for (cx = 0; cx < 2; cx++) {
+            uint8_t cellx = ox + cx;
+            uint8_t celly = oy + cy;
+            if (cellx < nx || cellx > (uint8_t)(nx + 1) ||
+                celly < ny || celly > (uint8_t)(ny + 1)) {
+                clear_cell(cellx, celly);
+            }
+        }
+    }
+}
+
+/* Draw 2-cell horizontal enemy at (x,y) */
+static void draw_enemy(uint8_t x, uint8_t y)
+{
+    set_cell(x,     y, T_ENEMY_L, C_ENEMY);
+    set_cell(x + 1, y, T_ENEMY_R, C_ENEMY);
+}
+
+/* Clear both cells of 2-cell enemy at (x,y) */
+static void clear_enemy(uint8_t x, uint8_t y)
+{
+    clear_cell(x,     y);
+    clear_cell(x + 1, y);
+}
+
+/* Clear old enemy cells NOT inside the new 2-cell at (nx,ny) */
+static void clear_enemy_diff(uint8_t ox, uint8_t oy, uint8_t nx, uint8_t ny)
+{
+    if (!((ox == nx || ox == (uint8_t)(nx + 1)) && oy == ny)) {
+        clear_cell(ox, oy);
+    }
+    if (!((ox + 1 == nx || ox + 1 == (uint8_t)(nx + 1)) && oy == ny)) {
+        clear_cell(ox + 1, oy);
+    }
 }
 
 /* ---------- game reset ---------- */
@@ -183,7 +230,7 @@ static void fire_player(void)
 {
     uint8_t slot;
 
-    /* Level 1: single straight (from nose = px+1, so bullet starts at px+2) */
+    /* Level 1: single straight from top-right */
     slot = find_bullet_slot();
     if (slot < MAX_BULLETS && px + 2 < XSize) {
         bullets[slot].x = px + 2;
@@ -195,9 +242,9 @@ static void fire_player(void)
 
     if (power_level >= 2) {
         slot = find_bullet_slot();
-        if (slot < MAX_BULLETS && py > 0 && px + 2 < XSize) {
+        if (slot < MAX_BULLETS && py + 1 < YSize && px + 2 < XSize) {
             bullets[slot].x = px + 2;
-            bullets[slot].y = py - 1;
+            bullets[slot].y = py + 1;
             bullets[slot].dx = 1;
             bullets[slot].dy = 0;
             bullets[slot].active = 1;
@@ -208,7 +255,7 @@ static void fire_player(void)
         slot = find_bullet_slot();
         if (slot < MAX_BULLETS && py > 0 && px + 2 < XSize) {
             bullets[slot].x = px + 2;
-            bullets[slot].y = py - 1;
+            bullets[slot].y = py;
             bullets[slot].dx = 1;
             bullets[slot].dy = -1;
             bullets[slot].active = 1;
@@ -217,7 +264,7 @@ static void fire_player(void)
 
     if (power_level >= 4) {
         slot = find_bullet_slot();
-        if (slot < MAX_BULLETS && py + 1 < YSize && px + 2 < XSize) {
+        if (slot < MAX_BULLETS && py + 2 < YSize && px + 2 < XSize) {
             bullets[slot].x = px + 2;
             bullets[slot].y = py + 1;
             bullets[slot].dx = 1;
@@ -239,7 +286,6 @@ static void spawn_enemy(void)
     slot = find_enemy_slot();
     if (slot >= MAX_ENEMIES) return;
 
-    /* Spawn so the right cell is at XSize-1: left edge = XSize-2 */
     enemies[slot].x = XSize - 2;
     r = (uint8_t)(_XL_RAND() % YSize);
     enemies[slot].y = r;
@@ -282,19 +328,19 @@ static void update(void)
 
     tick++;
 
-    /* --- player movement (save old pos to clear the trace) --- */
+    /* --- player movement (save old pos for diff-clear) --- */
     old_px = px;
     old_py = py;
 
     input = _XL_INPUT();
-    if (_XL_UP(input) && py > 0)                 py--;
-    else if (_XL_DOWN(input) && py + 1 < YSize)  py++;
-    if (_XL_LEFT(input) && px > 0)               px--;
-    else if (_XL_RIGHT(input) && px + 2 < XSize) px++;
+    if (_XL_UP(input) && py > 0)                       py--;
+    else if (_XL_DOWN(input) && py + 1 < YSize - 1)    py++;
+    if (_XL_LEFT(input) && px > 0)                      px--;
+    else if (_XL_RIGHT(input) && px + 1 < XSize - 1)   px++;
 
-    /* clear the cells the player just left */
+    /* clear only the old cells not covered by the new 2x2 */
     if (old_px != px || old_py != py) {
-        clear_ship(old_px, old_py);
+        clear_player_diff(old_px, old_py, px, py);
     }
 
     /* --- player fire --- */
@@ -307,100 +353,113 @@ static void update(void)
     /* --- invincibility countdown --- */
     if (invincible > 0) invincible--;
 
-    /* --- move player bullets: every tick (fast) --- */
+    /* --- move player bullets --- */
     for (i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) continue;
-        clear_cell(bullets[i].x, bullets[i].y);
         {
             short nx = (short)bullets[i].x + (short)bullets[i].dx;
             short ny = (short)bullets[i].y + (short)bullets[i].dy;
             if (nx < 0 || nx >= (short)XSize || ny < 0 || ny >= (short)YSize) {
+                clear_cell(bullets[i].x, bullets[i].y);
                 bullets[i].active = 0;
             } else {
+                clear_cell(bullets[i].x, bullets[i].y);
                 bullets[i].x = (uint8_t)nx;
                 bullets[i].y = (uint8_t)ny;
             }
         }
     }
 
-    /* --- move enemy bullets: every tick (fast) --- */
+    /* --- move enemy bullets --- */
     for (i = 0; i < MAX_EBULLETS; i++) {
         if (!ebullets[i].active) continue;
-        clear_cell(ebullets[i].x, ebullets[i].y);
         {
             short nx = (short)ebullets[i].x + (short)ebullets[i].dx;
             short ny = (short)ebullets[i].y + (short)ebullets[i].dy;
             if (nx < 0 || nx >= (short)XSize || ny < 0 || ny >= (short)YSize) {
+                clear_cell(ebullets[i].x, ebullets[i].y);
                 ebullets[i].active = 0;
             } else {
+                clear_cell(ebullets[i].x, ebullets[i].y);
                 ebullets[i].x = (uint8_t)nx;
                 ebullets[i].y = (uint8_t)ny;
             }
         }
     }
 
-    /* --- move enemies: every 2 ticks (half speed of bullets) --- */
+    /* --- move enemies: every 2 ticks --- */
     if ((tick & 1) == 0) {
         for (i = 0; i < MAX_ENEMIES; i++) {
             if (!enemies[i].active) continue;
-            clear_ship(enemies[i].x, enemies[i].y);
-
-            /* Diagonal clamping near top/bottom edges */
-            ady = enemies[i].dy;
-            if (ady != 0 && (enemies[i].y < 4 || enemies[i].y > YSize - 5)) {
-                ady = 0;
-            }
-
             {
-                short nx = (short)enemies[i].x + (short)enemies[i].dx;
-                short ny = (short)enemies[i].y + (short)ady;
+                short nx, ny;
+                ady = enemies[i].dy;
+                if (ady != 0 && (enemies[i].y < 4 || enemies[i].y > YSize - 5)) {
+                    ady = 0;
+                }
+                nx = (short)enemies[i].x + (short)enemies[i].dx;
+                ny = (short)enemies[i].y + (short)ady;
+
                 if (nx < 0 || nx >= (short)(XSize - 1) || ny < 0 || ny >= (short)YSize) {
+                    /* off-screen: clear tiles fully and deactivate */
+                    clear_enemy(enemies[i].x, enemies[i].y);
                     enemies[i].active = 0;
                 } else {
+                    /* diff-clear: only remove old cells not in new position */
+                    clear_enemy_diff(enemies[i].x, enemies[i].y,
+                                    (uint8_t)nx, (uint8_t)ny);
                     enemies[i].x = (uint8_t)nx;
                     enemies[i].y = (uint8_t)ny;
+                    draw_enemy(enemies[i].x, enemies[i].y);
                 }
             }
 
-            /* enemy fire from its front (left cell - 1) */
-            if (enemies[i].fire_cd > 0) {
-                enemies[i].fire_cd--;
-            } else {
-                j = find_ebullet_slot();
-                if (j < MAX_EBULLETS && enemies[i].x > 0) {
-                    ebullets[j].x = enemies[i].x - 1;
-                    ebullets[j].y = enemies[i].y;
-                    ebullets[j].dx = -1;
-                    if (_XL_RAND() % 5 == 0) {
-                        ebullets[j].dy = (_XL_RAND() & 1) ? -1 : 1;
-                    } else {
-                        ebullets[j].dy = 0;
+            /* enemy fire from its front */
+            if (enemies[i].active) {
+                if (enemies[i].fire_cd > 0) {
+                    enemies[i].fire_cd--;
+                } else {
+                    j = find_ebullet_slot();
+                    if (j < MAX_EBULLETS && enemies[i].x > 0) {
+                        ebullets[j].x = enemies[i].x - 1;
+                        ebullets[j].y = enemies[i].y;
+                        ebullets[j].dx = -1;
+                        if (_XL_RAND() % 5 == 0) {
+                            ebullets[j].dy = (_XL_RAND() & 1) ? -1 : 1;
+                        } else {
+                            ebullets[j].dy = 0;
+                        }
+                        ebullets[j].active = 1;
                     }
-                    ebullets[j].active = 1;
+                    enemies[i].fire_cd = ENEMY_FIRE_CD + (uint8_t)(_XL_RAND() % 8);
                 }
-                enemies[i].fire_cd = ENEMY_FIRE_CD + (uint8_t)(_XL_RAND() % 8);
             }
         }
     }
 
-    /* --- move power-ups: every 3 ticks (slow drift) --- */
+    /* --- move power-ups: every 3 ticks --- */
     if ((tick % 3) == 0) {
         for (i = 0; i < MAX_POWERUPS; i++) {
             if (!powerups[i].active) continue;
             clear_cell(powerups[i].x, powerups[i].y);
-            if (powerups[i].x > 0) powerups[i].x--;
+            if (powerups[i].x > 0) {
+                powerups[i].x--;
+            } else {
+                powerups[i].active = 0;
+            }
         }
     }
 
-    /* --- collisions: player bullets vs enemies (2-cell wide) --- */
+    /* --- collisions: player bullets vs enemies --- */
     for (i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) continue;
         for (j = 0; j < MAX_ENEMIES; j++) {
             if (!enemies[j].active) continue;
-            /* bullet hits either cell of the enemy */
-            if ((bullets[i].x == enemies[j].x || bullets[i].x == enemies[j].x + 1)
+            if ((bullets[i].x == enemies[j].x || bullets[i].x == (uint8_t)(enemies[j].x + 1))
                 && bullets[i].y == enemies[j].y) {
+                clear_cell(bullets[i].x, bullets[i].y);
                 bullets[i].active = 0;
+                clear_enemy(enemies[j].x, enemies[j].y);
                 enemies[j].active = 0;
                 score += 10;
                 _XL_PING_SOUND();
@@ -409,42 +468,47 @@ static void update(void)
         }
     }
 
-    /* --- collisions: enemy bullets vs player (2-cell wide) --- */
+    /* --- collisions: enemy bullets vs player (2x2) --- */
     if (invincible == 0) {
         for (i = 0; i < MAX_EBULLETS; i++) {
             if (!ebullets[i].active) continue;
-            if ((ebullets[i].x == px || ebullets[i].x == px + 1)
-                && ebullets[i].y == py) {
+            if ((ebullets[i].x == px || ebullets[i].x == (uint8_t)(px + 1))
+                && (ebullets[i].y == py || ebullets[i].y == (uint8_t)(py + 1))) {
+                clear_cell(ebullets[i].x, ebullets[i].y);
                 ebullets[i].active = 0;
                 lives--;
                 power_level = 1;
+                invincible = INVINCIBLE_TICKS;
                 _XL_EXPLOSION_SOUND();
                 break;
             }
         }
     }
 
-    /* --- collisions: enemies vs player (both 2-cell wide) --- */
+    /* --- collisions: enemies vs player (2x1 vs 2x2) --- */
     if (invincible == 0) {
         for (i = 0; i < MAX_ENEMIES; i++) {
             if (!enemies[i].active) continue;
-            /* horizontal overlap of two 2-wide entities on same row */
-            if (enemies[i].y == py &&
-                enemies[i].x <= px + 1 && enemies[i].x + 1 >= px) {
+            if ((enemies[i].y == py || enemies[i].y == (uint8_t)(py + 1))
+                && enemies[i].x <= (uint8_t)(px + 1)
+                && (uint8_t)(enemies[i].x + 1) >= px) {
+                clear_enemy(enemies[i].x, enemies[i].y);
                 enemies[i].active = 0;
                 lives--;
                 power_level = 1;
+                invincible = INVINCIBLE_TICKS;
                 _XL_EXPLOSION_SOUND();
                 break;
             }
         }
     }
 
-    /* --- collisions: player vs power-ups --- */
+    /* --- collisions: player vs power-ups (2x2) --- */
     for (i = 0; i < MAX_POWERUPS; i++) {
         if (!powerups[i].active) continue;
-        if ((powerups[i].x == px || powerups[i].x == px + 1)
-            && powerups[i].y == py) {
+        if ((powerups[i].x == px || powerups[i].x == (uint8_t)(px + 1))
+            && (powerups[i].y == py || powerups[i].y == (uint8_t)(py + 1))) {
+            clear_cell(powerups[i].x, powerups[i].y);
             powerups[i].active = 0;
             switch (powerups[i].type) {
                 case PU_DOUBLE:
@@ -482,8 +546,8 @@ static void update(void)
         }
     }
     for (i = 0; i < MAX_ENEMIES; i++) {
-        if (enemies[i].active && enemies[i].x + 1 < XSize && enemies[i].y < YSize) {
-            draw_ship(enemies[i].x, enemies[i].y, T_ENEMY_L, T_ENEMY_R, C_ENEMY);
+        if (enemies[i].active && (uint8_t)(enemies[i].x + 1) < XSize && enemies[i].y < YSize) {
+            draw_enemy(enemies[i].x, enemies[i].y);
         }
     }
     for (i = 0; i < MAX_EBULLETS; i++) {
@@ -500,12 +564,12 @@ static void update(void)
     /* player – blink when invincible */
     if (invincible > 0) {
         if ((invincible / 4) % 2 == 0) {
-            draw_ship(px, py, T_PLAYER_L, T_PLAYER_R, _XL_WHITE);
+            draw_player(px, py, _XL_WHITE);
         } else {
-            clear_ship(px, py);
+            clear_player(px, py);
         }
     } else {
-        draw_ship(px, py, T_PLAYER_L, T_PLAYER_R, C_PLAYER);
+        draw_player(px, py, C_PLAYER);
     }
 
     /* --- HUD --- */
@@ -544,8 +608,8 @@ static void update(void)
         _XL_PRINT(0, 0, buf);
 
         for (k = 0; k < lives && k < 5; k++) {
-            set_cell(2 + k * 2,     0, T_PLAYER_L, C_PLAYER);
-            set_cell(2 + k * 2 + 1, 0, T_PLAYER_R, C_PLAYER);
+            set_cell(2 + k * 2,     0, T_PLAYER_TL, C_PLAYER);
+            set_cell(2 + k * 2 + 1, 0, T_PLAYER_TR, C_PLAYER);
         }
         for (k = lives; k < 5; k++) {
             clear_cell(2 + k * 2,     0);
@@ -584,11 +648,14 @@ static void show_game_over(void)
             buf[0] = '0' + (char)(s / 100);
             buf[1] = '0' + (char)((s / 10) % 10);
             buf[2] = '0' + (char)(s % 10);
+            buf[3] = '\0';
         } else if (s >= 10) {
             buf[0] = '0' + (char)(s / 10);
             buf[1] = '0' + (char)(s % 10);
+            buf[2] = '\0';
         } else {
             buf[0] = '0' + (char)s;
+            buf[1] = '\0';
         }
         buf[4] = '\0';
         _XL_PRINT(2, YSize / 2, buf);
