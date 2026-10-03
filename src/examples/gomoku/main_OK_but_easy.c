@@ -5,27 +5,11 @@
 #define PLAYER 1
 #define AI 2
 
-/* Empty board cell (single tile repeated) */
 #define T_EMPTY    _TILE_25
 #define T_ARROW    _TILE_26
-
-/* Player stone: 4 distinct tiles */
-#define T_PLAYER_1  _TILE_0
-#define T_PLAYER_2  _TILE_1
-#define T_PLAYER_3  _TILE_2
-#define T_PLAYER_4  _TILE_3
-
-/* Opponent stone: 4 distinct tiles */
-#define T_OPPONENT_1 _TILE_4
-#define T_OPPONENT_2 _TILE_5
-#define T_OPPONENT_3 _TILE_6
-#define T_OPPONENT_4 _TILE_7
-
-/* Select / cursor: 4 distinct tiles */
-#define T_SELECT_1  _TILE_8
-#define T_SELECT_2  _TILE_9
-#define T_SELECT_3  _TILE_10
-#define T_SELECT_4  _TILE_11
+#define T_PLAYER   _TILE_0
+#define T_OPPONENT _TILE_1
+#define T_SELECT   _TILE_3
 
 uint8_t board[BOARD_SIZE][BOARD_SIZE];
 uint8_t difficulty;
@@ -45,8 +29,6 @@ uint8_t win_line_x[5];
 uint8_t win_line_y[5];
 uint8_t win_line_len;
 
-/* --- Drawing helpers --- */
-
 void draw_cell(uint8_t col, uint8_t row, uint8_t tile_id, uint8_t color_id)
 {
     uint8_t px, py;
@@ -58,41 +40,25 @@ void draw_cell(uint8_t col, uint8_t row, uint8_t tile_id, uint8_t color_id)
     _XL_DRAW(px + 1, py + 1, tile_id, color_id);
 }
 
-void draw_cell_4tiles(uint8_t col, uint8_t row, uint8_t color_id,
-                      uint8_t t1, uint8_t t2, uint8_t t3, uint8_t t4)
-{
-    uint8_t px, py;
-    px = (uint8_t)(bx + col * 2);
-    py = (uint8_t)(by + row * 2);
-    _XL_DRAW(px, py, t1, color_id);
-    _XL_DRAW(px + 1, py, t2, color_id);
-    _XL_DRAW(px, py + 1, t3, color_id);
-    _XL_DRAW(px + 1, py + 1, t4, color_id);
-}
-
-void draw_cell_player(uint8_t col, uint8_t row, uint8_t color_id)
-{
-    draw_cell_4tiles(col, row, color_id, T_PLAYER_1, T_PLAYER_2, T_PLAYER_3, T_PLAYER_4);
-}
-
-void draw_cell_opponent(uint8_t col, uint8_t row, uint8_t color_id)
-{
-    draw_cell_4tiles(col, row, color_id, T_OPPONENT_1, T_OPPONENT_2, T_OPPONENT_3, T_OPPONENT_4);
-}
-
-void draw_cell_select(uint8_t col, uint8_t row, uint8_t color_id)
-{
-    draw_cell_4tiles(col, row, color_id, T_SELECT_1, T_SELECT_2, T_SELECT_3, T_SELECT_4);
-}
+// void delete_cell(uint8_t col, uint8_t row)
+// {
+    // uint8_t px, py;
+    // px = (uint8_t)(bx + col * 2);
+    // py = (uint8_t)(by + row * 2);
+    // _XL_DELETE(px, py);
+    // _XL_DELETE(px + 1, py);
+    // _XL_DELETE(px, py + 1);
+    // _XL_DELETE(px + 1, py + 1);
+// }
 
 void draw_board_cell(uint8_t col, uint8_t row)
 {
     if (board[row][col] == EMPTY) {
         draw_cell(col, row, T_EMPTY, _XL_GREEN);
     } else if (board[row][col] == PLAYER) {
-        draw_cell_player(col, row, _XL_WHITE);
+        draw_cell(col, row, T_PLAYER, _XL_WHITE);
     } else if (board[row][col] == AI) {
-        draw_cell_opponent(col, row, _XL_MAGENTA);
+        draw_cell(col, row, T_OPPONENT, _XL_MAGENTA);
     }
 }
 
@@ -113,18 +79,22 @@ void draw_full_board(void)
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINT(XSize-1-3, 0, "LV");
     _XL_PRINTD(XSize-1-1, 0, 1, difficulty);
+    // _XL_PRINT(9, 1, "P");
+    // _XL_PRINTD(11, 1, 1, player_wins);
+    // _XL_PRINT(15, 1, "AI");
+    // _XL_PRINTD(19, 1, 1, ai_wins);
     for (i = 0; i < BOARD_SIZE; i++) {
         for (j = 0; j < BOARD_SIZE; j++) {
             draw_cell(j, i, T_EMPTY, _XL_GREEN);
             if (board[i][j] == PLAYER) {
-                draw_cell_player(j, i, _XL_WHITE);
+                draw_cell(j, i, T_PLAYER, _XL_WHITE);
             } else if (board[i][j] == AI) {
-                draw_cell_opponent(j, i, _XL_MAGENTA);
+                draw_cell(j, i, T_OPPONENT, _XL_MAGENTA);
             }
         }
     }
     if (board[cursor_y][cursor_x] == EMPTY) {
-        draw_cell_select(cursor_x, cursor_y, _XL_RED);
+        draw_cell(cursor_x, cursor_y, T_EMPTY, _XL_RED);
     }
 }
 
@@ -176,7 +146,8 @@ void show_win_line(void)
 {
     uint8_t k;
     for (k = 0; k < win_line_len; k++) {
-        draw_cell_player(win_line_x[k], win_line_y[k], _XL_YELLOW);
+        // TODO: Use a special tile or the correct tile
+        draw_cell(win_line_x[k], win_line_y[k], T_PLAYER, _XL_YELLOW);
     }
 }
 
@@ -244,18 +215,6 @@ uint8_t is_board_full(void)
     return 1;
 }
 
-/*
- * AI difficulty tiers:
- *   Level 1 – detects immediate wins/blocks, then plays a random
- *             move within 2 cells of an existing stone.
- *   Level 2 – detects immediate wins/blocks, then picks the highest-
- *             scoring cell using full-weight threat evaluation
- *             (AI score + PLAYER score).
- *   Level 3 – detects immediate wins/blocks, then picks the highest-
- *             scoring cell using weighted evaluation
- *             (AI score + PLAYER score / 2) plus a small random
- *             jitter to avoid predictability.
- */
 void ai_make_move(void)
 {
     uint8_t i, j;
@@ -283,38 +242,6 @@ void ai_make_move(void)
         return;
     }
 
-    /* --- All levels: take an immediate win if available --- */
-    for (i = 0; i < BOARD_SIZE; i++) {
-        for (j = 0; j < BOARD_SIZE; j++) {
-            if (board[i][j] == EMPTY) {
-                board[i][j] = AI;
-                if (check_win(j, i, AI)) {
-                    ai_move_x = j;
-                    ai_move_y = i;
-                    return;
-                }
-                board[i][j] = EMPTY;
-            }
-        }
-    }
-
-    /* --- All levels: block an immediate loss if needed --- */
-    for (i = 0; i < BOARD_SIZE; i++) {
-        for (j = 0; j < BOARD_SIZE; j++) {
-            if (board[i][j] == EMPTY) {
-                board[i][j] = PLAYER;
-                if (check_win(j, i, PLAYER)) {
-                    board[i][j] = AI;
-                    ai_move_x = j;
-                    ai_move_y = i;
-                    return;
-                }
-                board[i][j] = EMPTY;
-            }
-        }
-    }
-
-    /* --- Level 1: random move near existing stones --- */
     if (difficulty == 1) {
         found = 0;
         for (attempts = 0; attempts < 300 && !found; attempts++) {
@@ -352,45 +279,59 @@ void ai_make_move(void)
         return;
     }
 
-    /* --- Level 2 & 3: evaluate every empty cell --- */
     best_score = 0;
     found = 0;
 
     if (difficulty == 2) {
-        /* MEDIUM: equal weight on both sides, no randomness */
         for (i = 0; i < BOARD_SIZE; i++) {
             for (j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == EMPTY) {
-                    score = score_position(j, i, AI);
-                    board[i][j] = PLAYER;
-                    score += score_position(j, i, PLAYER);
-                    board[i][j] = EMPTY;
-                    if (score > best_score || !found) {
-                        best_score = score;
-                        best_i = i;
-                        best_j = j;
-                        found = 1;
+                    board[i][j] = AI;
+                    if (check_win(j, i, AI)) {
+                        ai_move_x = j;
+                        ai_move_y = i;
+                        return;
                     }
+                    board[i][j] = EMPTY;
                 }
             }
         }
-    } else {
-        /* HARD: AI threats at full weight, player threats halved,
-                 small random jitter for unpredictability */
         for (i = 0; i < BOARD_SIZE; i++) {
             for (j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == EMPTY) {
+                    board[i][j] = PLAYER;
+                    if (check_win(j, i, PLAYER)) {
+                        board[i][j] = AI;
+                        ai_move_x = j;
+                        ai_move_y = i;
+                        return;
+                    }
+                    board[i][j] = EMPTY;
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < BOARD_SIZE; i++) {
+        for (j = 0; j < BOARD_SIZE; j++) {
+            if (board[i][j] == EMPTY) {
+                if (difficulty == 2) {
                     score = score_position(j, i, AI);
                     board[i][j] = PLAYER;
                     score += score_position(j, i, PLAYER) / 2;
                     board[i][j] = EMPTY;
                     score += _XL_RAND() % 200;
-                    if (score > best_score || !found) {
-                        best_score = score;
-                        best_i = i;
-                        best_j = j;
-                        found = 1;
-                    }
+                } else {
+                    score = score_position(j, i, AI);
+                    board[i][j] = PLAYER;
+                    score += score_position(j, i, PLAYER);
+                    board[i][j] = EMPTY;
+                }
+                if (score > best_score || !found) {
+                    best_score = score;
+                    best_i = i;
+                    best_j = j;
+                    found = 1;
                 }
             }
         }
@@ -466,17 +407,39 @@ int main(void)
             _XL_DRAW((XSize - 12) / 2 - 1, 6 + sel_level, T_ARROW, _XL_RED);
 
             if (_XL_UP(input)) {
-                if (sel_level > 1) {
+                if (sel_level > 1) 
+                {
                     _XL_DELETE((XSize - 12) / 2 - 1, 6 + sel_level);
                     sel_level--;
                 }
+                // _XL_CLEAR_SCREEN();
+                // _XL_SET_TEXT_COLOR(_XL_CYAN);
+                // _XL_PRINT((XSize - 12) / 2, 2, "GOMOKU");
+                // _XL_SET_TEXT_COLOR(_XL_WHITE);
+                // _XL_PRINT((XSize - 16) / 2, 5, "SELECT LEVEL");
+                // _XL_PRINT((XSize - 12) / 2, 7, "1  EASY");
+                // _XL_PRINT((XSize - 12) / 2, 8, "2  MEDIUM");
+                // _XL_PRINT((XSize - 12) / 2, 9, "3  HARD");
+                // _XL_SET_TEXT_COLOR(_XL_YELLOW);
+                // _XL_PRINT(0, 13, "FIRE TO START");
                 _XL_TICK_SOUND();
             }
             if (_XL_DOWN(input)) {
-                if (sel_level < 3) {
+                if (sel_level < 3) 
+                {
                     _XL_DELETE((XSize - 12) / 2 - 1, 6 + sel_level);
                     sel_level++;
                 }
+                // _XL_CLEAR_SCREEN();
+                // _XL_SET_TEXT_COLOR(_XL_CYAN);
+                // _XL_PRINT((XSize - 12) / 2, 2, "GOMOKU");
+                // _XL_SET_TEXT_COLOR(_XL_WHITE);
+                // _XL_PRINT((XSize - 16) / 2, 5, "SELECT LEVEL");
+                // _XL_PRINT((XSize - 12) / 2, 7, "1  EASY");
+                // _XL_PRINT((XSize - 12) / 2, 8, "2  MEDIUM");
+                // _XL_PRINT((XSize - 12) / 2, 9, "3  HARD");
+                // _XL_SET_TEXT_COLOR(_XL_YELLOW);
+                // _XL_PRINT(0, 13, "FIRE TO START");
                 _XL_TICK_SOUND();
             }
             if (_XL_FIRE(input)) {
@@ -512,10 +475,12 @@ int main(void)
                         old_cx = cursor_x;
                         old_cy = cursor_y;
                         cursor_x--;
-                        if (board[old_cy][old_cx] == EMPTY)
+                        if (board[old_cy][old_cx] == EMPTY) {
+                            // delete_cell(old_cx, old_cy);
                             draw_board_cell(old_cx, old_cy);
+                        }
                         if (board[cursor_y][cursor_x] == EMPTY)
-                            draw_cell_select(cursor_x, cursor_y, _XL_RED);
+                            draw_cell(cursor_x, cursor_y, T_SELECT, _XL_RED);
                         _XL_TICK_SOUND();
                         _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
                     }
@@ -525,10 +490,12 @@ int main(void)
                         old_cx = cursor_x;
                         old_cy = cursor_y;
                         cursor_x++;
-                        if (board[old_cy][old_cx] == EMPTY)
+                        if (board[old_cy][old_cx] == EMPTY) {
+                            // delete_cell(old_cx, old_cy);
                             draw_board_cell(old_cx, old_cy);
+                        }
                         if (board[cursor_y][cursor_x] == EMPTY)
-                            draw_cell_select(cursor_x, cursor_y, _XL_RED);
+                            draw_cell(cursor_x, cursor_y, T_SELECT, _XL_RED);
                         _XL_TICK_SOUND();
                         _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
                     }
@@ -538,10 +505,12 @@ int main(void)
                         old_cx = cursor_x;
                         old_cy = cursor_y;
                         cursor_y--;
-                        if (board[old_cy][old_cx] == EMPTY)
+                        if (board[old_cy][old_cx] == EMPTY) {
+                            // delete_cell(old_cx, old_cy);
                             draw_board_cell(old_cx, old_cy);
+                        }
                         if (board[cursor_y][cursor_x] == EMPTY)
-                            draw_cell_select(cursor_x, cursor_y, _XL_RED);
+                            draw_cell(cursor_x, cursor_y, T_SELECT, _XL_RED);
                         _XL_TICK_SOUND();
                         _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
                     }
@@ -551,20 +520,24 @@ int main(void)
                         old_cx = cursor_x;
                         old_cy = cursor_y;
                         cursor_y++;
-                        if (board[old_cy][old_cx] == EMPTY)
+                        if (board[old_cy][old_cx] == EMPTY) {
+                            // delete_cell(old_cx, old_cy);
                             draw_board_cell(old_cx, old_cy);
+                        }
                         if (board[cursor_y][cursor_x] == EMPTY)
-                            draw_cell_select(cursor_x, cursor_y, _XL_RED);
+                            draw_cell(cursor_x, cursor_y, T_SELECT, _XL_RED);
                         _XL_TICK_SOUND();
                         _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
                     }
                 }
                 if (_XL_FIRE(input)) {
                     if (board[cursor_y][cursor_x] == EMPTY) {
+                        // delete_cell(cursor_x, cursor_y);
                         board[cursor_y][cursor_x] = PLAYER;
-                        draw_cell_player(cursor_x, cursor_y, _XL_WHITE);
+                        draw_cell(cursor_x, cursor_y, T_PLAYER, _XL_WHITE);
                         _XL_SHOOT_SOUND();
 
+                        /* Check win after PLAYER move */
                         if (check_win(cursor_x, cursor_y, PLAYER)) {
                             game_over = 1;
                             winner = PLAYER;
@@ -591,9 +564,10 @@ int main(void)
                 ai_make_move();
 
                 if (!game_over) {
-                    draw_cell_opponent(ai_move_x, ai_move_y, _XL_MAGENTA);
+                    draw_cell(ai_move_x, ai_move_y, T_OPPONENT, _XL_MAGENTA);
                     _XL_TOCK_SOUND();
 
+                    /* Check win after AI move */
                     if (check_win(ai_move_x, ai_move_y, AI)) {
                         game_over = 1;
                         winner = AI;
