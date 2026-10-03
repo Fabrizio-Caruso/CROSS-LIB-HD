@@ -115,8 +115,6 @@ static uint8_t old_item_tile[MAX_ITEMS];
 static uint8_t old_item_color[MAX_ITEMS];
 static uint8_t old_item_alive[MAX_ITEMS];
 
-static uint8_t last_player_color;
-
 static void reset_screen_state(void);
 static void set_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id);
 static void erase_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id);
@@ -138,16 +136,18 @@ static void fire_bullets(uint8_t idx);
 static void reset_screen_state(void)
 {
     uint16_t y, x;
-    for (y = 0; y < (uint16_t)STATE_H; ++y)
+    for (y = 0; y < (uint16_t)STATE_H; ++y) {
         for (x = 0; x < (uint16_t)STATE_W; ++x) {
             prev_tile[y][x] = (uint8_t)BLANK_TILE;
             prev_color[y][x] = 0;
         }
+    }
 }
 
 static void set_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id)
 {
     if ((uint16_t)x >= (uint16_t)STATE_W || (uint16_t)y >= (uint16_t)STATE_H) return;
+
     if (tile_id == (uint8_t)BLANK_TILE && color_id == 0) {
         if (prev_tile[y][x] != (uint8_t)BLANK_TILE || prev_color[y][x] != 0)
             _XL_DELETE(x, y);
@@ -155,7 +155,9 @@ static void set_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id)
         prev_color[y][x] = 0;
         return;
     }
+
     if (prev_tile[y][x] == tile_id && prev_color[y][x] == color_id) return;
+
     _XL_DRAW(x, y, tile_id, color_id);
     prev_tile[y][x] = tile_id;
     prev_color[y][x] = color_id;
@@ -165,6 +167,7 @@ static void erase_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id)
 {
     if ((uint16_t)x >= (uint16_t)STATE_W || (uint16_t)y >= (uint16_t)STATE_H) return;
     if (tile_id == (uint8_t)BLANK_TILE && color_id == 0) return;
+
     if (prev_tile[y][x] == tile_id && prev_color[y][x] == color_id) {
         _XL_DELETE(x, y);
         prev_tile[y][x] = (uint8_t)BLANK_TILE;
@@ -175,7 +178,8 @@ static void erase_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id)
 static uint8_t random_play_row(void)
 {
     uint16_t span = (uint16_t)((PLAY_BOTTOM) - (PLAY_TOP) + 1);
-    if (span > 0) return (uint8_t)((PLAY_TOP) + (_XL_RAND() % span));
+    if (span > 0)
+        return (uint8_t)((PLAY_TOP) + (_XL_RAND() % span));
     return (uint8_t)PLAY_TOP;
 }
 
@@ -213,8 +217,10 @@ static void spawn_enemy(void)
     if ((uint16_t)idx >= (uint16_t)MAX_ENEMIES) return;
 
     y = random_play_row();
-    for (i = 0; i < (uint16_t)MAX_ENEMIES; ++i)
+
+    for (i = 0; i < (uint16_t)MAX_ENEMIES; ++i) {
         if (enemies[i].alive && enemies[i].y == y) return;
+    }
 
     enemies[idx].x = (uint8_t)(GAME_MAX_X - 1);
     enemies[idx].y = y;
@@ -290,7 +296,6 @@ static void reset_game(void)
     }
 
     old_player_x = 0; old_player_y = 0; old_player_alive = 0;
-    last_player_color = PLAYER_COLOR_ID;
     player_alive = 1;
     game_over = 0;
     explosion_shown = 0;
@@ -325,54 +330,59 @@ static void fire_bullets(uint8_t idx)
     if ((uint16_t)bx > (uint16_t)GAME_MAX_X) bx = (uint8_t)GAME_MAX_X;
     by = player_y;
 
-    /* Center bullet */
-    bullets[idx].x = bx;
-    bullets[idx].y = by;
-    bullets[idx].tile_id = BULLET_TILE_ID;
-    bullets[idx].color_id = BULLET_COLOR_ID;
-    bullets[idx].alive = 1;
-
     if (triple_timer > 0) {
         uint8_t i2, i3, bu, bd;
-
+        i2 = find_dead_bullet();
+        i3 = find_dead_bullet();
         bu = (player_y > PLAY_TOP)    ? (uint8_t)(player_y - 1) : player_y;
         bd = (player_y < PLAY_BOTTOM) ? (uint8_t)(player_y + 1) : player_y;
 
-        /* Upper bullet: find slot, commit it, THEN search for next. */
-        i2 = find_dead_bullet();
+        if ((uint16_t)idx < (uint16_t)MAX_BULLETS) {
+            bullets[idx].x = bx; bullets[idx].y = by;
+            bullets[idx].tile_id = BULLET_TILE_ID; bullets[idx].color_id = BULLET_COLOR_ID;
+            bullets[idx].alive = 1;
+        }
         if ((uint16_t)i2 < (uint16_t)MAX_BULLETS) {
-            bullets[i2].x = bx;
-            bullets[i2].y = bu;
-            bullets[i2].tile_id = BULLET_TILE_ID;
-            bullets[i2].color_id = BULLET_COLOR_ID;
+            bullets[i2].x = bx; bullets[i2].y = bu;
+            bullets[i2].tile_id = BULLET_TILE_ID; bullets[i2].color_id = BULLET_COLOR_ID;
             bullets[i2].alive = 1;
         }
-
-        /* Lower bullet: i2 is now alive so this finds a DIFFERENT slot. */
-        i3 = find_dead_bullet();
         if ((uint16_t)i3 < (uint16_t)MAX_BULLETS) {
-            bullets[i3].x = bx;
-            bullets[i3].y = bd;
-            bullets[i3].tile_id = BULLET_TILE_ID;
-            bullets[i3].color_id = BULLET_COLOR_ID;
+            bullets[i3].x = bx; bullets[i3].y = bd;
+            bullets[i3].tile_id = BULLET_TILE_ID; bullets[i3].color_id = BULLET_COLOR_ID;
             bullets[i3].alive = 1;
         }
+    } else {
+        if ((uint16_t)idx < (uint16_t)MAX_BULLETS) {
+            bullets[idx].x = bx; bullets[idx].y = by;
+            bullets[idx].tile_id = BULLET_TILE_ID; bullets[idx].color_id = BULLET_COLOR_ID;
+            bullets[idx].alive = 1;
+        }
     }
-
     _XL_SHOOT_SOUND();
 }
 
+/*
+ * CRITICAL ORDER:
+ *   1. Snapshot ALL previous-frame positions FIRST.
+ *   2. Then mutate everything (spawn, move, collide, pick up).
+ *
+ * This guarantees old_* values truly reflect where each entity was
+ * on the last rendered frame, so the draw pass can erase the correct
+ * cells.
+ */
 static void update_game(uint8_t input)
 {
     uint16_t i, j;
     uint8_t idx;
 
+    /* --- Timers --- */
     if (fire_cooldown > 0)    --fire_cooldown;
     if (firerate_timer > 0)   --firerate_timer;
     if (invincible_timer > 0) --invincible_timer;
     if (triple_timer > 0)     --triple_timer;
 
-    /* === SNAPSHOT OLD STATE === */
+    /* --- STEP 1: Snapshot old state (BEFORE any mutation) --- */
     old_player_alive = player_alive;
     old_player_x = player_x;
     old_player_y = player_y;
@@ -395,14 +405,14 @@ static void update_game(uint8_t input)
         old_item_alive[i] = items[i].alive;
     }
 
-    /* === SPAWN === */
+    /* --- STEP 2: Spawn --- */
     if (spawn_timer > 0) --spawn_timer;
     else { spawn_enemy(); spawn_timer = ENEMY_INTERVAL; }
 
     if (item_spawn_timer > 0) --item_spawn_timer;
     else { spawn_item(); item_spawn_timer = ITEM_INTERVAL; }
 
-    /* === PLAYER === */
+    /* --- STEP 3: Player movement / firing --- */
     if (player_alive) {
         if (_XL_LEFT(input)) {
             if ((uint16_t)player_x > 0) --player_x;
@@ -421,7 +431,7 @@ static void update_game(uint8_t input)
         }
     }
 
-    /* === MOVE BULLETS === */
+    /* --- STEP 4: Move bullets right --- */
     for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
         if (!bullets[i].alive) continue;
         if ((uint16_t)bullets[i].x + 1 <= (uint16_t)GAME_MAX_X)
@@ -430,7 +440,7 @@ static void update_game(uint8_t input)
             bullets[i].alive = 0;
     }
 
-    /* === MOVE ENEMIES === */
+    /* --- STEP 5: Move enemies left --- */
     for (i = 0; i < (uint16_t)MAX_ENEMIES; ++i) {
         if (!enemies[i].alive) continue;
         if ((uint16_t)enemies[i].x > 0)
@@ -439,7 +449,7 @@ static void update_game(uint8_t input)
             enemies[i].alive = 0;
     }
 
-    /* === MOVE ITEMS (slow) === */
+    /* --- STEP 6: Move items left (slow) --- */
     item_move_timer++;
     if (item_move_timer >= ITEM_MOVE_EVERY) {
         item_move_timer = 0;
@@ -452,7 +462,7 @@ static void update_game(uint8_t input)
         }
     }
 
-    /* === BULLET vs ENEMY === */
+    /* --- STEP 7: Bullet vs enemy collisions --- */
     for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
         if (!bullets[i].alive) continue;
         for (j = 0; j < (uint16_t)MAX_ENEMIES; ++j) {
@@ -469,7 +479,7 @@ static void update_game(uint8_t input)
         }
     }
 
-    /* === PLAYER vs ENEMY === */
+    /* --- STEP 8: Player vs enemy collisions --- */
     if (player_alive && !game_over && invincible_timer == 0) {
         for (j = 0; j < (uint16_t)MAX_ENEMIES; ++j) {
             if (!enemies[j].alive) continue;
@@ -484,7 +494,7 @@ static void update_game(uint8_t input)
         }
     }
 
-    /* === PLAYER vs ITEM === */
+    /* --- STEP 9: Player vs item pickup --- */
     if (player_alive) {
         for (i = 0; i < (uint16_t)MAX_ITEMS; ++i) {
             if (!items[i].alive) continue;
@@ -506,65 +516,33 @@ static void update_game(uint8_t input)
     }
 }
 
+/*
+ * Draw pass: two-phase to prevent ghost tiles.
+ *   Phase 1: erase every entity's OLD position.
+ *   Phase 2: draw every entity's NEW position.
+ *
+ * Because old_* was snapshotted BEFORE any mutation in update_game,
+ * old_item_x/old_item_y always point to the cell that was actually
+ * rendered last frame, so erase_cell finds the matching state and
+ * clears it.
+ */
 static void draw_changed_tiles(void)
 {
     uint16_t i;
     uint8_t pc;
 
-    /* ===== PLAYER ===== */
-    if (player_alive) {
-        pc = PLAYER_COLOR_ID;
-        if (invincible_timer > 0 && (invincible_timer & 1) == 0)
-            pc = _XL_WHITE;
+    /* ===== PHASE 1: ERASE old positions ===== */
 
-        if (old_player_alive) {
-            if (player_x != old_player_x || player_y != old_player_y) {
-                if (player_y == old_player_y) {
-                    if (player_x > old_player_x) {
-                        erase_cell(old_player_x, old_player_y,
-                                   PLAYER_LEFT_TILE_ID, last_player_color);
-                        set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
-                        set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
-                    } else {
-                        erase_cell((uint8_t)(old_player_x + 1), old_player_y,
-                                   PLAYER_RIGHT_TILE_ID, last_player_color);
-                        set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
-                        set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
-                    }
-                } else {
-                    erase_cell(old_player_x, old_player_y,
-                               PLAYER_LEFT_TILE_ID, last_player_color);
-                    erase_cell((uint8_t)(old_player_x + 1), old_player_y,
-                               PLAYER_RIGHT_TILE_ID, last_player_color);
-                    set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
-                    set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
-                }
-            } else {
-                set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
-                set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
-            }
-        } else {
-            set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
-            set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
-        }
-        last_player_color = pc;
-    } else {
-        if (old_player_alive) {
-            erase_cell(old_player_x, old_player_y,
-                       PLAYER_LEFT_TILE_ID, last_player_color);
-            erase_cell((uint8_t)(old_player_x + 1), old_player_y,
-                       PLAYER_RIGHT_TILE_ID, last_player_color);
-        }
-        if (!explosion_shown) {
-            set_cell(old_player_x, old_player_y,
-                     EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
-            set_cell((uint8_t)(old_player_x + 1), old_player_y,
-                     EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
-            explosion_shown = 1;
-        }
+    /* Player */
+    if (old_player_alive &&
+        (!player_alive || old_player_x != player_x || old_player_y != player_y)) {
+        erase_cell(old_player_x, old_player_y,
+                   PLAYER_LEFT_TILE_ID, PLAYER_COLOR_ID);
+        erase_cell((uint8_t)(old_player_x + 1), old_player_y,
+                   PLAYER_RIGHT_TILE_ID, PLAYER_COLOR_ID);
     }
 
-    /* ===== BULLETS (two-pass: erase all old, then draw all new) ===== */
+    /* Bullets */
     for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
         if (old_bullet_alive[i] &&
             ((old_bullet_x[i] != bullets[i].x) ||
@@ -574,53 +552,21 @@ static void draw_changed_tiles(void)
                        BULLET_TILE_ID, BULLET_COLOR_ID);
         }
     }
-    for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
-        if (bullets[i].alive)
-            set_cell(bullets[i].x, bullets[i].y,
-                     BULLET_TILE_ID, BULLET_COLOR_ID);
-    }
 
-    /* ===== ENEMIES ===== */
+    /* Enemies */
     for (i = 0; i < (uint16_t)MAX_ENEMIES; ++i) {
-        if (enemies[i].alive) {
-            if (old_enemy_alive[i]) {
-                if (enemies[i].x != old_enemy_x[i] || enemies[i].y != old_enemy_y[i]) {
-                    if (enemies[i].y == old_enemy_y[i]) {
-                        if (enemies[i].x > old_enemy_x[i]) {
-                            erase_cell(old_enemy_x[i], old_enemy_y[i],
-                                       ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
-                        } else {
-                            erase_cell((uint8_t)(old_enemy_x[i] + 1), old_enemy_y[i],
-                                       ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
-                        }
-                    } else {
-                        erase_cell(old_enemy_x[i], old_enemy_y[i],
-                                   ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
-                        erase_cell((uint8_t)(old_enemy_x[i] + 1), old_enemy_y[i],
-                                   ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
-                    }
-                }
-                set_cell(enemies[i].x, enemies[i].y,
-                         ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
-                set_cell((uint8_t)(enemies[i].x + 1), enemies[i].y,
-                         ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
-            } else {
-                set_cell(enemies[i].x, enemies[i].y,
-                         ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
-                set_cell((uint8_t)(enemies[i].x + 1), enemies[i].y,
-                         ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
-            }
-        } else {
-            if (old_enemy_alive[i]) {
-                erase_cell(old_enemy_x[i], old_enemy_y[i],
-                           ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
-                erase_cell((uint8_t)(old_enemy_x[i] + 1), old_enemy_y[i],
-                           ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
-            }
+        if (old_enemy_alive[i] &&
+            ((old_enemy_x[i] != enemies[i].x) ||
+             (old_enemy_y[i] != enemies[i].y) ||
+             !enemies[i].alive)) {
+            erase_cell(old_enemy_x[i], old_enemy_y[i],
+                       ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
+            erase_cell((uint8_t)(old_enemy_x[i] + 1), old_enemy_y[i],
+                       ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
         }
     }
 
-    /* ===== ITEMS ===== */
+    /* Items – use the exact tile/color that was drawn last frame */
     for (i = 0; i < (uint16_t)MAX_ITEMS; ++i) {
         if (old_item_alive[i] &&
             ((old_item_x[i] != items[i].x) ||
@@ -629,6 +575,46 @@ static void draw_changed_tiles(void)
             erase_cell(old_item_x[i], old_item_y[i],
                        old_item_tile[i], old_item_color[i]);
         }
+    }
+
+    /* ===== PHASE 2: DRAW new positions ===== */
+
+    /* Player or explosion */
+    if (player_alive) {
+        pc = PLAYER_COLOR_ID;
+        if (invincible_timer > 0 && (invincible_timer & 1) == 0)
+            pc = _XL_WHITE;
+        set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
+        set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
+    } else {
+        if (!explosion_shown) {
+            set_cell(player_x, player_y,
+                     EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
+            set_cell((uint8_t)(player_x + 1), player_y,
+                     EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
+            explosion_shown = 1;
+        }
+    }
+
+    /* Bullets */
+    for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
+        if (bullets[i].alive)
+            set_cell(bullets[i].x, bullets[i].y,
+                     BULLET_TILE_ID, BULLET_COLOR_ID);
+    }
+
+    /* Enemies */
+    for (i = 0; i < (uint16_t)MAX_ENEMIES; ++i) {
+        if (enemies[i].alive) {
+            set_cell(enemies[i].x, enemies[i].y,
+                     ENEMY_LEFT_TILE_ID, ENEMY_COLOR_ID);
+            set_cell((uint8_t)(enemies[i].x + 1), enemies[i].y,
+                     ENEMY_RIGHT_TILE_ID, ENEMY_COLOR_ID);
+        }
+    }
+
+    /* Items */
+    for (i = 0; i < (uint16_t)MAX_ITEMS; ++i) {
         if (items[i].alive)
             set_cell(items[i].x, items[i].y,
                      items[i].tile_id, items[i].color_id);
