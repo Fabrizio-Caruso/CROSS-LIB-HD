@@ -3,22 +3,11 @@
 #define COLS 7
 #define ROWS 6
 
-#define START_ROW 3
-
 #define PLAYER_HUMAN 1
 #define PLAYER_AI 2
 
-/* 2x2 tile set for the human player (4 distinct tiles) */
-#define TILE_HUMAN_TL  1
-#define TILE_HUMAN_TR  2
-#define TILE_HUMAN_BL  3
-#define TILE_HUMAN_BR  4
-
-/* 2x2 tile set for the AI (4 distinct tiles, different from human) */
-#define TILE_AI_TL     5
-#define TILE_AI_TR     6
-#define TILE_AI_BL     7
-#define TILE_AI_BR     8
+#define TILE_HUMAN 1
+#define TILE_AI 2
 
 #define DIFF_EASY 0
 #define DIFF_MEDIUM 1
@@ -29,73 +18,6 @@ typedef struct {
     uint8_t c[4];
     uint8_t count;
 } WinLine;
-
-/* Draw a 2x2 piece at board coordinates (col, row) */
-void draw_piece(uint8_t ox, uint8_t oy, uint8_t col, uint8_t row,
-                uint8_t player, uint8_t color)
-{
-    uint8_t x, y;
-
-    x = ox + (uint8_t)(col * 2);
-    y = oy + (uint8_t)(row * 2);
-
-    if (player == PLAYER_HUMAN) {
-        _XL_DRAW(x, y, TILE_HUMAN_TL, color);
-        _XL_DRAW(x + 1, y, TILE_HUMAN_TR, color);
-        _XL_DRAW(x, y + 1, TILE_HUMAN_BL, color);
-        _XL_DRAW(x + 1, y + 1, TILE_HUMAN_BR, color);
-    } else {
-        _XL_DRAW(x, y, TILE_AI_TL, color);
-        _XL_DRAW(x + 1, y, TILE_AI_TR, color);
-        _XL_DRAW(x, y + 1, TILE_AI_BL, color);
-        _XL_DRAW(x + 1, y + 1, TILE_AI_BR, color);
-    }
-}
-
-/* Erase a 2x2 piece at screen coordinates (x, y) */
-void erase_piece(uint8_t x, uint8_t y)
-{
-    _XL_DELETE(x, y);
-    _XL_DELETE(x + 1, y);
-    _XL_DELETE(x, y + 1);
-    _XL_DELETE(x + 1, y + 1);
-}
-
-/*
- * Animate the piece dropping from the top of the board down to final_row.
- * Falls by increments of 1 tile; erases the previous position at each step.
- */
-void drop_animation(uint8_t ox, uint8_t oy, uint8_t col,
-                   uint8_t final_row, uint8_t player, uint8_t color)
-{
-    uint8_t x, y, final_y;
-
-    x = ox + (uint8_t)(col * 2);
-    final_y = oy + (uint8_t)(final_row * 2);
-
-    /* Draw at the starting position (top of board) */
-    draw_piece(ox, oy, col, 0, player, color);
-    _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
-
-    /* Step down by 1 tile at a time */
-    for (y = oy + 1; y <= final_y; y++) {
-        /* Erase the 2x2 block at the previous screen row (y-1) */
-        erase_piece(x, y - 1);
-        /* Draw the 2x2 block at the new screen row (y) */
-        if (player == PLAYER_HUMAN) {
-            _XL_DRAW(x, y, TILE_HUMAN_TL, color);
-            _XL_DRAW(x + 1, y, TILE_HUMAN_TR, color);
-            _XL_DRAW(x, y + 1, TILE_HUMAN_BL, color);
-            _XL_DRAW(x + 1, y + 1, TILE_HUMAN_BR, color);
-        } else {
-            _XL_DRAW(x, y, TILE_AI_TL, color);
-            _XL_DRAW(x + 1, y, TILE_AI_TR, color);
-            _XL_DRAW(x, y + 1, TILE_AI_BL, color);
-            _XL_DRAW(x + 1, y + 1, TILE_AI_BR, color);
-        }
-        _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
-    }
-}
 
 uint8_t get_lowest_empty(uint8_t board[ROWS][COLS], uint8_t col)
 {
@@ -549,9 +471,9 @@ void highlight_win(uint8_t board[ROWS][COLS], WinLine *wl, uint8_t ox, uint8_t o
 
     for (i = 0; i < wl->count; i++) {
         if (board[wl->r[i]][wl->c[i]] == PLAYER_HUMAN) {
-            draw_piece(ox, oy, wl->c[i], wl->r[i], PLAYER_HUMAN, _XL_MAGENTA);
+            _XL_DRAW(ox + wl->c[i], oy + wl->r[i], TILE_HUMAN, _XL_MAGENTA);
         } else {
-            draw_piece(ox, oy, wl->c[i], wl->r[i], PLAYER_AI, _XL_MAGENTA);
+            _XL_DRAW(ox + wl->c[i], oy + wl->r[i], TILE_AI, _XL_MAGENTA);
         }
     }
 }
@@ -572,6 +494,7 @@ uint8_t select_difficulty(void)
     _XL_PRINT(ox, 4, "L=LEFT R=RIGHT F=OK");
     _XL_PRINT(ox, 6, "EASY  MEDIUM  HARD");
 
+    /* Draw initial cursor */
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(ox + 6, 7, "V");
 
@@ -582,6 +505,7 @@ uint8_t select_difficulty(void)
             if (sel > DIFF_EASY) {
                 old_sel = sel;
                 sel--;
+                /* Delete old cursor */
                 if (old_sel == DIFF_EASY) {
                     _XL_DELETE(ox, 7);
                 } else if (old_sel == DIFF_MEDIUM) {
@@ -589,6 +513,7 @@ uint8_t select_difficulty(void)
                 } else {
                     _XL_DELETE(ox + 13, 7);
                 }
+                /* Draw new cursor */
                 _XL_SET_TEXT_COLOR(_XL_CYAN);
                 if (sel == DIFF_EASY) {
                     _XL_PRINT(ox, 7, "V");
@@ -601,6 +526,7 @@ uint8_t select_difficulty(void)
             if (sel < DIFF_HARD) {
                 old_sel = sel;
                 sel++;
+                /* Delete old cursor */
                 if (old_sel == DIFF_EASY) {
                     _XL_DELETE(ox, 7);
                 } else if (old_sel == DIFF_MEDIUM) {
@@ -608,6 +534,7 @@ uint8_t select_difficulty(void)
                 } else {
                     _XL_DELETE(ox + 13, 7);
                 }
+                /* Draw new cursor */
                 _XL_SET_TEXT_COLOR(_XL_CYAN);
                 if (sel == DIFF_MEDIUM) {
                     _XL_PRINT(ox + 6, 7, "V");
@@ -635,20 +562,20 @@ int main(void)
     uint8_t col, row;
     uint8_t ox, oy;
     uint8_t difficulty;
-    uint8_t cursor_row;
     WinLine wl;
 
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
     _XL_INIT_SOUND();
 
-    ox = (uint8_t)((XSize - (COLS * 2)) / 2);
-    oy = START_ROW;
-    cursor_row = (uint8_t)(START_ROW - 1);
+    ox = (uint8_t)((XSize - COLS) / 2);
+    oy = 4;
 
     while (1) {
+        /* Difficulty selection */
         difficulty = select_difficulty();
 
+        /* Reset game */
         reset_board(board);
         state = 0;
         turn = PLAYER_HUMAN;
@@ -669,8 +596,9 @@ int main(void)
         _XL_PRINT(ox, 2, "L=MOVE R=MOVE F=DROP");
 
         _XL_SET_TEXT_COLOR(_XL_CYAN);
-        _XL_PRINT(ox + cursor * 2, cursor_row, "V");
+        _XL_PRINT(ox + cursor, 3, "V");
 
+        /* Main game loop */
         while (state == 0) {
             if (turn == PLAYER_HUMAN) {
                 while (state == 0 && turn == PLAYER_HUMAN) {
@@ -678,24 +606,23 @@ int main(void)
 
                     if (_XL_LEFT(input)) {
                         if (cursor > 0) {
-                            _XL_DELETE(ox + cursor * 2, cursor_row);
+                            _XL_DELETE(ox + cursor, 3);
                             cursor--;
-                            _XL_PRINT(ox + cursor * 2, cursor_row, "V");
+                            _XL_PRINT(ox + cursor, 3, "V");
                             _XL_TICK_SOUND();
                         }
                     } else if (_XL_RIGHT(input)) {
                         if (cursor < (uint8_t)(COLS - 1)) {
-                            _XL_DELETE(ox + cursor * 2, cursor_row);
+                            _XL_DELETE(ox + cursor, 3);
                             cursor++;
-                            _XL_PRINT(ox + cursor * 2, cursor_row, "V");
+                            _XL_PRINT(ox + cursor, 3, "V");
                             _XL_TICK_SOUND();
                         }
                     } else if (_XL_FIRE(input)) {
                         row = get_lowest_empty(board, cursor);
                         if (row != 255) {
                             board[row][cursor] = PLAYER_HUMAN;
-                            drop_animation(ox, oy, cursor, row,
-                                          PLAYER_HUMAN, _XL_RED);
+                            _XL_DRAW(ox + cursor, oy + row, TILE_HUMAN, _XL_RED);
                             _XL_PING_SOUND();
 
                             check_win(board, PLAYER_HUMAN, &wl);
@@ -723,8 +650,7 @@ int main(void)
 
                 if (row != 255) {
                     board[row][col] = PLAYER_AI;
-                    drop_animation(ox, oy, col, row,
-                                  PLAYER_AI, _XL_YELLOW);
+                    _XL_DRAW(ox + col, oy + row, TILE_AI, _XL_YELLOW);
                     _XL_SHOOT_SOUND();
 
                     check_win(board, PLAYER_AI, &wl);
@@ -743,7 +669,8 @@ int main(void)
             }
         }
 
-        _XL_DELETE(ox + cursor * 2, cursor_row);
+        /* Game over display */
+        _XL_DELETE(ox + cursor, 3);
         _XL_SET_TEXT_COLOR(_XL_WHITE);
 
         if (state == 1) {
@@ -769,3 +696,4 @@ int main(void)
 
     return 0;
 }
+
