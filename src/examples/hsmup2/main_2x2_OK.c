@@ -4,7 +4,6 @@
  *  HORIZONTAL SHOOTER - Cross-Lib / ANSI C89
  *  Player uses virtual y (vpy): display at vpy/2, 2x2 tiles.
  *  Even vpy → tile set A, Odd vpy → tile set B.
- *  Play area: rows TOP_ROW .. BOT_ROW (inclusive).
  * ============================================================ */
 
 #define MAX_BULLETS     16
@@ -14,14 +13,6 @@
 #define FIRE_COOLDOWN    4
 #define INVINCIBLE_TICKS 300
 #define ENEMY_FIRE_CD   12
-
-/* Play-area vertical bounds (real screen rows) */
-#define TOP_ROW         2
-#define BOT_ROW         (YSize - 2)
-
-/* Virtual-y bounds derived from play area */
-#define MIN_VPY         4
-#define MAX_VPY         (uint8_t)(2 * (YSize - 3) + 1)
 
 /* Tile / colour assignments */
 /* Player 2x2 – EVEN virtual y */
@@ -39,12 +30,8 @@
 #define T_ENEMY_L    _TILE_2
 #define T_ENEMY_R    _TILE_7
 #define C_ENEMY      _XL_RED
-
-/* Bullet tiles: differ by origin parity */
-#define T_BULLET_E   _TILE_3
-#define T_BULLET_O   _TILE_8
+#define T_BULLET     _TILE_3
 #define C_BULLET     _XL_YELLOW
-
 #define T_POWERUP    _TILE_4
 #define C_POWERUP    _XL_GREEN
 #define T_EBULLET    _TILE_5
@@ -64,7 +51,6 @@ static uint8_t scr[XSize][YSize];
 typedef struct {
     uint8_t x, y;
     int8_t  dx, dy;
-    uint8_t tile;
     uint8_t active;
 } Bullet;
 
@@ -209,7 +195,7 @@ static void reset_game(void)
 {
     uint8_t i;
     px = 2;
-    vpy = MIN_VPY;         /* start at top of play area */
+    vpy = YSize;           /* virtual y = YSize → screen row = YSize/2 */
     lives = 3;
     power_level = 1;
     fire_timer = 0;
@@ -264,75 +250,53 @@ static uint8_t find_powerup_slot(void)
 }
 
 /* ---------- fire player bullets ----------
- * Even vpy → bullet tile T_BULLET_E, primary y = sy (top of 2x2).
- * Odd  vpy → bullet tile T_BULLET_O, primary y = sy+1 (bottom of 2x2).
- * Bullets keep their tile for the entire lifespan. */
+ * Bullets originate from the right edge of the 2x2 player.
+ * Screen rows are vpy/2 (top) and vpy/2+1 (bottom). */
 
 static void fire_player(void)
 {
     uint8_t slot;
     uint8_t sy = (uint8_t)(vpy / 2);
-    uint8_t btile;
-    uint8_t primary_y;
-    uint8_t secondary_y;
 
-    if ((vpy & 1) == 0) {
-        btile = T_BULLET_E;
-        primary_y   = sy;       /* top of 2x2 */
-        secondary_y = sy + 1;   /* bottom of 2x2 */
-    } else {
-        btile = T_BULLET_O;
-        primary_y   = sy + 1;   /* bottom of 2x2 */
-        secondary_y = sy;       /* top of 2x2 */
-    }
-
-    /* Level 1: single straight from primary row */
+    /* Level 1: single straight from top row */
     slot = find_bullet_slot();
-    if (slot < MAX_BULLETS && px + 2 < XSize &&
-        primary_y >= TOP_ROW && primary_y <= BOT_ROW) {
+    if (slot < MAX_BULLETS && px + 2 < XSize) {
         bullets[slot].x = px + 2;
-        bullets[slot].y = primary_y;
+        bullets[slot].y = sy;
         bullets[slot].dx = 1;
         bullets[slot].dy = 0;
-        bullets[slot].tile = btile;
         bullets[slot].active = 1;
     }
 
     if (power_level >= 2) {
         slot = find_bullet_slot();
-        if (slot < MAX_BULLETS && px + 2 < XSize &&
-            secondary_y >= TOP_ROW && secondary_y <= BOT_ROW) {
+        if (slot < MAX_BULLETS && (uint8_t)(sy + 1) < YSize && px + 2 < XSize) {
             bullets[slot].x = px + 2;
-            bullets[slot].y = secondary_y;
+            bullets[slot].y = sy + 1;
             bullets[slot].dx = 1;
             bullets[slot].dy = 0;
-            bullets[slot].tile = btile;
             bullets[slot].active = 1;
         }
     }
 
     if (power_level >= 3) {
         slot = find_bullet_slot();
-        if (slot < MAX_BULLETS && px + 2 < XSize &&
-            primary_y > TOP_ROW) {
+        if (slot < MAX_BULLETS && sy > 0 && px + 2 < XSize) {
             bullets[slot].x = px + 2;
-            bullets[slot].y = primary_y;
+            bullets[slot].y = sy;
             bullets[slot].dx = 1;
             bullets[slot].dy = -1;
-            bullets[slot].tile = btile;
             bullets[slot].active = 1;
         }
     }
 
     if (power_level >= 4) {
         slot = find_bullet_slot();
-        if (slot < MAX_BULLETS && px + 2 < XSize &&
-            secondary_y < BOT_ROW) {
+        if (slot < MAX_BULLETS && (uint8_t)(sy + 2) < YSize && px + 2 < XSize) {
             bullets[slot].x = px + 2;
-            bullets[slot].y = secondary_y;
+            bullets[slot].y = sy + 1;
             bullets[slot].dx = 1;
             bullets[slot].dy = 1;
-            bullets[slot].tile = btile;
             bullets[slot].active = 1;
         }
     }
@@ -346,15 +310,13 @@ static void spawn_enemy(void)
 {
     uint8_t slot, r;
     int8_t dy;
-    uint8_t span;
 
     slot = find_enemy_slot();
     if (slot >= MAX_ENEMIES) return;
 
     enemies[slot].x = XSize - 2;
-    span = (uint8_t)(BOT_ROW - TOP_ROW + 1);
-    r = (uint8_t)(_XL_RAND() % span);
-    enemies[slot].y = (uint8_t)(TOP_ROW + r);
+    r = (uint8_t)(_XL_RAND() % YSize);
+    enemies[slot].y = r;
 
     if (_XL_RAND() % 10 < 3) {
         dy = (_XL_RAND() & 1) ? -1 : 1;
@@ -372,15 +334,13 @@ static void spawn_enemy(void)
 static void spawn_powerup(void)
 {
     uint8_t slot, r;
-    uint8_t span;
 
     slot = find_powerup_slot();
     if (slot >= MAX_POWERUPS) return;
 
     powerups[slot].x = XSize - 1;
-    span = (uint8_t)(BOT_ROW - TOP_ROW + 1);
-    r = (uint8_t)(_XL_RAND() % span);
-    powerups[slot].y = (uint8_t)(TOP_ROW + r);
+    r = (uint8_t)(_XL_RAND() % YSize);
+    powerups[slot].y = r;
     powerups[slot].type = (uint8_t)(_XL_RAND() % 4);
     powerups[slot].active = 1;
 }
@@ -398,14 +358,14 @@ static void update(void)
     tick++;
     sy = (uint8_t)(vpy / 2);
 
-    /* --- player movement (clamped to play area) --- */
+    /* --- player movement --- */
     old_px = px;
     old_vpy = vpy;
 
     input = _XL_INPUT();
-    if (_XL_UP(input) && vpy > MIN_VPY)
+    if (_XL_UP(input) && vpy > 0)
         vpy--;
-    else if (_XL_DOWN(input) && vpy < MAX_VPY)
+    else if (_XL_DOWN(input) && (uint8_t)((vpy + 1) / 2 + 1) < YSize)
         vpy++;
     if (_XL_LEFT(input) && px > 0)
         px--;
@@ -427,14 +387,13 @@ static void update(void)
     /* --- invincibility countdown --- */
     if (invincible > 0) invincible--;
 
-    /* --- move player bullets (removed when leaving play area) --- */
+    /* --- move player bullets --- */
     for (i = 0; i < MAX_BULLETS; i++) {
         if (!bullets[i].active) continue;
         {
             short nx = (short)bullets[i].x + (short)bullets[i].dx;
             short ny = (short)bullets[i].y + (short)bullets[i].dy;
-            if (nx < 0 || nx >= (short)XSize ||
-                ny < (short)TOP_ROW || ny > (short)BOT_ROW) {
+            if (nx < 0 || nx >= (short)XSize || ny < 0 || ny >= (short)YSize) {
                 clear_cell(bullets[i].x, bullets[i].y);
                 bullets[i].active = 0;
             } else {
@@ -445,14 +404,13 @@ static void update(void)
         }
     }
 
-    /* --- move enemy bullets (removed when leaving play area) --- */
+    /* --- move enemy bullets --- */
     for (i = 0; i < MAX_EBULLETS; i++) {
         if (!ebullets[i].active) continue;
         {
             short nx = (short)ebullets[i].x + (short)ebullets[i].dx;
             short ny = (short)ebullets[i].y + (short)ebullets[i].dy;
-            if (nx < 0 || nx >= (short)XSize ||
-                ny < (short)TOP_ROW || ny > (short)BOT_ROW) {
+            if (nx < 0 || nx >= (short)XSize || ny < 0 || ny >= (short)YSize) {
                 clear_cell(ebullets[i].x, ebullets[i].y);
                 ebullets[i].active = 0;
             } else {
@@ -470,16 +428,13 @@ static void update(void)
             {
                 short nx, ny;
                 ady = enemies[i].dy;
-                /* bounce within play area */
-                if (ady != 0 &&
-                    (enemies[i].y <= TOP_ROW || enemies[i].y >= BOT_ROW)) {
+                if (ady != 0 && (enemies[i].y < 4 || enemies[i].y > YSize - 5)) {
                     ady = 0;
                 }
                 nx = (short)enemies[i].x + (short)enemies[i].dx;
                 ny = (short)enemies[i].y + (short)ady;
 
-                if (nx < 0 || nx >= (short)(XSize - 1) ||
-                    ny < (short)TOP_ROW || ny > (short)BOT_ROW) {
+                if (nx < 0 || nx >= (short)(XSize - 1) || ny < 0 || ny >= (short)YSize) {
                     clear_enemy(enemies[i].x, enemies[i].y);
                     enemies[i].active = 0;
                 } else {
@@ -505,7 +460,6 @@ static void update(void)
                         } else {
                             ebullets[j].dy = 0;
                         }
-                        ebullets[j].tile = T_EBULLET;
                         ebullets[j].active = 1;
                     }
                     enemies[i].fire_cd = ENEMY_FIRE_CD + (uint8_t)(_XL_RAND() % 8);
@@ -546,7 +500,8 @@ static void update(void)
         }
     }
 
-    /* --- collisions: enemy bullets vs player (2x2 area) --- */
+    /* --- collisions: enemy bullets vs player (2x2 area) ---
+     * Player screen cells: (px,sy),(px+1,sy),(px,sy+1),(px+1,sy+1) */
     if (invincible == 0) {
         sy = (uint8_t)(vpy / 2);
         for (i = 0; i < MAX_EBULLETS; i++) {
@@ -569,6 +524,8 @@ static void update(void)
         sy = (uint8_t)(vpy / 2);
         for (i = 0; i < MAX_ENEMIES; i++) {
             if (!enemies[i].active) continue;
+            /* enemy at (ex,ey) occupies (ex,ey) and (ex+1,ey)
+             * player occupies rows sy..sy+1, cols px..px+1 */
             if ((enemies[i].y == sy || enemies[i].y == (uint8_t)(sy + 1))
                 && enemies[i].x <= (uint8_t)(px + 1)
                 && (uint8_t)(enemies[i].x + 1) >= px) {
@@ -625,26 +582,23 @@ static void update(void)
 
     /* --- render all active entities --- */
     for (i = 0; i < MAX_BULLETS; i++) {
-        if (bullets[i].active && bullets[i].x < XSize
-            && bullets[i].y >= TOP_ROW && bullets[i].y <= BOT_ROW) {
-            set_cell(bullets[i].x, bullets[i].y, bullets[i].tile, C_BULLET);
+        if (bullets[i].active && bullets[i].x < XSize && bullets[i].y < YSize) {
+            set_cell(bullets[i].x, bullets[i].y, T_BULLET, C_BULLET);
         }
     }
     for (i = 0; i < MAX_ENEMIES; i++) {
         if (enemies[i].active && (uint8_t)(enemies[i].x + 1) < XSize
-            && enemies[i].y >= TOP_ROW && enemies[i].y <= BOT_ROW) {
+            && enemies[i].y < YSize) {
             draw_enemy(enemies[i].x, enemies[i].y);
         }
     }
     for (i = 0; i < MAX_EBULLETS; i++) {
-        if (ebullets[i].active && ebullets[i].x < XSize
-            && ebullets[i].y >= TOP_ROW && ebullets[i].y <= BOT_ROW) {
+        if (ebullets[i].active && ebullets[i].x < XSize && ebullets[i].y < YSize) {
             set_cell(ebullets[i].x, ebullets[i].y, T_EBULLET, C_EBULLET);
         }
     }
     for (i = 0; i < MAX_POWERUPS; i++) {
-        if (powerups[i].active && powerups[i].x < XSize
-            && powerups[i].y >= TOP_ROW && powerups[i].y <= BOT_ROW) {
+        if (powerups[i].active && powerups[i].x < XSize && powerups[i].y < YSize) {
             set_cell(powerups[i].x, powerups[i].y, T_POWERUP, C_POWERUP);
         }
     }
@@ -660,7 +614,7 @@ static void update(void)
         draw_player(px, vpy, C_PLAYER);
     }
 
-    /* --- HUD (rows 0-1, above play area) --- */
+    /* --- HUD --- */
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     {
         char buf[16];
@@ -695,14 +649,14 @@ static void update(void)
         }
         _XL_PRINT(0, 0, buf);
 
-        /* life icons: small 2-tile player at row 1 (within HUD zone) */
+        /* life icons: small 2-tile player at row 0 (even parity) */
         for (k = 0; k < lives && k < 5; k++) {
-            set_cell(2 + k * 2,     1, T_PLAYER_E_TL, C_PLAYER);
-            set_cell(2 + k * 2 + 1, 1, T_PLAYER_E_TR, C_PLAYER);
+            set_cell(2 + k * 2,     0, T_PLAYER_E_TL, C_PLAYER);
+            set_cell(2 + k * 2 + 1, 0, T_PLAYER_E_TR, C_PLAYER);
         }
         for (k = lives; k < 5; k++) {
-            clear_cell(2 + k * 2,     1);
-            clear_cell(2 + k * 2 + 1, 1);
+            clear_cell(2 + k * 2,     0);
+            clear_cell(2 + k * 2 + 1, 0);
         }
 
         _XL_SET_TEXT_COLOR(_XL_GREEN);
@@ -711,7 +665,7 @@ static void update(void)
             pbuf[0] = 'P';
             pbuf[1] = '0' + (char)power_level;
             pbuf[2] = '\0';
-            _XL_PRINT(XSize - 4, 1, pbuf);
+            _XL_PRINT(XSize - 4, 0, pbuf);
         }
     }
 }
