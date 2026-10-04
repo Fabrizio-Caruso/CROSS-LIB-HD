@@ -887,6 +887,19 @@ uint16_t bfs_farthest(void) {
     return farthest_room;
 }
 
+#define NUM_ITEM_HEAL_POTION  5
+#define NUM_ITEM_LIGHT_SHIELD 4
+#define NUM_ITEM_MED_SHIELD   3
+#define NUM_ITEM_HEAVY_SHIELD 2
+#define NUM_ITEM_IRON_SWORD   4
+#define NUM_ITEM_AXE          3
+#define NUM_ITEM_TORCH        1
+
+#define NUM_GOBLIN_ENEMY      8
+#define NUM_SKELETON_ENEMY    6
+#define NUM_OGRE_ENEMY        4
+#define NUM_TROLL             3
+
 void place_items_and_monsters(void) {
     uint16_t i;
     uint16_t farthest;
@@ -910,7 +923,7 @@ void place_items_and_monsters(void) {
     rooms[r].item = ITEM_MAGIC_SWORD;
 
     i = 1;
-    while (i < 5) {
+    while (i < NUM_ITEM_HEAL_POTION) {
         r = _XL_RAND() % NUM_ROOMS;
         if (r != 0 && rooms[r].item == ITEM_NONE && r != farthest) {
             rooms[r].item = ITEM_HEAL_POTION;
@@ -919,7 +932,7 @@ void place_items_and_monsters(void) {
     }
 
     i = 1;
-    while (i < 3) {
+    while (i < NUM_ITEM_LIGHT_SHIELD) {
         r = _XL_RAND() % NUM_ROOMS;
         if (r != 0 && rooms[r].item == ITEM_NONE && r != farthest) {
             rooms[r].item = ITEM_LIGHT_SHIELD;
@@ -928,7 +941,7 @@ void place_items_and_monsters(void) {
     }
 
     i = 1;
-    while (i < 3) {
+    while (i < NUM_ITEM_MED_SHIELD) {
         r = _XL_RAND() % NUM_ROOMS;
         if (r != 0 && rooms[r].item == ITEM_NONE && r != farthest) {
             rooms[r].item = ITEM_MED_SHIELD;
@@ -937,7 +950,7 @@ void place_items_and_monsters(void) {
     }
 
     i = 1;
-    while (i < 2) {
+    while (i < NUM_ITEM_HEAVY_SHIELD) {
         r = _XL_RAND() % NUM_ROOMS;
         if (r != 0 && rooms[r].item == ITEM_NONE && r != farthest) {
             rooms[r].item = ITEM_HEAVY_SHIELD;
@@ -946,7 +959,7 @@ void place_items_and_monsters(void) {
     }
 
     i = 1;
-    while (i < 4) {
+    while (i < NUM_ITEM_IRON_SWORD) {
         r = _XL_RAND() % NUM_ROOMS;
         if (r != 0 && rooms[r].item == ITEM_NONE && r != farthest) {
             rooms[r].item = ITEM_IRON_SWORD;
@@ -955,7 +968,7 @@ void place_items_and_monsters(void) {
     }
 
     i = 1;
-    while (i < 3) {
+    while (i < NUM_ITEM_AXE) {
         r = _XL_RAND() % NUM_ROOMS;
         if (r != 0 && rooms[r].item == ITEM_NONE && r != farthest) {
             rooms[r].item = ITEM_AXE;
@@ -1030,7 +1043,7 @@ void display_map(void) {
 
     /* Fixed screen anchor for the player */
     screen_x = XSize - 8;
-    screen_y = YSize - 8;
+    screen_y = YSize/2 + 1; //YSize - 8;
 
     /* Visibility radius: 2 without torch, 5 with torch */
     radius = (map_radius == MAP_RADIUS_EXTENDED) ? MAP_RADIUS_EXTENDED : MAP_RADIUS_INITIAL;
@@ -1102,7 +1115,7 @@ void display_room_info(void) {
     split_description(desc, line1, line2);
 
     _XL_SET_TEXT_COLOR(_XL_MAGENTA);
-    _XL_PRINT(1, 0, "TEXT ADVENTURE");
+    _XL_PRINT(1, 0, "BIG ADVENTURE");
 
     _XL_SET_TEXT_COLOR(_XL_GREEN);
     _XL_PRINT(1, 1, rname);
@@ -1112,7 +1125,7 @@ void display_room_info(void) {
     _XL_PRINT(1, 3, line2);
 
     _XL_SET_TEXT_COLOR(_XL_BLUE);
-    _XL_PRINT(1, 5, "EXITS:");
+    _XL_PRINT(1, 5, "EXITS");
     if (rooms[player_room].exits & DIR_N) _XL_PRINT(10, 5, "N");
     if (rooms[player_room].exits & DIR_S) _XL_PRINT(14, 5, "S");
     if (rooms[player_room].exits & DIR_E) _XL_PRINT(18, 5, "E");
@@ -1120,22 +1133,22 @@ void display_room_info(void) {
 
     if (rooms[player_room].item != ITEM_NONE) {
         _XL_SET_TEXT_COLOR(_XL_CYAN);
-        _XL_PRINT(1, 6, "ITEM:");
+        _XL_PRINT(1, 6, "ITEM ");
         _XL_PRINT(8, 6, item_names[rooms[player_room].item]);
     }
 
     if (rooms[player_room].monster != MONSTER_NONE) {
         _XL_SET_TEXT_COLOR(_XL_RED);
-        _XL_PRINT(1, 7, "MONSTER:");
+        _XL_PRINT(1, 7, "MONSTER ");
         _XL_PRINT(12, 7, monster_names[rooms[player_room].monster]);
     }
 
     _XL_SET_TEXT_COLOR(_XL_GREEN);
-    _XL_PRINT(1, 9, "HP:");
+    _XL_PRINT(1, 9, "HP ");
     _XL_PRINTD(4, 9, 3, player_hp);
 
     _XL_SET_TEXT_COLOR(_XL_CYAN);
-    _XL_PRINT(1, 10, "WEAPON:");
+    _XL_PRINT(1, 10, "WEAPON ");
     _XL_PRINT(10, 10, item_names[player_weapon]);
 
     if (player_shield > 0) {
@@ -1145,16 +1158,15 @@ void display_room_info(void) {
     }
 
     _XL_SET_TEXT_COLOR(_XL_CYAN);
-    _XL_PRINT(1, 12, "POTIONS:");
+    _XL_PRINT(1, 12, "POTIONS ");
     _XL_PRINTD(10, 12, 1, player_potions);
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(1, 13, "SCORE:");
+    _XL_PRINT(1, 13, "SCORE ");
     _XL_PRINTD(8, 13, 4, player_score);
 
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-    _XL_PRINT(1, 15, "PRESS DIRECTION TO MOVE");
-    _XL_PRINT(1, 16, "PRESS F TO USE POTION");
+    _XL_PRINT(1, 16, "FIRE FOR POTION");
 
     display_map();
 }
@@ -1170,42 +1182,42 @@ void display_combat_screen(uint16_t room_idx) {
     _XL_PRINT(1, 2, monster_descs[rooms[room_idx].monster]);
 
     _XL_SET_TEXT_COLOR(_XL_RED);
-    _XL_PRINT(1, 4, "ENEMY HP:");
+    _XL_PRINT(1, 4, "ENEMY HP ");
     _XL_PRINTD(11, 4, 3, rooms[room_idx].monster_hp);
 
     _XL_SET_TEXT_COLOR(_XL_GREEN);
-    _XL_PRINT(1, 5, "YOUR HP:");
+    _XL_PRINT(1, 5, "YOUR HP ");
     _XL_PRINTD(10, 5, 3, player_hp);
 
     _XL_SET_TEXT_COLOR(_XL_CYAN);
-    _XL_PRINT(1, 7, "WEAPON:");
+    _XL_PRINT(1, 7, "WEAPON ");
     _XL_PRINT(10, 7, item_names[player_weapon]);
 
     if (player_shield > 0) {
         _XL_SET_TEXT_COLOR(_XL_CYAN);
-        _XL_PRINT(1, 8, "SHIELD:");
+        _XL_PRINT(1, 8, "SHIELD ");
         _XL_PRINT(10, 8, item_names[player_shield + 2]);
     }
 
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-    _XL_PRINT(1, 10, "PRESS F TO ATTACK");
-    _XL_PRINT(1, 11, "PRESS DIRECTION TO FLEE");
+    _XL_PRINT(1, 10, "F TO ATTACK");
+    _XL_PRINT(1, 11, "ANY DIRECTION TO FLEE");
 
     if (rooms[player_room].exits & DIR_N) {
         _XL_SET_TEXT_COLOR(_XL_BLUE);
-        _XL_PRINT(1, 13, "FLEE NORTH:");
+        _XL_PRINT(1, 13, "FLEE NORTH ");
     }
     if (rooms[player_room].exits & DIR_S) {
         _XL_SET_TEXT_COLOR(_XL_BLUE);
-        _XL_PRINT(1, 14, "FLEE SOUTH:");
+        _XL_PRINT(1, 14, "FLEE SOUTH ");
     }
     if (rooms[player_room].exits & DIR_E) {
         _XL_SET_TEXT_COLOR(_XL_BLUE);
-        _XL_PRINT(1, 15, "FLEE EAST:");
+        _XL_PRINT(1, 15, "FLEE EAST ");
     }
     if (rooms[player_room].exits & DIR_W) {
         _XL_SET_TEXT_COLOR(_XL_BLUE);
-        _XL_PRINT(1, 16, "FLEE WEST:");
+        _XL_PRINT(1, 16, "FLEE WEST ");
     }
 }
 
@@ -1401,7 +1413,7 @@ uint8_t use_potion(void) {
 void show_title(void) {
     _XL_CLEAR_SCREEN();
     _XL_SET_TEXT_COLOR(_XL_MAGENTA);
-    _XL_PRINT(5, 3, "TEXT ADVENTURE");
+    _XL_PRINT(5, 3, "BIG ADVENTURE");
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINT(3, 5, "FIND THE MAGIC SWORD IN THE CASTLE");
     _XL_PRINT(3, 6, "TRAVEL FAR AND KILL THE DRAGON");
@@ -1409,7 +1421,7 @@ void show_title(void) {
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(3, 9, "ITEMS ARE CYAN AND ENEMIES ARE RED");
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(2, 11, "PRESS ANY KEY TO BEGIN");
+    _XL_PRINT(2, 11, "ANY KEY TO BEGIN");
     _XL_WAIT_FOR_INPUT();
 }
 
@@ -1419,7 +1431,7 @@ void show_game_over(void) {
         _XL_SET_TEXT_COLOR(_XL_GREEN);
         _XL_PRINT(2, 4, "YOU DEFEATED THE ANCIENT DRAGON");
         _XL_PRINT(2, 5, "THE REALM IS SAFE ONCE MORE");
-        _XL_PRINT(2, 7, "YOU WIN!");
+        _XL_PRINT(2, 7, "YOU WIN");
         _XL_ZAP_SOUND();
     } else {
         _XL_SET_TEXT_COLOR(_XL_RED);
@@ -1429,10 +1441,10 @@ void show_game_over(void) {
         _XL_EXPLOSION_SOUND();
     }
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(2, 10, "FINAL SCORE:");
+    _XL_PRINT(2, 10, "FINAL SCORE ");
     _XL_PRINTD(14, 10, 4, player_score);
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-    _XL_PRINT(2, 13, "PRESS ANY KEY TO RESTART");
+    _XL_PRINT(2, 13, "ANY KEY TO RESTART");
     _XL_WAIT_FOR_INPUT();
 }
 

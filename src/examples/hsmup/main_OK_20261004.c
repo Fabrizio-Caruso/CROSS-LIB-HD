@@ -14,17 +14,8 @@
 #define START_BULLETS 99
 #define BULLET_RESTORE 99
 
-/* Player 2x2 tile sets: even virtual y */
-#define PLAYER_EVEN_TL_TILE_ID    _TILE_11
-#define PLAYER_EVEN_TR_TILE_ID    _TILE_12
-#define PLAYER_EVEN_BL_TILE_ID    _TILE_13
-#define PLAYER_EVEN_BR_TILE_ID    _TILE_14
-/* Player 2x2 tile sets: odd virtual y */
-#define PLAYER_ODD_TL_TILE_ID     _TILE_15
-#define PLAYER_ODD_TR_TILE_ID     _TILE_16
-#define PLAYER_ODD_BL_TILE_ID     _TILE_17
-#define PLAYER_ODD_BR_TILE_ID     _TILE_18
-
+#define PLAYER_LEFT_TILE_ID     _TILE_1
+#define PLAYER_RIGHT_TILE_ID    _TILE_2
 #define BULLET_TILE_ID          _TILE_3
 #define ENEMY_LEFT_TILE_ID      _TILE_4
 #define ENEMY_RIGHT_TILE_ID     _TILE_5
@@ -54,15 +45,11 @@
 #define GAME_MAX_Y ((STATE_H) - 1)
 #define HUD_ROW    ((uint8_t)GAME_MAX_Y)
 
-#define PLAY_TOP    ((((GAME_MAX_Y)) >= 3) ? 1 : 0)
-#define PLAY_BOTTOM ((((GAME_MAX_Y)) >= 3) ? ((uint8_t)(GAME_MAX_Y) - 1) : ((uint8_t)PLAY_TOP))
-
-/* Virtual y: screen rows are vy/2 and vy/2+1 */
-#define PLAYER_VIRT_TOP    ((uint16_t)(2 * PLAY_TOP))
-#define PLAYER_VIRT_BOTTOM ((uint16_t)(2 * (PLAY_BOTTOM - 1)))
+#define PLAY_TOP    ((((GAME_MAX_Y)) >= 2) ? 1 : 0)
+#define PLAY_BOTTOM ((((GAME_MAX_Y)) >= 2) ? ((uint8_t)(GAME_MAX_Y) - 1) : ((uint8_t)PLAY_TOP))
 
 #define PLAYER_START_X (1)
-#define PLAYER_START_Y ((uint8_t)(PLAYER_VIRT_TOP + ((PLAYER_VIRT_BOTTOM) - (PLAYER_VIRT_TOP)) / 2))
+#define PLAYER_START_Y (((PLAY_TOP) + (PLAY_BOTTOM)) / 2)
 
 #define ITEM_TYPE_BULLETS 1
 #define ITEM_TYPE_FIRERATE 2
@@ -94,7 +81,7 @@ static entity_t enemies[MAX_ENEMIES];
 static item_t   items[MAX_ITEMS];
 
 static uint8_t player_x;
-static uint8_t player_vy;      /* virtual y (screen rows: vy/2, vy/2+1) */
+static uint8_t player_y;
 static uint8_t player_alive;
 static uint8_t bullet_count;
 
@@ -114,7 +101,7 @@ static uint8_t game_over_shown;
 static uint8_t explosion_shown;
 
 static uint8_t old_player_x;
-static uint8_t old_player_vy;
+static uint8_t old_player_y;
 static uint8_t old_player_alive;
 static uint8_t old_bullet_x[MAX_BULLETS];
 static uint8_t old_bullet_y[MAX_BULLETS];
@@ -133,8 +120,6 @@ static uint8_t last_player_color;
 static void reset_screen_state(void);
 static void set_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id);
 static void erase_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id);
-static void draw_player_2x2(uint8_t x, uint8_t vy, uint8_t color_id);
-static void erase_player_2x2(uint8_t x, uint8_t vy, uint8_t color_id);
 static uint8_t random_play_row(void);
 static uint8_t find_dead_bullet(void);
 static uint8_t find_dead_enemy(void);
@@ -184,44 +169,6 @@ static void erase_cell(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id)
         _XL_DELETE(x, y);
         prev_tile[y][x] = (uint8_t)BLANK_TILE;
         prev_color[y][x] = 0;
-    }
-}
-
-/* Draw the player's 2x2 area at screen position (x, vy/2) using parity-appropriate tiles */
-static void draw_player_2x2(uint8_t x, uint8_t vy, uint8_t color_id)
-{
-    uint8_t sy = (uint8_t)(vy >> 1);
-    uint8_t even = ((vy & 1) == 0);
-
-    if (even) {
-        set_cell(x, sy, PLAYER_EVEN_TL_TILE_ID, color_id);
-        set_cell((uint8_t)(x + 1), sy, PLAYER_EVEN_TR_TILE_ID, color_id);
-        set_cell(x, (uint8_t)(sy + 1), PLAYER_EVEN_BL_TILE_ID, color_id);
-        set_cell((uint8_t)(x + 1), (uint8_t)(sy + 1), PLAYER_EVEN_BR_TILE_ID, color_id);
-    } else {
-        set_cell(x, sy, PLAYER_ODD_TL_TILE_ID, color_id);
-        set_cell((uint8_t)(x + 1), sy, PLAYER_ODD_TR_TILE_ID, color_id);
-        set_cell(x, (uint8_t)(sy + 1), PLAYER_ODD_BL_TILE_ID, color_id);
-        set_cell((uint8_t)(x + 1), (uint8_t)(sy + 1), PLAYER_ODD_BR_TILE_ID, color_id);
-    }
-}
-
-/* Erase the player's 2x2 area at screen position (x, vy/2) using parity-appropriate tiles */
-static void erase_player_2x2(uint8_t x, uint8_t vy, uint8_t color_id)
-{
-    uint8_t sy = (uint8_t)(vy >> 1);
-    uint8_t even = ((vy & 1) == 0);
-
-    if (even) {
-        erase_cell(x, sy, PLAYER_EVEN_TL_TILE_ID, color_id);
-        erase_cell((uint8_t)(x + 1), sy, PLAYER_EVEN_TR_TILE_ID, color_id);
-        erase_cell(x, (uint8_t)(sy + 1), PLAYER_EVEN_BL_TILE_ID, color_id);
-        erase_cell((uint8_t)(x + 1), (uint8_t)(sy + 1), PLAYER_EVEN_BR_TILE_ID, color_id);
-    } else {
-        erase_cell(x, sy, PLAYER_ODD_TL_TILE_ID, color_id);
-        erase_cell((uint8_t)(x + 1), sy, PLAYER_ODD_TR_TILE_ID, color_id);
-        erase_cell(x, (uint8_t)(sy + 1), PLAYER_ODD_BL_TILE_ID, color_id);
-        erase_cell((uint8_t)(x + 1), (uint8_t)(sy + 1), PLAYER_ODD_BR_TILE_ID, color_id);
     }
 }
 
@@ -342,7 +289,7 @@ static void reset_game(void)
         old_item_alive[i] = 0;
     }
 
-    old_player_x = 0; old_player_vy = 0; old_player_alive = 0;
+    old_player_x = 0; old_player_y = 0; old_player_alive = 0;
     last_player_color = PLAYER_COLOR_ID;
     player_alive = 1;
     game_over = 0;
@@ -362,7 +309,7 @@ static void reset_game(void)
     bullet_count = START_BULLETS;
 
     player_x = (uint8_t)PLAYER_START_X;
-    player_vy = (uint8_t)PLAYER_START_Y;
+    player_y = (uint8_t)PLAYER_START_Y;
 }
 
 static void fire_bullets(uint8_t idx)
@@ -376,7 +323,7 @@ static void fire_bullets(uint8_t idx)
 
     bx = (uint8_t)((uint16_t)player_x + 2);
     if ((uint16_t)bx > (uint16_t)GAME_MAX_X) bx = (uint8_t)GAME_MAX_X;
-    by = (uint8_t)(player_vy >> 1);  /* top screen row of the 2x2 player */
+    by = player_y;
 
     /* Center bullet */
     bullets[idx].x = bx;
@@ -388,10 +335,10 @@ static void fire_bullets(uint8_t idx)
     if (triple_timer > 0) {
         uint8_t i2, i3, bu, bd;
 
-        bu = (by > PLAY_TOP)    ? (uint8_t)(by - 1) : by;
-        bd = (by + 1 < PLAY_BOTTOM) ? (uint8_t)(by + 1) : by;
+        bu = (player_y > PLAY_TOP)    ? (uint8_t)(player_y - 1) : player_y;
+        bd = (player_y < PLAY_BOTTOM) ? (uint8_t)(player_y + 1) : player_y;
 
-        /* Upper bullet */
+        /* Upper bullet: find slot, commit it, THEN search for next. */
         i2 = find_dead_bullet();
         if ((uint16_t)i2 < (uint16_t)MAX_BULLETS) {
             bullets[i2].x = bx;
@@ -401,7 +348,7 @@ static void fire_bullets(uint8_t idx)
             bullets[i2].alive = 1;
         }
 
-        /* Lower bullet */
+        /* Lower bullet: i2 is now alive so this finds a DIFFERENT slot. */
         i3 = find_dead_bullet();
         if ((uint16_t)i3 < (uint16_t)MAX_BULLETS) {
             bullets[i3].x = bx;
@@ -419,19 +366,16 @@ static void update_game(uint8_t input)
 {
     uint16_t i, j;
     uint8_t idx;
-    uint8_t psy;  /* player screen top row = player_vy / 2 */
 
     if (fire_cooldown > 0)    --fire_cooldown;
     if (firerate_timer > 0)   --firerate_timer;
     if (invincible_timer > 0) --invincible_timer;
     if (triple_timer > 0)     --triple_timer;
 
-    psy = (uint8_t)(player_vy >> 1);
-
     /* === SNAPSHOT OLD STATE === */
     old_player_alive = player_alive;
     old_player_x = player_x;
-    old_player_vy = player_vy;
+    old_player_y = player_y;
 
     for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
         old_bullet_x[i] = bullets[i].x;
@@ -458,16 +402,16 @@ static void update_game(uint8_t input)
     if (item_spawn_timer > 0) --item_spawn_timer;
     else { spawn_item(); item_spawn_timer = ITEM_INTERVAL; }
 
-    /* === PLAYER MOVEMENT (virtual y) === */
+    /* === PLAYER === */
     if (player_alive) {
         if (_XL_LEFT(input)) {
             if ((uint16_t)player_x > 0) --player_x;
         } else if (_XL_RIGHT(input)) {
             if ((uint16_t)player_x + 2 <= (uint16_t)GAME_MAX_X) ++player_x;
         } else if (_XL_UP(input)) {
-            if ((uint16_t)player_vy > PLAYER_VIRT_TOP) --player_vy;
+            if ((uint16_t)player_y > (uint16_t)PLAY_TOP) --player_y;
         } else if (_XL_DOWN(input)) {
-            if ((uint16_t)player_vy < PLAYER_VIRT_BOTTOM) ++player_vy;
+            if ((uint16_t)player_y < (uint16_t)PLAY_BOTTOM) ++player_y;
         }
 
         if (_XL_FIRE(input) && fire_cooldown == 0 && bullet_count > 0) {
@@ -525,20 +469,12 @@ static void update_game(uint8_t input)
         }
     }
 
-    /* === PLAYER vs ENEMY (2x2 player area) ===
-       Player screen rows: psy, psy+1
-       Player screen cols: player_x, player_x+1
-       Enemy at (ex, ey) occupies cols ex, ex+1 and row ey.
-       Collision: column overlap AND row in {psy, psy+1}
-    */
+    /* === PLAYER vs ENEMY === */
     if (player_alive && !game_over && invincible_timer == 0) {
         for (j = 0; j < (uint16_t)MAX_ENEMIES; ++j) {
             if (!enemies[j].alive) continue;
-            /* Row check: enemy row must be psy or psy+1 */
-            if ((enemies[j].y != psy) && (enemies[j].y != (uint8_t)(psy + 1)))
-                continue;
-            /* Column overlap: enemy occupies [ex, ex+1], player [px, px+1] */
-            if ((uint16_t)enemies[j].x + 1 >= (uint16_t)player_x &&
+            if (player_y != enemies[j].y) continue;
+            if ((uint16_t)player_x <= (uint16_t)enemies[j].x + 1 &&
                 (uint16_t)enemies[j].x <= (uint16_t)player_x + 1) {
                 game_over = 1;
                 player_alive = 0;
@@ -548,15 +484,11 @@ static void update_game(uint8_t input)
         }
     }
 
-    /* === PLAYER vs ITEM (2x2 player area) ===
-       Item at (ix, iy) is 1x1.
-       Collision: ix in {px, px+1} AND iy in {psy, psy+1}
-    */
+    /* === PLAYER vs ITEM === */
     if (player_alive) {
         for (i = 0; i < (uint16_t)MAX_ITEMS; ++i) {
             if (!items[i].alive) continue;
-            if ((items[i].y != psy) && (items[i].y != (uint8_t)(psy + 1)))
-                continue;
+            if (items[i].y != player_y) continue;
             if ((items[i].x == player_x) ||
                 (items[i].x == (uint8_t)(player_x + 1))) {
                 items[i].alive = 0;
@@ -579,34 +511,55 @@ static void draw_changed_tiles(void)
     uint16_t i;
     uint8_t pc;
 
-    /* ===== PLAYER (2x2) ===== */
+    /* ===== PLAYER ===== */
     if (player_alive) {
         pc = PLAYER_COLOR_ID;
         if (invincible_timer > 0 && (invincible_timer & 1) == 0)
             pc = _XL_WHITE;
 
         if (old_player_alive) {
-            if (player_x != old_player_x || player_vy != old_player_vy) {
-                erase_player_2x2(old_player_x, old_player_vy, last_player_color);
-                draw_player_2x2(player_x, player_vy, pc);
+            if (player_x != old_player_x || player_y != old_player_y) {
+                if (player_y == old_player_y) {
+                    if (player_x > old_player_x) {
+                        erase_cell(old_player_x, old_player_y,
+                                   PLAYER_LEFT_TILE_ID, last_player_color);
+                        set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
+                        set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
+                    } else {
+                        erase_cell((uint8_t)(old_player_x + 1), old_player_y,
+                                   PLAYER_RIGHT_TILE_ID, last_player_color);
+                        set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
+                        set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
+                    }
+                } else {
+                    erase_cell(old_player_x, old_player_y,
+                               PLAYER_LEFT_TILE_ID, last_player_color);
+                    erase_cell((uint8_t)(old_player_x + 1), old_player_y,
+                               PLAYER_RIGHT_TILE_ID, last_player_color);
+                    set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
+                    set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
+                }
             } else {
-                /* Position unchanged; redraw for colour (e.g. invincibility blink) */
-                draw_player_2x2(player_x, player_vy, pc);
+                set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
+                set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
             }
         } else {
-            draw_player_2x2(player_x, player_vy, pc);
+            set_cell(player_x, player_y, PLAYER_LEFT_TILE_ID, pc);
+            set_cell((uint8_t)(player_x + 1), player_y, PLAYER_RIGHT_TILE_ID, pc);
         }
         last_player_color = pc;
     } else {
         if (old_player_alive) {
-            erase_player_2x2(old_player_x, old_player_vy, last_player_color);
+            erase_cell(old_player_x, old_player_y,
+                       PLAYER_LEFT_TILE_ID, last_player_color);
+            erase_cell((uint8_t)(old_player_x + 1), old_player_y,
+                       PLAYER_RIGHT_TILE_ID, last_player_color);
         }
         if (!explosion_shown) {
-            uint8_t esy = (uint8_t)(old_player_vy >> 1);
-            set_cell(old_player_x, esy, EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
-            set_cell((uint8_t)(old_player_x + 1), esy, EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
-            set_cell(old_player_x, (uint8_t)(esy + 1), EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
-            set_cell((uint8_t)(old_player_x + 1), (uint8_t)(esy + 1), EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
+            set_cell(old_player_x, old_player_y,
+                     EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
+            set_cell((uint8_t)(old_player_x + 1), old_player_y,
+                     EXPLOSION_TILE_ID, EXPLOSION_COLOR_ID);
             explosion_shown = 1;
         }
     }
@@ -769,4 +722,3 @@ int main(void)
     }
     return 0;
 }
-
