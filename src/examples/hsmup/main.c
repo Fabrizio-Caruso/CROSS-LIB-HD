@@ -25,9 +25,12 @@
 #define PLAYER_ODD_BL_TILE_ID     _TILE_17
 #define PLAYER_ODD_BR_TILE_ID     _TILE_18
 
-#define BULLET_TILE_ID          _TILE_3
+/* Bullet tiles: selected by player virtual-y parity at time of firing */
+#define BULLET_EVEN_TILE_ID       _TILE_3
+#define BULLET_ODD_TILE_ID        _TILE_19
+
 #define ENEMY_LEFT_TILE_ID      _TILE_4
-#define ENEMY_RIGHT_TILE_ID     _TILE_5
+#define ENEMY_RIGHT_TILE_ID      _TILE_5
 #define EXPLOSION_TILE_ID       _TILE_6
 #define ITEM_BULLET_TILE_ID     _TILE_7
 #define ITEM_FIRERATE_TILE_ID   _TILE_8
@@ -54,7 +57,8 @@
 #define GAME_MAX_Y ((STATE_H) - 1)
 #define HUD_ROW    ((uint8_t)GAME_MAX_Y)
 
-#define PLAY_TOP    ((((GAME_MAX_Y)) >= 3) ? 1 : 0)
+/* Play area: real rows 2 .. YSize-2 (i.e. GAME_MAX_Y-1) */
+#define PLAY_TOP    ((((GAME_MAX_Y)) >= 3) ? 2 : 0)
 #define PLAY_BOTTOM ((((GAME_MAX_Y)) >= 3) ? ((uint8_t)(GAME_MAX_Y) - 1) : ((uint8_t)PLAY_TOP))
 
 /* Virtual y: screen rows are vy/2 and vy/2+1 */
@@ -365,10 +369,20 @@ static void reset_game(void)
     player_vy = (uint8_t)PLAYER_START_Y;
 }
 
+/*
+ * Fire bullets from the player.
+ *
+ * Tile selection: the bullet keeps the tile that matches the player's
+ *   virtual-y parity at the moment of firing for its entire lifespan.
+ *   - even player_vy  ->  BULLET_EVEN_TILE_ID,  y = vy/2       (top of 2x2)
+ *   - odd  player_vy  ->  BULLET_ODD_TILE_ID,   y = vy/2 + 1   (bottom of 2x2)
+ */
 static void fire_bullets(uint8_t idx)
 {
     uint16_t cooldown = (firerate_timer > 0) ? FAST_FIRE_COOLDOWN : FIRE_COOLDOWN;
     uint8_t bx, by;
+    uint8_t even = ((player_vy & 1) == 0);
+    uint8_t btile = even ? (uint8_t)BULLET_EVEN_TILE_ID : (uint8_t)BULLET_ODD_TILE_ID;
 
     if (bullet_count == 0) return;
     --bullet_count;
@@ -376,12 +390,16 @@ static void fire_bullets(uint8_t idx)
 
     bx = (uint8_t)((uint16_t)player_x + 2);
     if ((uint16_t)bx > (uint16_t)GAME_MAX_X) bx = (uint8_t)GAME_MAX_X;
-    by = (uint8_t)(player_vy >> 1);  /* top screen row of the 2x2 player */
+
+    if (even)
+        by = (uint8_t)(player_vy >> 1);         /* top row of the 2x2 block */
+    else
+        by = (uint8_t)((player_vy >> 1) + 1);   /* bottom row of the 2x2 block */
 
     /* Center bullet */
     bullets[idx].x = bx;
     bullets[idx].y = by;
-    bullets[idx].tile_id = BULLET_TILE_ID;
+    bullets[idx].tile_id = btile;
     bullets[idx].color_id = BULLET_COLOR_ID;
     bullets[idx].alive = 1;
 
@@ -391,22 +409,22 @@ static void fire_bullets(uint8_t idx)
         bu = (by > PLAY_TOP)    ? (uint8_t)(by - 1) : by;
         bd = (by + 1 < PLAY_BOTTOM) ? (uint8_t)(by + 1) : by;
 
-        /* Upper bullet */
+        /* Upper bullet – same tile as center */
         i2 = find_dead_bullet();
         if ((uint16_t)i2 < (uint16_t)MAX_BULLETS) {
             bullets[i2].x = bx;
             bullets[i2].y = bu;
-            bullets[i2].tile_id = BULLET_TILE_ID;
+            bullets[i2].tile_id = btile;
             bullets[i2].color_id = BULLET_COLOR_ID;
             bullets[i2].alive = 1;
         }
 
-        /* Lower bullet */
+        /* Lower bullet – same tile as center */
         i3 = find_dead_bullet();
         if ((uint16_t)i3 < (uint16_t)MAX_BULLETS) {
             bullets[i3].x = bx;
             bullets[i3].y = bd;
-            bullets[i3].tile_id = BULLET_TILE_ID;
+            bullets[i3].tile_id = btile;
             bullets[i3].color_id = BULLET_COLOR_ID;
             bullets[i3].alive = 1;
         }
@@ -534,10 +552,8 @@ static void update_game(uint8_t input)
     if (player_alive && !game_over && invincible_timer == 0) {
         for (j = 0; j < (uint16_t)MAX_ENEMIES; ++j) {
             if (!enemies[j].alive) continue;
-            /* Row check: enemy row must be psy or psy+1 */
             if ((enemies[j].y != psy) && (enemies[j].y != (uint8_t)(psy + 1)))
                 continue;
-            /* Column overlap: enemy occupies [ex, ex+1], player [px, px+1] */
             if ((uint16_t)enemies[j].x + 1 >= (uint16_t)player_x &&
                 (uint16_t)enemies[j].x <= (uint16_t)player_x + 1) {
                 game_over = 1;
@@ -590,7 +606,6 @@ static void draw_changed_tiles(void)
                 erase_player_2x2(old_player_x, old_player_vy, last_player_color);
                 draw_player_2x2(player_x, player_vy, pc);
             } else {
-                /* Position unchanged; redraw for colour (e.g. invincibility blink) */
                 draw_player_2x2(player_x, player_vy, pc);
             }
         } else {
@@ -611,20 +626,23 @@ static void draw_changed_tiles(void)
         }
     }
 
-    /* ===== BULLETS (two-pass: erase all old, then draw all new) ===== */
+    /* ===== BULLETS (two-pass: erase all old, then draw all new) =====
+       Each bullet retains the tile_id chosen at fire-time, so we use
+       bullets[i].tile_id for both erase and draw.
+    */
     for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
         if (old_bullet_alive[i] &&
             ((old_bullet_x[i] != bullets[i].x) ||
              (old_bullet_y[i] != bullets[i].y) ||
              !bullets[i].alive)) {
             erase_cell(old_bullet_x[i], old_bullet_y[i],
-                       BULLET_TILE_ID, BULLET_COLOR_ID);
+                       bullets[i].tile_id, BULLET_COLOR_ID);
         }
     }
     for (i = 0; i < (uint16_t)MAX_BULLETS; ++i) {
         if (bullets[i].alive)
             set_cell(bullets[i].x, bullets[i].y,
-                     BULLET_TILE_ID, BULLET_COLOR_ID);
+                     bullets[i].tile_id, BULLET_COLOR_ID);
     }
 
     /* ===== ENEMIES ===== */
@@ -769,4 +787,3 @@ int main(void)
     }
     return 0;
 }
-
