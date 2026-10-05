@@ -22,11 +22,8 @@ static uint8_t scr_color[XSize][YSize];
 #define _TILE_INV_ODD_L     _TILE_6
 #define _TILE_INV_ODD_R     _TILE_7
 
-#define _TILE_PLAYER_BULLET_EVEN _TILE_8
-#define _TILE_PLAYER_BULLET_ODD  _TILE_9
-
-#define _TILE_ENEMY_BULLET_EVEN  _TILE_10
-#define _TILE_ENEMY_BULLET_ODD   _TILE_11
+#define _TILE_PLAYER_BULLET _TILE_8
+#define _TILE_ENEMY_BULLET  _TILE_9
 
 
 static uint8_t player_x;   /* virtual x */
@@ -46,12 +43,10 @@ static uint8_t inv_fire_t;
 static uint8_t pb_x[MAX_PB];
 static uint8_t pb_y[MAX_PB];
 static uint8_t pb_active[MAX_PB];
-static uint8_t pb_tile[MAX_PB];   /* tile id for this bullet */
 
 static uint8_t eb_x[MAX_EB];
 static uint8_t eb_y[MAX_EB];
 static uint8_t eb_active[MAX_EB];
-static uint8_t eb_tile[MAX_EB];   /* tile id for this bullet */
 
 static uint16_t disp_score;
 static uint8_t disp_lives;
@@ -220,15 +215,9 @@ int main(void) {
                 for (i = 0; i < MAX_PB; i++) {
                     if (!pb_active[i]) {
                         pb_active[i] = 1;
+                        pb_x[i] = (uint8_t)(player_x / 2);
                         pb_y[i] = (uint8_t)(player_y - 1);
-                        if (player_x % 2 == 0) {
-                            pb_x[i]  = (uint8_t)(player_x / 2);
-                            pb_tile[i] = _TILE_PLAYER_BULLET_EVEN;
-                        } else {
-                            pb_x[i]  = (uint8_t)(player_x / 2 + 1);
-                            pb_tile[i] = _TILE_PLAYER_BULLET_ODD;
-                        }
-                        draw_cell(pb_x[i], pb_y[i], pb_tile[i], _XL_YELLOW);
+                        draw_cell(pb_x[i], pb_y[i], _TILE_PLAYER_BULLET, _XL_YELLOW);
                         _XL_SHOOT_SOUND();
                         break;
                     }
@@ -241,7 +230,7 @@ int main(void) {
                     erase_cell(pb_x[i], pb_y[i]);
                     if (pb_y[i] > 0) {
                         pb_y[i]--;
-                        draw_cell(pb_x[i], pb_y[i], pb_tile[i], _XL_YELLOW);
+                        draw_cell(pb_x[i], pb_y[i], _TILE_PLAYER_BULLET, _XL_YELLOW);
                     } else {
                         pb_active[i] = 0;
                     }
@@ -323,15 +312,9 @@ int main(void) {
                     for (j = 0; j < MAX_EB; j++) {
                         if (!eb_active[j]) {
                             eb_active[j] = 1;
+                            eb_x[j] = (uint8_t)(inv_x[idx] / 2);
                             eb_y[j] = (uint8_t)(inv_y[idx] + 1);
-                            if (inv_x[idx] % 2 == 0) {
-                                eb_x[j]  = (uint8_t)(inv_x[idx] / 2);
-                                eb_tile[j] = _TILE_ENEMY_BULLET_EVEN;
-                            } else {
-                                eb_x[j]  = (uint8_t)(inv_x[idx] / 2 + 1);
-                                eb_tile[j] = _TILE_ENEMY_BULLET_ODD;
-                            }
-                            draw_cell(eb_x[j], eb_y[j], eb_tile[j], _XL_RED);
+                            draw_cell(eb_x[j], eb_y[j], _TILE_ENEMY_BULLET, _XL_RED);
                             break;
                         }
                     }
@@ -344,7 +327,7 @@ int main(void) {
                     erase_cell(eb_x[i], eb_y[i]);
                     if (eb_y[i] < (uint8_t)(YSize - 1)) {
                         eb_y[i]++;
-                        draw_cell(eb_x[i], eb_y[i], eb_tile[i], _XL_RED);
+                        draw_cell(eb_x[i], eb_y[i], _TILE_ENEMY_BULLET, _XL_RED);
                     } else {
                         eb_active[i] = 0;
                     }
@@ -432,3 +415,5 @@ int main(void) {
 
     return 0;
 }
+
+
