@@ -1,6 +1,6 @@
 #include "cross_lib.h"
 
-#define COLS 7
+#define GAME_COLS 7
 #define ROWS 6
 
 #define START_ROW 3
@@ -9,16 +9,18 @@
 #define PLAYER_AI 2
 
 /* 2x2 tile set for the human player (4 distinct tiles) */
-#define TILE_HUMAN_TL  1
-#define TILE_HUMAN_TR  2
-#define TILE_HUMAN_BL  3
-#define TILE_HUMAN_BR  4
+#define TILE_HUMAN_TL  _TILE_0
+#define TILE_HUMAN_TR  _TILE_1
+#define TILE_HUMAN_BL  _TILE_2
+#define TILE_HUMAN_BR  _TILE_3
 
 /* 2x2 tile set for the AI (4 distinct tiles, different from human) */
-#define TILE_AI_TL     5
-#define TILE_AI_TR     6
-#define TILE_AI_BL     7
-#define TILE_AI_BR     8
+#define TILE_AI_TL     _TILE_4
+#define TILE_AI_TR     _TILE_5
+#define TILE_AI_BL     _TILE_6
+#define TILE_AI_BR     _TILE_7
+
+#define TILE_ARROW     _TILE_8
 
 #define DIFF_EASY 0
 #define DIFF_MEDIUM 1
@@ -57,8 +59,8 @@ void erase_piece(uint8_t x, uint8_t y)
 {
     _XL_DELETE(x, y);
     _XL_DELETE(x + 1, y);
-    _XL_DELETE(x, y + 1);
-    _XL_DELETE(x + 1, y + 1);
+    // _XL_DELETE(x, y + 1);
+    // _XL_DELETE(x + 1, y + 1);
 }
 
 /*
@@ -97,7 +99,7 @@ void drop_animation(uint8_t ox, uint8_t oy, uint8_t col,
     }
 }
 
-uint8_t get_lowest_empty(uint8_t board[ROWS][COLS], uint8_t col)
+uint8_t get_lowest_empty(uint8_t board[ROWS][GAME_COLS], uint8_t col)
 {
     uint8_t r;
     uint8_t result;
@@ -110,7 +112,7 @@ uint8_t get_lowest_empty(uint8_t board[ROWS][COLS], uint8_t col)
     return result;
 }
 
-void check_win(uint8_t board[ROWS][COLS], uint8_t player, WinLine *wl)
+void check_win(uint8_t board[ROWS][GAME_COLS], uint8_t player, WinLine *wl)
 {
     uint8_t r, c, count, rr, cc;
     uint8_t i;
@@ -118,11 +120,11 @@ void check_win(uint8_t board[ROWS][COLS], uint8_t player, WinLine *wl)
     wl->count = 0;
 
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             count = 0;
             rr = r;
             cc = c;
-            while (cc < COLS && board[rr][cc] == player) {
+            while (cc < GAME_COLS && board[rr][cc] == player) {
                 count++;
                 cc++;
             }
@@ -137,7 +139,7 @@ void check_win(uint8_t board[ROWS][COLS], uint8_t player, WinLine *wl)
         }
     }
 
-    for (c = 0; c < COLS; c++) {
+    for (c = 0; c < GAME_COLS; c++) {
         for (r = 0; r < ROWS; r++) {
             count = 0;
             rr = r;
@@ -158,11 +160,11 @@ void check_win(uint8_t board[ROWS][COLS], uint8_t player, WinLine *wl)
     }
 
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             count = 0;
             rr = r;
             cc = c;
-            while (rr < ROWS && cc < COLS && board[rr][cc] == player) {
+            while (rr < ROWS && cc < GAME_COLS && board[rr][cc] == player) {
                 count++;
                 rr++;
                 cc++;
@@ -179,11 +181,11 @@ void check_win(uint8_t board[ROWS][COLS], uint8_t player, WinLine *wl)
     }
 
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             count = 0;
             rr = r;
             cc = c;
-            while (rr < ROWS && cc < COLS && board[rr][cc] == player) {
+            while (rr < ROWS && cc < GAME_COLS && board[rr][cc] == player) {
                 count++;
                 rr++;
                 cc--;
@@ -200,7 +202,7 @@ void check_win(uint8_t board[ROWS][COLS], uint8_t player, WinLine *wl)
     }
 }
 
-uint8_t has_threat(uint8_t board[ROWS][COLS], uint8_t player, uint8_t *threat_col)
+uint8_t has_threat(uint8_t board[ROWS][GAME_COLS], uint8_t player, uint8_t *threat_col)
 {
     uint8_t r, c, rr, cc;
     uint8_t count;
@@ -210,17 +212,17 @@ uint8_t has_threat(uint8_t board[ROWS][COLS], uint8_t player, uint8_t *threat_co
     *threat_col = 255;
 
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             if (board[r][c] == player) {
                 count = 0;
                 rr = r;
                 cc = c;
-                while (cc < COLS && board[rr][cc] == player) {
+                while (cc < GAME_COLS && board[rr][cc] == player) {
                     count++;
                     cc++;
                 }
                 if (count == 3) {
-                    if (cc < COLS && board[r][cc] == 0) {
+                    if (cc < GAME_COLS && board[r][cc] == 0) {
                         *threat_col = cc;
                         found = 1;
                         return found;
@@ -235,7 +237,7 @@ uint8_t has_threat(uint8_t board[ROWS][COLS], uint8_t player, uint8_t *threat_co
         }
     }
 
-    for (c = 0; c < COLS; c++) {
+    for (c = 0; c < GAME_COLS; c++) {
         for (r = 0; r < ROWS; r++) {
             if (board[r][c] == player) {
                 count = 0;
@@ -262,18 +264,18 @@ uint8_t has_threat(uint8_t board[ROWS][COLS], uint8_t player, uint8_t *threat_co
     }
 
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             if (board[r][c] == player) {
                 count = 0;
                 rr = r;
                 cc = c;
-                while (rr < ROWS && cc < COLS && board[rr][cc] == player) {
+                while (rr < ROWS && cc < GAME_COLS && board[rr][cc] == player) {
                     count++;
                     rr++;
                     cc++;
                 }
                 if (count == 3) {
-                    if (rr < ROWS && cc < COLS && board[rr][cc] == 0) {
+                    if (rr < ROWS && cc < GAME_COLS && board[rr][cc] == 0) {
                         *threat_col = cc;
                         found = 1;
                         return found;
@@ -289,23 +291,23 @@ uint8_t has_threat(uint8_t board[ROWS][COLS], uint8_t player, uint8_t *threat_co
     }
 
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             if (board[r][c] == player) {
                 count = 0;
                 rr = r;
                 cc = c;
-                while (rr < ROWS && cc < COLS && board[rr][cc] == player) {
+                while (rr < ROWS && cc < GAME_COLS && board[rr][cc] == player) {
                     count++;
                     rr++;
                     cc--;
                 }
                 if (count == 3) {
-                    if (rr < ROWS && cc < COLS && board[rr][cc] == 0) {
+                    if (rr < ROWS && cc < GAME_COLS && board[rr][cc] == 0) {
                         *threat_col = cc;
                         found = 1;
                         return found;
                     }
-                    if (r > 0 && c < (uint8_t)(COLS - 1) && board[r - 1][c + 1] == 0) {
+                    if (r > 0 && c < (uint8_t)(GAME_COLS - 1) && board[r - 1][c + 1] == 0) {
                         *threat_col = (uint8_t)(c + 1);
                         found = 1;
                         return found;
@@ -318,7 +320,7 @@ uint8_t has_threat(uint8_t board[ROWS][COLS], uint8_t player, uint8_t *threat_co
     return found;
 }
 
-uint8_t creates_threat(uint8_t board[ROWS][COLS], uint8_t col)
+uint8_t creates_threat(uint8_t board[ROWS][GAME_COLS], uint8_t col)
 {
     uint8_t row;
     uint8_t tcol;
@@ -333,7 +335,7 @@ uint8_t creates_threat(uint8_t board[ROWS][COLS], uint8_t col)
     return (tcol != 255) ? 1 : 0;
 }
 
-uint8_t gives_win(uint8_t board[ROWS][COLS], uint8_t col)
+uint8_t gives_win(uint8_t board[ROWS][GAME_COLS], uint8_t col)
 {
     uint8_t row, c2;
     WinLine wl;
@@ -343,7 +345,7 @@ uint8_t gives_win(uint8_t board[ROWS][COLS], uint8_t col)
 
     board[row][col] = PLAYER_AI;
 
-    for (c2 = 0; c2 < COLS; c2++) {
+    for (c2 = 0; c2 < GAME_COLS; c2++) {
         if (get_lowest_empty(board, c2) != 255) {
             board[get_lowest_empty(board, c2)][c2] = PLAYER_HUMAN;
             check_win(board, PLAYER_HUMAN, &wl);
@@ -359,7 +361,7 @@ uint8_t gives_win(uint8_t board[ROWS][COLS], uint8_t col)
     return 0;
 }
 
-uint8_t ai_easy(uint8_t board[ROWS][COLS])
+uint8_t ai_easy(uint8_t board[ROWS][GAME_COLS])
 {
     uint8_t col, row;
     WinLine wl;
@@ -368,7 +370,7 @@ uint8_t ai_easy(uint8_t board[ROWS][COLS])
     rnd = (uint8_t)(_XL_RAND() % 100);
 
     if (rnd < 40) {
-        for (col = 0; col < COLS; col++) {
+        for (col = 0; col < GAME_COLS; col++) {
             row = get_lowest_empty(board, col);
             if (row != 255) {
                 board[row][col] = PLAYER_AI;
@@ -377,7 +379,7 @@ uint8_t ai_easy(uint8_t board[ROWS][COLS])
                 if (wl.count >= 4) return col;
             }
         }
-        for (col = 0; col < COLS; col++) {
+        for (col = 0; col < GAME_COLS; col++) {
             row = get_lowest_empty(board, col);
             if (row != 255) {
                 board[row][col] = PLAYER_HUMAN;
@@ -388,21 +390,21 @@ uint8_t ai_easy(uint8_t board[ROWS][COLS])
         }
     }
 
-    col = (uint8_t)(_XL_RAND() % COLS);
+    col = (uint8_t)(_XL_RAND() % GAME_COLS);
     while (get_lowest_empty(board, col) == 255) {
-        col = (uint8_t)((col + 1) % COLS);
+        col = (uint8_t)((col + 1) % GAME_COLS);
     }
     return col;
 }
 
-uint8_t ai_medium(uint8_t board[ROWS][COLS])
+uint8_t ai_medium(uint8_t board[ROWS][GAME_COLS])
 {
     uint8_t col, row;
     WinLine wl;
-    uint8_t priority[COLS];
+    uint8_t priority[GAME_COLS];
     uint8_t i;
 
-    for (col = 0; col < COLS; col++) {
+    for (col = 0; col < GAME_COLS; col++) {
         row = get_lowest_empty(board, col);
         if (row != 255) {
             board[row][col] = PLAYER_AI;
@@ -412,7 +414,7 @@ uint8_t ai_medium(uint8_t board[ROWS][COLS])
         }
     }
 
-    for (col = 0; col < COLS; col++) {
+    for (col = 0; col < GAME_COLS; col++) {
         row = get_lowest_empty(board, col);
         if (row != 255) {
             board[row][col] = PLAYER_HUMAN;
@@ -430,26 +432,26 @@ uint8_t ai_medium(uint8_t board[ROWS][COLS])
     priority[5] = 0;
     priority[6] = 6;
 
-    for (i = 0; i < COLS; i++) {
+    for (i = 0; i < GAME_COLS; i++) {
         col = priority[i];
         if (get_lowest_empty(board, col) != 255) {
             return col;
         }
     }
 
-    col = (uint8_t)(_XL_RAND() % COLS);
+    col = (uint8_t)(_XL_RAND() % GAME_COLS);
     return col;
 }
 
-uint8_t ai_hard(uint8_t board[ROWS][COLS])
+uint8_t ai_hard(uint8_t board[ROWS][GAME_COLS])
 {
     uint8_t col, row;
     WinLine wl;
     uint8_t threat_col;
-    uint8_t priority[COLS];
+    uint8_t priority[GAME_COLS];
     uint8_t i;
 
-    for (col = 0; col < COLS; col++) {
+    for (col = 0; col < GAME_COLS; col++) {
         row = get_lowest_empty(board, col);
         if (row != 255) {
             board[row][col] = PLAYER_AI;
@@ -459,7 +461,7 @@ uint8_t ai_hard(uint8_t board[ROWS][COLS])
         }
     }
 
-    for (col = 0; col < COLS; col++) {
+    for (col = 0; col < GAME_COLS; col++) {
         row = get_lowest_empty(board, col);
         if (row != 255) {
             board[row][col] = PLAYER_HUMAN;
@@ -475,7 +477,7 @@ uint8_t ai_hard(uint8_t board[ROWS][COLS])
         }
     }
 
-    for (col = 0; col < COLS; col++) {
+    for (col = 0; col < GAME_COLS; col++) {
         if (get_lowest_empty(board, col) != 255) {
             if (creates_threat(board, col)) {
                 return col;
@@ -491,7 +493,7 @@ uint8_t ai_hard(uint8_t board[ROWS][COLS])
     priority[5] = 0;
     priority[6] = 6;
 
-    for (i = 0; i < COLS; i++) {
+    for (i = 0; i < GAME_COLS; i++) {
         col = priority[i];
         if (get_lowest_empty(board, col) != 255) {
             if (!gives_win(board, col)) {
@@ -500,18 +502,18 @@ uint8_t ai_hard(uint8_t board[ROWS][COLS])
         }
     }
 
-    for (i = 0; i < COLS; i++) {
+    for (i = 0; i < GAME_COLS; i++) {
         col = priority[i];
         if (get_lowest_empty(board, col) != 255) {
             return col;
         }
     }
 
-    col = (uint8_t)(_XL_RAND() % COLS);
+    col = (uint8_t)(_XL_RAND() % GAME_COLS);
     return col;
 }
 
-uint8_t get_ai_move(uint8_t board[ROWS][COLS], uint8_t difficulty)
+uint8_t get_ai_move(uint8_t board[ROWS][GAME_COLS], uint8_t difficulty)
 {
     if (difficulty == DIFF_EASY) {
         return ai_easy(board);
@@ -522,20 +524,20 @@ uint8_t get_ai_move(uint8_t board[ROWS][COLS], uint8_t difficulty)
     }
 }
 
-void reset_board(uint8_t board[ROWS][COLS])
+void reset_board(uint8_t board[ROWS][GAME_COLS])
 {
     uint8_t r, c;
     for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLS; c++) {
+        for (c = 0; c < GAME_COLS; c++) {
             board[r][c] = 0;
         }
     }
 }
 
-uint8_t is_board_full(uint8_t board[ROWS][COLS])
+uint8_t is_board_full(uint8_t board[ROWS][GAME_COLS])
 {
     uint8_t c;
-    for (c = 0; c < COLS; c++) {
+    for (c = 0; c < GAME_COLS; c++) {
         if (board[0][c] == 0) {
             return 0;
         }
@@ -543,7 +545,7 @@ uint8_t is_board_full(uint8_t board[ROWS][COLS])
     return 1;
 }
 
-void highlight_win(uint8_t board[ROWS][COLS], WinLine *wl, uint8_t ox, uint8_t oy)
+void highlight_win(uint8_t board[ROWS][GAME_COLS], WinLine *wl, uint8_t ox, uint8_t oy)
 {
     uint8_t i;
 
@@ -569,11 +571,9 @@ uint8_t select_difficulty(void)
     _XL_CLEAR_SCREEN();
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINT(ox, 2, "SELECT DIFFICULTY");
-    _XL_PRINT(ox, 4, "L=LEFT R=RIGHT F=OK");
     _XL_PRINT(ox, 6, "EASY  MEDIUM  HARD");
 
-    _XL_SET_TEXT_COLOR(_XL_CYAN);
-    _XL_PRINT(ox + 6, 7, "V");
+    _XL_DRAW(ox + 8, 7, TILE_ARROW, _XL_CYAN);
 
     while (1) {
         input = _XL_INPUT();
@@ -583,17 +583,17 @@ uint8_t select_difficulty(void)
                 old_sel = sel;
                 sel--;
                 if (old_sel == DIFF_EASY) {
-                    _XL_DELETE(ox, 7);
+                    _XL_DELETE(ox + 1, 7);
                 } else if (old_sel == DIFF_MEDIUM) {
-                    _XL_DELETE(ox + 6, 7);
+                    _XL_DELETE(ox + 8, 7);
                 } else {
-                    _XL_DELETE(ox + 13, 7);
+                    _XL_DELETE(ox + 15, 7);
                 }
                 _XL_SET_TEXT_COLOR(_XL_CYAN);
                 if (sel == DIFF_EASY) {
-                    _XL_PRINT(ox, 7, "V");
+                    _XL_DRAW(ox + 1, 7, TILE_ARROW, _XL_CYAN);
                 } else {
-                    _XL_PRINT(ox + 6, 7, "V");
+                    _XL_DRAW(ox + 8, 7, TILE_ARROW, _XL_CYAN);
                 }
                 _XL_TICK_SOUND();
             }
@@ -602,17 +602,17 @@ uint8_t select_difficulty(void)
                 old_sel = sel;
                 sel++;
                 if (old_sel == DIFF_EASY) {
-                    _XL_DELETE(ox, 7);
+                    _XL_DELETE(ox + 1, 7);
                 } else if (old_sel == DIFF_MEDIUM) {
-                    _XL_DELETE(ox + 6, 7);
+                    _XL_DELETE(ox + 8, 7);
                 } else {
-                    _XL_DELETE(ox + 13, 7);
+                    _XL_DELETE(ox + 15, 7);
                 }
                 _XL_SET_TEXT_COLOR(_XL_CYAN);
                 if (sel == DIFF_MEDIUM) {
-                    _XL_PRINT(ox + 6, 7, "V");
+                    _XL_DRAW(ox + 8, 7, TILE_ARROW, _XL_CYAN);
                 } else {
-                    _XL_PRINT(ox + 13, 7, "V");
+                    _XL_DRAW(ox + 15, 7, TILE_ARROW, _XL_CYAN);
                 }
                 _XL_TICK_SOUND();
             }
@@ -627,7 +627,7 @@ uint8_t select_difficulty(void)
 
 int main(void)
 {
-    uint8_t board[ROWS][COLS];
+    uint8_t board[ROWS][GAME_COLS];
     uint8_t state;
     uint8_t turn;
     uint8_t input;
@@ -642,7 +642,7 @@ int main(void)
     _XL_INIT_INPUT();
     _XL_INIT_SOUND();
 
-    ox = (uint8_t)((XSize - (COLS * 2)) / 2);
+    ox = (uint8_t)((XSize - (GAME_COLS * 2)) / 2);
     oy = START_ROW;
     cursor_row = (uint8_t)(START_ROW - 1);
 
@@ -652,7 +652,7 @@ int main(void)
         reset_board(board);
         state = 0;
         turn = PLAYER_HUMAN;
-        cursor = (uint8_t)(COLS / 2);
+        cursor = (uint8_t)(GAME_COLS / 2);
 
         _XL_CLEAR_SCREEN();
         _XL_SET_TEXT_COLOR(_XL_WHITE);
@@ -666,10 +666,7 @@ int main(void)
             _XL_PRINT(ox, 1, "YOU VS HARD");
         }
 
-        _XL_PRINT(ox, 2, "L=MOVE R=MOVE F=DROP");
-
-        _XL_SET_TEXT_COLOR(_XL_CYAN);
-        _XL_PRINT(ox + cursor * 2, cursor_row, "V");
+        _XL_DRAW(ox + cursor * 2, cursor_row, TILE_ARROW, _XL_CYAN);
 
         while (state == 0) {
             if (turn == PLAYER_HUMAN) {
@@ -680,14 +677,14 @@ int main(void)
                         if (cursor > 0) {
                             _XL_DELETE(ox + cursor * 2, cursor_row);
                             cursor--;
-                            _XL_PRINT(ox + cursor * 2, cursor_row, "V");
+                            _XL_DRAW(ox + cursor * 2, cursor_row, TILE_ARROW, _XL_CYAN);
                             _XL_TICK_SOUND();
                         }
                     } else if (_XL_RIGHT(input)) {
-                        if (cursor < (uint8_t)(COLS - 1)) {
+                        if (cursor < (uint8_t)(GAME_COLS - 1)) {
                             _XL_DELETE(ox + cursor * 2, cursor_row);
                             cursor++;
-                            _XL_PRINT(ox + cursor * 2, cursor_row, "V");
+                            _XL_DRAW(ox + cursor * 2, cursor_row,  TILE_ARROW, _XL_CYAN);
                             _XL_TICK_SOUND();
                         }
                     } else if (_XL_FIRE(input)) {
@@ -749,21 +746,19 @@ int main(void)
         if (state == 1) {
             if (turn == PLAYER_HUMAN) {
                 _XL_SET_TEXT_COLOR(_XL_GREEN);
-                _XL_PRINT(ox, 11, "YOU WIN!");
+                _XL_PRINT(ox, 1, "YOU WIN      ");
             } else {
                 _XL_SET_TEXT_COLOR(_XL_RED);
-                _XL_PRINT(ox, 11, "CPU WINS!");
+                _XL_PRINT(ox, 1, "CPU WINS     ");
             }
             _XL_EXPLOSION_SOUND();
         } else {
             _XL_SET_TEXT_COLOR(_XL_CYAN);
-            _XL_PRINT(ox, 11, "DRAW!");
+            _XL_PRINT(ox, 1,     "DRAW         ");
             _XL_ZAP_SOUND();
         }
 
-        _XL_SET_TEXT_COLOR(_XL_WHITE);
-        _XL_PRINT(ox, 13, "PRESS ANY KEY");
-
+        _XL_SLEEP(1);
         _XL_WAIT_FOR_INPUT();
     }
 
