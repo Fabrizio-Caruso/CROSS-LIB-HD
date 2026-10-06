@@ -9,6 +9,16 @@
 
 #define TILE_WALL _TILE_16
 
+
+uint8_t tile[4][4][4] = 
+{
+    {{_TILE_0, _TILE_1},  {_TILE_2, _TILE_3}},
+    {{_TILE_4, _TILE_5},  {_TILE_6, _TILE_7}},
+    {{_TILE_8, _TILE_9},  {_TILE_10,_TILE_11}},
+    {{_TILE_12,_TILE_13}, {_TILE_14,_TILE_15}}
+};
+
+
 static uint8_t GAME_COLORS[NUM_COLORS + 1] = {
     0,
     _XL_RED,
@@ -197,15 +207,6 @@ uint8_t get_cell_color(uint8_t r, uint8_t c)
 
     return grid[r][c];
 }
-
-
-uint8_t tile[4][4][4] = 
-{
-    {{_TILE_0, _TILE_1},  {_TILE_2, _TILE_3}},
-    {{_TILE_4, _TILE_5},  {_TILE_6, _TILE_7}},
-    {{_TILE_8, _TILE_9},  {_TILE_10,_TILE_11}},
-    {{_TILE_12,_TILE_13}, {_TILE_14,_TILE_15}}
-};
 
 
 void render(void)
