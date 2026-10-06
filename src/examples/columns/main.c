@@ -7,6 +7,8 @@
 #define STATE_CLEARING 1
 #define STATE_GAME_OVER 2
 
+#define TILE_WALL _TILE_16
+
 static uint8_t GAME_COLORS[NUM_COLORS + 1] = {
     0,
     _XL_RED,
@@ -140,7 +142,7 @@ void draw_borders(void)
                 (uint16_t)y > (uint16_t)bottom_y - 2 ||
                 (uint16_t)x < (uint16_t)left_x + 2 ||
                 (uint16_t)x > (uint16_t)right_x - 2) {
-                _XL_DRAW(x, y, _TILE_3, _XL_CYAN);
+                _XL_DRAW(x, y, TILE_WALL, _XL_CYAN);
             }
         }
     }
@@ -196,6 +198,16 @@ uint8_t get_cell_color(uint8_t r, uint8_t c)
     return grid[r][c];
 }
 
+
+uint8_t tile[4][4][4] = 
+{
+    {{_TILE_0, _TILE_1},  {_TILE_2, _TILE_3}},
+    {{_TILE_4, _TILE_5},  {_TILE_6, _TILE_7}},
+    {{_TILE_8, _TILE_9},  {_TILE_10,_TILE_11}},
+    {{_TILE_12,_TILE_13}, {_TILE_14,_TILE_15}}
+};
+
+
 void render(void)
 {
     uint8_t r;
@@ -244,7 +256,7 @@ void render(void)
                         }
                     } else {
                         if (displayed[r][c][sy][sx] != color) {
-                            _XL_DRAW((uint8_t)(x + sx), (uint8_t)(y + sy), _TILE_1, color);
+                        _XL_DRAW((uint8_t)(x + sx), (uint8_t)(y + sy), tile[color_idx-1][sy][sx], color);
                             displayed[r][c][sy][sx] = color;
                         }
                     }
@@ -562,6 +574,8 @@ int main(void)
             update_score_display();
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
         }
+        _XL_SLEEP(1);
+        _XL_WAIT_FOR_INPUT();
 
         _XL_CLEAR_SCREEN();
 
