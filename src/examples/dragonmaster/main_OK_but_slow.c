@@ -18,6 +18,9 @@ static Dragon dragons[MAX_DRAGONS];
 
 static uint8_t passable[MAP_W][MAP_H];
 
+static uint16_t bfs_queue[MAP_W * MAP_H];
+static uint16_t bfs_dist[MAP_W * MAP_H];
+
 static uint8_t initial_dragons;
 
 static uint8_t player_x, player_y;
@@ -327,7 +330,7 @@ static void move_player(uint8_t dir)
 }
 
 /* --------------------------------------------------------------------------------------- */
-/* Wizard movement (simple greedy + random fallback)                                        */
+/* Wizard movement (BFS chase)                                                              */
 /* --------------------------------------------------------------------------------------- */
 
 static short wizard_dirs[8][2] =
@@ -344,12 +347,19 @@ static short wizard_dirs[8][2] =
 
 static void wizard_step(void)
 {
-    short dx;
-    short dy;
+    uint16_t i;
+    uint16_t head;
+    uint16_t tail;
+    uint16_t cur;
+    uint16_t idx;
+    uint16_t wiz_idx;
+    uint16_t best;
+    uint8_t cx;
+    uint8_t cy;
     short nx;
     short ny;
-    uint8_t i;
-    uint8_t tried;
+    short bestx;
+    short besty;
 
     if (wizard_x == player_x && wizard_y == player_y)
     {
@@ -357,51 +367,111 @@ static void wizard_step(void)
         return;
     }
 
-    /* Desired direction toward the player */
-    dx = (short)player_x - (short)wizard_x;
-    dy = (short)player_y - (short)wizard_y;
-
-    if (dx > 0) dx = 1;
-    else if (dx < 0) dx = -1;
-    else dx = 0;
-
-    if (dy > 0) dy = 1;
-    else if (dy < 0) dy = -1;
-    else dy = 0;
-
-    nx = (short)wizard_x + dx;
-    ny = (short)wizard_y + dy;
-
-    if (can_move(nx, ny))
+    /* Quick path: if player is within one 8-directional step, move directly */
     {
-        _XL_DELETE(wizard_x, wizard_y);
-        wizard_x = (uint8_t)nx;
-        wizard_y = (uint8_t)ny;
-        draw_wizard();
-    }
-    else
-    {
-        /* Blocked: pick a random passable neighbor */
-        tried = 0;
+        short sx = (short)player_x - (short)wizard_x;
+        short sy = (short)player_y - (short)wizard_y;
 
-        while (tried < 8)
+        if (sx > 1) sx = 1;
+        if (sx < -1) sx = -1;
+        if (sy > 1) sy = 1;
+        if (sy < -1) sy = -1;
+
+        nx = (short)wizard_x + sx;
+        ny = (short)wizard_y + sy;
+
+        if (can_move(nx, ny))
         {
-            i = (uint8_t)(_XL_RAND() % 8);
-            nx = (short)wizard_x + wizard_dirs[i][0];
-            ny = (short)wizard_y + wizard_dirs[i][1];
+            _XL_DELETE(wizard_x, wizard_y);
+            wizard_x = (uint8_t)nx;
+            wizard_y = (uint8_t)ny;
+            draw_wizard();
 
-            if (can_move(nx, ny))
-            {
-                _XL_DELETE(wizard_x, wizard_y);
-                wizard_x = (uint8_t)nx;
-                wizard_y = (uint8_t)ny;
-                draw_wizard();
-                break;
-            }
+            if (wizard_x == player_x && wizard_y == player_y)
+                game_over = 1;
 
-            ++tried;
+            return;
         }
     }
+
+    head = 0;
+    tail = 0;
+
+    for (i = 0; i < MAP_W * MAP_H; ++i)
+    {
+        bfs_dist[i] = 0xFFFF;
+    }
+
+    if (!can_move((short)player_x, (short)player_y))
+        return;
+
+    bfs_dist[player_y * MAP_W + player_x] = 0;
+    bfs_queue[tail++] = (uint16_t)(player_y * MAP_W + player_x);
+
+    while (head < tail)
+    {
+        cur = bfs_queue[head++];
+
+        cx = (uint8_t)(cur % MAP_W);
+        cy = (uint8_t)(cur / MAP_W);
+
+        if (cx == wizard_x && cy == wizard_y)
+            break;
+
+        for (i = 0; i < 8; ++i)
+        {
+            nx = (short)cx + wizard_dirs[i][0];
+            ny = (short)cy + wizard_dirs[i][1];
+
+            if (!can_move(nx, ny))
+                continue;
+
+            idx = (uint16_t)((uint16_t)ny * MAP_W + (uint16_t)nx);
+
+            if (bfs_dist[idx] != 0xFFFF)
+                continue;
+
+            bfs_dist[idx] = bfs_dist[cur] + 1;
+            bfs_queue[tail++] = idx;
+        }
+    }
+
+    wiz_idx = (uint16_t)((uint16_t)wizard_y * MAP_W + (uint16_t)wizard_x);
+
+    if (bfs_dist[wiz_idx] == 0xFFFF)
+        return;
+
+    best = 0xFFFF;
+    bestx = (short)wizard_x;
+    besty = (short)wizard_y;
+
+    for (i = 0; i < 8; ++i)
+    {
+        nx = (short)wizard_x + wizard_dirs[i][0];
+        ny = (short)wizard_y + wizard_dirs[i][1];
+
+        if (!can_move(nx, ny))
+            continue;
+
+        idx = (uint16_t)((uint16_t)ny * MAP_W + (uint16_t)nx);
+
+        if (bfs_dist[idx] < best)
+        {
+            best = bfs_dist[idx];
+            bestx = nx;
+            besty = ny;
+        }
+    }
+
+    if (best == 0xFFFF)
+        return;
+
+    _XL_DELETE(wizard_x, wizard_y);
+
+    wizard_x = (uint8_t)bestx;
+    wizard_y = (uint8_t)besty;
+
+    draw_wizard();
 
     if (wizard_x == player_x && wizard_y == player_y)
         game_over = 1;
@@ -504,7 +574,6 @@ static void spawn_dragon(void)
                 dragons[i].color = (uint8_t)(_XL_RAND() & 1) ? _XL_RED : _XL_WHITE;
 
                 draw_dragon(&dragons[i]);
-                rebuild_passable();
 
                 return;
             }
@@ -589,11 +658,8 @@ static void update_respawn(void)
 static void kill_dragons(void)
 {
     uint8_t i;
-    uint8_t killed;
     short bx;
     short by;
-
-    killed = 0;
 
     for (i = 0; i < MAX_DRAGONS; ++i)
     {
@@ -613,12 +679,8 @@ static void kill_dragons(void)
                 ++score;
 
             respawn_timer = 90;
-            killed = 1;
         }
     }
-
-    if (killed)
-        rebuild_passable();
 }
 
 static void check_death(void)
@@ -787,8 +849,6 @@ static void reset_game(void)
         spawn_dragon();
     }
 
-    rebuild_passable();
-
     draw_wizard();
     draw_player(player_x, player_y);
 
@@ -837,6 +897,7 @@ int main(void)
 
         update_flip();
         update_respawn();
+        rebuild_passable();
 
         {
             uint8_t input;
