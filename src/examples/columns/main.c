@@ -481,23 +481,43 @@ void handle_input(uint8_t input)
     }
 }
 
+
 void update_playing(void)
 {
-    if (dropping) {
-        while (can_fall()) {
-            fall_row++;
-        }
+    uint8_t steps = (dropping ? 2 : 1);
 
-        place_triplet();
-        dropping = 0;
-    } else {
+    while (steps--) {
         if (can_fall()) {
             fall_row++;
         } else {
-            place_triplet();
+            break;
         }
     }
+
+    if (!can_fall()) {
+        place_triplet();
+    }
+
+    dropping = 0;
 }
+
+// void update_playing(void)
+// {
+    // if (dropping) {
+        // while (can_fall()) {
+            // fall_row++;
+        // }
+
+        // place_triplet();
+        // dropping = 0;
+    // } else {
+        // if (can_fall()) {
+            // fall_row++;
+        // } else {
+            // place_triplet();
+        // }
+    // }
+// }
 
 void update_clearing(void)
 {
@@ -591,3 +611,5 @@ int main(void)
         _XL_WAIT_FOR_INPUT();
     }
 }
+
+
