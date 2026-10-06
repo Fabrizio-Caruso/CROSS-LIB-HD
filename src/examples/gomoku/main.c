@@ -106,9 +106,9 @@ void draw_normal_cell(uint8_t col, uint8_t row)
     if (board[row][col] == EMPTY) {
         draw_cell_empty(col, row, _XL_GREEN);
     } else if (board[row][col] == PLAYER) {
-        draw_cell_player(col, row, _XL_WHITE);
+        draw_cell_player(col, row, _XL_CYAN);
     } else if (board[row][col] == AI) {
-        draw_cell_opponent(col, row, _XL_MAGENTA);
+        draw_cell_opponent(col, row, _XL_WHITE);
     }
 }
 
@@ -125,13 +125,13 @@ void draw_cursor_cell(uint8_t col, uint8_t row)
         if (frame_parity) {
             draw_cell_select(col, row, _XL_RED);
         } else {
-            draw_cell_player(col, row, _XL_WHITE);
+            draw_cell_player(col, row, _XL_CYAN);
         }
     } else if (board[row][col] == AI) {
         if (frame_parity) {
             draw_cell_select(col, row, _XL_RED);
         } else {
-            draw_cell_opponent(col, row, _XL_MAGENTA);
+            draw_cell_opponent(col, row, _XL_WHITE);
         }
     }
 }
@@ -157,9 +157,9 @@ void draw_full_board(void)
         for (j = 0; j < BOARD_SIZE; j++) {
             draw_cell_empty(j, i, _XL_GREEN);
             if (board[i][j] == PLAYER) {
-                draw_cell_player(j, i, _XL_WHITE);
+                draw_cell_player(j, i, _XL_CYAN);
             } else if (board[i][j] == AI) {
-                draw_cell_opponent(j, i, _XL_MAGENTA);
+                draw_cell_opponent(j, i, _XL_WHITE);
             }
         }
     }
@@ -213,8 +213,16 @@ uint8_t check_win(uint8_t x, uint8_t y, uint8_t player)
 void show_win_line(void)
 {
     uint8_t k;
-    for (k = 0; k < win_line_len; k++) {
-        draw_cell_player(win_line_x[k], win_line_y[k], _XL_YELLOW);
+    uint8_t i;
+    
+    for(i=0;i<30;++i)
+    {
+        for (k = 0; k < win_line_len; k++) {
+            draw_cell_player(win_line_x[k], win_line_y[k], _XL_GREEN);
+            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR/8);
+            draw_cell_player(win_line_x[k], win_line_y[k], _XL_RED);
+            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR/10);
+        }
     }
 }
 
@@ -580,7 +588,7 @@ int main(void)
                 if (_XL_FIRE(input)) {
                     if (board[cursor_y][cursor_x] == EMPTY) {
                         board[cursor_y][cursor_x] = PLAYER;
-                        draw_cell_player(cursor_x, cursor_y, _XL_WHITE);
+                        draw_cell_player(cursor_x, cursor_y, _XL_CYAN);
                         _XL_SHOOT_SOUND();
 
                         if (check_win(cursor_x, cursor_y, PLAYER)) {
@@ -613,7 +621,7 @@ int main(void)
                 ai_make_move();
 
                 if (!game_over) {
-                    draw_cell_opponent(ai_move_x, ai_move_y, _XL_MAGENTA);
+                    draw_cell_opponent(ai_move_x, ai_move_y, _XL_WHITE);
                     _XL_TOCK_SOUND();
 
                     if (check_win(ai_move_x, ai_move_y, AI)) {
