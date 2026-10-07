@@ -6,11 +6,10 @@ static uint8_t empty_c;
 static uint16_t move_count;
 
 /*
- * Solvability guarantee:
- * We start from the solved state and perform only legal slide moves.
- * Each slide is a transposition (swap) of the blank with an adjacent tile.
- * The set of solvable configurations is closed under legal moves, so
- * every state reachable from the solved state is solvable.
+ * Solvability: we start from the solved state and apply only legal
+ * slide moves.  The solved state is trivially solvable and the set
+ * of solvable configurations is closed under legal moves, so every
+ * state we reach is solvable.
  */
 
 static void init_board(void)
@@ -54,55 +53,167 @@ static void do_shuffle(void)
 }
 
 /*
- * Draws a single 4x4 screen-tile block for game cell (r,c).
- * Layout within the 4x4 block:
- *   Row 0: _TILE_16 x4  (horizontal border)
- *   Row 1: _TILE_0 | tile | tile | _TILE_0  (vertical borders + center top)
- *   Row 2: _TILE_0 | tile | tile | _TILE_0  (vertical borders + center bottom)
- *   Row 3: _TILE_16 x4  (horizontal border)
- * The 2x2 center uses _TILE_1 .. _TILE_15 for values 1..15.
- * The blank (value 0) has its 2x2 center deleted.
+ * Draws one 4x4 screen-tile block for game cell (r, c).
+ * Layout:
+ *   Row 0: _TILE_16 x4
+ *   Row 1: _TILE_0, C1, C2, _TILE_0
+ *   Row 2: _TILE_0, C3, C4, _TILE_0
+ *   Row 3: _TILE_16 x4
+ * where C1..C4 are the 4 distinct centre tiles for this value.
+ * Value v uses tiles _TILE_(4*(v-1)+1) .. _TILE_(4*(v-1)+4).
  */
 static void draw_tile(uint8_t r, uint8_t c)
 {
-    uint8_t val, px, py, tid;
+    uint8_t val, px, py, base;
     val = board[r][c];
     px = (uint8_t)(c * 4);
     py = (uint8_t)(1 + r * 4);
 
-    /* Upper border: 4 horizontal segments */
-    _XL_DRAW(px, py, _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 1, py, _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 2, py, _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 3, py, _TILE_16, _XL_WHITE);
+    _XL_DRAW(px,     py,     _TILE_16, _XL_WHITE);
+    _XL_DRAW(px + 1, py,     _TILE_16, _XL_WHITE);
+    _XL_DRAW(px + 2, py,     _TILE_16, _XL_WHITE);
+    _XL_DRAW(px + 3, py,     _TILE_16, _XL_WHITE);
 
-    /* Middle rows: left vertical border */
-    _XL_DRAW(px, py + 1, _TILE_0, _XL_WHITE);
-    _XL_DRAW(px, py + 2, _TILE_0, _XL_WHITE);
+    _XL_DRAW(px,     py + 1, _TILE_0,  _XL_WHITE);
+    _XL_DRAW(px,     py + 2, _TILE_0,  _XL_WHITE);
+    _XL_DRAW(px + 3, py + 1, _TILE_0,  _XL_WHITE);
+    _XL_DRAW(px + 3, py + 2, _TILE_0,  _XL_WHITE);
 
-    /* Middle rows: right vertical border */
-    _XL_DRAW(px + 3, py + 1, _TILE_0, _XL_WHITE);
-    _XL_DRAW(px + 3, py + 2, _TILE_0, _XL_WHITE);
-
-    /* Center 2x2 */
     if (val == 0) {
         _XL_DELETE(px + 1, py + 1);
         _XL_DELETE(px + 2, py + 1);
         _XL_DELETE(px + 1, py + 2);
         _XL_DELETE(px + 2, py + 2);
     } else {
-        tid = val; /* _TILE_1 through _TILE_15 */
-        _XL_DRAW(px + 1, py + 1, tid, _XL_CYAN);
-        _XL_DRAW(px + 2, py + 1, tid, _XL_CYAN);
-        _XL_DRAW(px + 1, py + 2, tid, _XL_CYAN);
-        _XL_DRAW(px + 2, py + 2, tid, _XL_CYAN);
+        base = (uint8_t)(4 * (val - 1));
+        _XL_DRAW(px + 1, py + 1, (uint8_t)(base + 1), _XL_CYAN);
+        _XL_DRAW(px + 2, py + 1, (uint8_t)(base + 2), _XL_CYAN);
+        _XL_DRAW(px + 1, py + 2, (uint8_t)(base + 3), _XL_CYAN);
+        _XL_DRAW(px + 2, py + 2, (uint8_t)(base + 4), _XL_CYAN);
     }
 
-    /* Lower border: 4 horizontal segments */
-    _XL_DRAW(px, py + 3, _TILE_16, _XL_WHITE);
+    _XL_DRAW(px,     py + 3, _TILE_16, _XL_WHITE);
     _XL_DRAW(px + 1, py + 3, _TILE_16, _XL_WHITE);
     _XL_DRAW(px + 2, py + 3, _TILE_16, _XL_WHITE);
     _XL_DRAW(px + 3, py + 3, _TILE_16, _XL_WHITE);
+}
+
+/* Draw a single column (4 px tall) of the 4x4 block.
+ * cx is the column offset 0..3 within the block. */
+static void draw_col(uint8_t px, uint8_t py, uint8_t cx, uint8_t val)
+{
+    uint8_t base, c1, c2, c3, c4;
+    base = (uint8_t)(4 * (val - 1));
+    c1 = (uint8_t)(base + 1);
+    c2 = (uint8_t)(base + 2);
+    c3 = (uint8_t)(base + 3);
+    c4 = (uint8_t)(base + 4);
+
+    _XL_DRAW(px, py,     _TILE_16, _XL_WHITE);
+    if (cx == 0 || cx == 3) {
+        _XL_DRAW(px, py + 1, _TILE_0, _XL_WHITE);
+        _XL_DRAW(px, py + 2, _TILE_0, _XL_WHITE);
+    } else if (cx == 1) {
+        _XL_DRAW(px, py + 1, c1, _XL_CYAN);
+        _XL_DRAW(px, py + 2, c3, _XL_CYAN);
+    } else {
+        _XL_DRAW(px, py + 1, c2, _XL_CYAN);
+        _XL_DRAW(px, py + 2, c4, _XL_CYAN);
+    }
+    _XL_DRAW(px, py + 3, _TILE_16, _XL_WHITE);
+}
+
+/* Clear a single column (4 px tall). */
+static void clear_col(uint8_t px, uint8_t py)
+{
+    _XL_DELETE(px, py);
+    _XL_DELETE(px, py + 1);
+    _XL_DELETE(px, py + 2);
+    _XL_DELETE(px, py + 3);
+}
+
+/* Draw a single row (4 px wide) of the 4x4 block.
+ * ry is the row offset 0..3 within the block. */
+static void draw_row(uint8_t px, uint8_t py, uint8_t ry, uint8_t val)
+{
+    uint8_t base, c1, c2, c3, c4;
+    base = (uint8_t)(4 * (val - 1));
+    c1 = (uint8_t)(base + 1);
+    c2 = (uint8_t)(base + 2);
+    c3 = (uint8_t)(base + 3);
+    c4 = (uint8_t)(base + 4);
+
+    if (ry == 0 || ry == 3) {
+        _XL_DRAW(px,     py, _TILE_16, _XL_WHITE);
+        _XL_DRAW(px + 1, py, _TILE_16, _XL_WHITE);
+        _XL_DRAW(px + 2, py, _TILE_16, _XL_WHITE);
+        _XL_DRAW(px + 3, py, _TILE_16, _XL_WHITE);
+    } else {
+        _XL_DRAW(px,     py, _TILE_0, _XL_WHITE);
+        if (ry == 1) {
+            _XL_DRAW(px + 1, py, c1, _XL_CYAN);
+            _XL_DRAW(px + 2, py, c2, _XL_CYAN);
+        } else {
+            _XL_DRAW(px + 1, py, c3, _XL_CYAN);
+            _XL_DRAW(px + 2, py, c4, _XL_CYAN);
+        }
+        _XL_DRAW(px + 3, py, _TILE_0, _XL_WHITE);
+    }
+}
+
+/* Clear a single row (4 px wide). */
+static void clear_row(uint8_t px, uint8_t py)
+{
+    _XL_DELETE(px,     py);
+    _XL_DELETE(px + 1, py);
+    _XL_DELETE(px + 2, py);
+    _XL_DELETE(px + 3, py);
+}
+
+/*
+ * Animate the sliding of a 4x4 tile from (from_r,from_c) to (to_r,to_c).
+ * The tile moves one screen-tile at a time over 4 steps.
+ */
+static void animate_move(uint8_t from_r, uint8_t from_c,
+                         uint8_t to_r, uint8_t to_c, uint8_t val)
+{
+    uint8_t src_px, src_py, s;
+    src_px = (uint8_t)(from_c * 4);
+    src_py = (uint8_t)(1 + from_r * 4);
+
+    if (to_r == from_r) {
+        if (to_c > from_c) {
+            /* moving right */
+            for (s = 0; s < 4; s++) {
+                clear_col(src_px + s, src_py);
+                draw_col(src_px + s + 4, src_py, 3, val);
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            }
+        } else {
+            /* moving left */
+            for (s = 0; s < 4; s++) {
+                clear_col(src_px + 3 - s, src_py);
+                draw_col(src_px - 1 - s, src_py, 0, val);
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            }
+        }
+    } else {
+        if (to_r > from_r) {
+            /* moving down */
+            for (s = 0; s < 4; s++) {
+                clear_row(src_px, src_py + s);
+                draw_row(src_px, src_py + s + 4, 3, val);
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            }
+        } else {
+            /* moving up */
+            for (s = 0; s < 4; s++) {
+                clear_row(src_px, src_py + 3 - s);
+                draw_row(src_px, src_py - 1 - s, 0, val);
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            }
+        }
+    }
 }
 
 static void draw_all(void)
@@ -137,7 +248,7 @@ static uint8_t is_solved(void)
 
 int main(void)
 {
-    uint8_t input, nr, nc;
+    uint8_t input, nr, nc, moved_val;
 
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
@@ -170,12 +281,12 @@ int main(void)
             }
 
             if (nr != empty_r || nc != empty_c) {
+                moved_val = board[nr][nc];
                 board[empty_r][empty_c] = board[nr][nc];
                 board[nr][nc] = 0;
-                draw_tile(empty_r, empty_c);
+                animate_move(nr, nc, empty_r, empty_c, moved_val);
                 empty_r = nr;
                 empty_c = nc;
-                draw_tile(empty_r, empty_c);
                 move_count = move_count + 1;
                 draw_moves();
                 _XL_TICK_SOUND();
