@@ -5,8 +5,8 @@
 #define MAP_W       64
 #define MAP_H       64
 
-#define MIN_WIZARD_INTERVAL     140
-#define INITIAL_WIZARD_INTERVAL  10
+#define MIN_WIZARD_INTERVAL       12
+#define INITIAL_WIZARD_INTERVAL  140
 
 typedef struct
 {
@@ -68,6 +68,28 @@ static void draw_left_dragon(uint8_t x, uint8_t y, uint8_t color)
     _XL_DRAW(x-1,y+1,LEFT_SW_TILE,color);
     _XL_DRAW(x,y+1,  LEFT_SE_TILE,color);
 }
+
+static void draw_dead_dragon(uint8_t i)
+{
+    const Dragon *d = &dragons[i];
+    uint8_t xl = (uint8_t)((short)d->x - 1);
+    uint8_t yh = (uint8_t)(d->y + 1);
+
+    _XL_DRAW(xl,d->y,     DEAD_BOSS_NW_TILE,_XL_WHITE);
+    _XL_DRAW(d->x,  d->y, DEAD_BOSS_NE_TILE,_XL_WHITE);
+    _XL_DRAW(xl,yh,       DEAD_BOSS_SW_TILE,_XL_WHITE);
+    _XL_DRAW(d->x,yh,     DEAD_BOSS_SE_TILE,_XL_WHITE);
+}
+
+static void draw_dead_king_dragon(void)
+{
+    _XL_DRAW(king_x,king_y,     DEAD_BOSS_NW_TILE,_XL_WHITE);
+    _XL_DRAW(king_x+1, king_y, DEAD_BOSS_NE_TILE,_XL_WHITE);
+    _XL_DRAW(king_x,king_y+1,       DEAD_BOSS_SW_TILE,_XL_WHITE);
+    _XL_DRAW(king_x+1,king_y+1,     DEAD_BOSS_SE_TILE,_XL_WHITE);
+}
+
+
 
 static void draw_king_dragon(void)
 {
@@ -463,6 +485,12 @@ static short dragon_side_x(const Dragon *d)
     return d->facing ? (short)d->x : (short)d->x - 1;
 }
 
+static short dragon_belly_x(const Dragon *d)
+{
+    return d->facing ? (short)d->x + 1 : (short)d->x - 2;
+}
+
+
 static uint8_t player_not_near_mouth(short x, short y, uint8_t facing)
 {
     short mx = facing ? x : x - 1;
@@ -595,7 +623,7 @@ static void update_flip(void)
             }
         }
 
-        flip_timer = (uint16_t)(1 + _XL_RAND() % 4);
+        flip_timer = (uint16_t)(30 + (_XL_RAND()&31));
     }
     else
     {
@@ -621,6 +649,8 @@ static void update_respawn(void)
         if (respawn_timer == 0)
         {
             spawn_dragon();
+            _XL_TOCK_SOUND();
+            rebuild_passable();
             respawn_timer = 90;
         }
         else
@@ -649,20 +679,25 @@ static void kill_dragons(void)
         if (!dragons[i].alive)
             continue;
 
-        bx = dragon_side_x(&dragons[i]);
+        bx = dragon_belly_x(&dragons[i]);
         by = (short)dragons[i].y + 1;
 
-        if (adjacent4((short)player_x, (short)player_y, bx, by))
+        // if (adjacent4((short)player_x, (short)player_y, bx, by))
+        if((player_x==bx) && (player_y==by))
         {
             dragons[i].alive = 0;
 
-            delete_dragon(i);
+            draw_dead_dragon(i);
+            _XL_SHOOT_SOUND();
+            _XL_SLOW_DOWN(4*_XL_SLOW_DOWN_FACTOR);
 
             if (score < 255)
                 ++score;
 
             respawn_timer = 90;
             killed = 1;
+            delete_dragon(i);
+
         }
     }
 
@@ -670,12 +705,16 @@ static void kill_dragons(void)
     if (king_alive && all_dragons_dead())
     {
         /* King mouth is the bottom row of its 2x2 area */
-        if (adjacent4((short)player_x, (short)player_y, king_x,     king_y + 1) ||
-            adjacent4((short)player_x, (short)player_y, king_x + 1, king_y + 1))
+        // if (adjacent4((short)player_x, (short)player_y, king_x,     king_y + 1))
+            
+        
+        if ((player_x == king_x-1) && (player_y == king_y + 1))
         {
             king_alive = 0;
+            draw_dead_king_dragon();
+            _XL_SHOOT_SOUND();
+            _XL_SLOW_DOWN(10*_XL_SLOW_DOWN_FACTOR);
 
-            delete_king_dragon();
             _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
 
 
@@ -684,11 +723,44 @@ static void kill_dragons(void)
 
             killed = 1;
             game_over = 1;
+            delete_king_dragon();
+            _XL_TICK_SOUND();
+            _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
+            _XL_SLEEP(1);
+            _XL_TOCK_SOUND();
+            _XL_DELETE(player_x, player_y);
+            draw_player(player_x+1,player_y);
+            _XL_SLEEP(1);
+            _XL_TOCK_SOUND();
+            _XL_DELETE(player_x+1, player_y);
+            draw_player(player_x+2,player_y);
+            _XL_SLEEP(1);
+            _XL_TOCK_SOUND();
+            _XL_DELETE(player_x+2, player_y);
+            draw_player(player_x+3,player_y);
+            _XL_SLEEP(1);
+            _XL_TOCK_SOUND();
+            _XL_DELETE(player_x+3, player_y);
+            _XL_SLEEP(1);
         }
     }
 
     if (killed)
+    {
         rebuild_passable();
+    }
+}
+
+static void show_player_death(void)
+{
+    _XL_EXPLOSION_SOUND();
+    _XL_SLEEP(1);
+    _XL_TICK_SOUND();
+    _XL_DRAW(player_x,player_y,DEAD_1_TILE, _XL_WHITE);
+    _XL_SLEEP(1);
+    _XL_TICK_SOUND();
+    _XL_DRAW(player_x,player_y,DEAD_2_TILE, _XL_WHITE);
+    _XL_SLEEP(1);
 }
 
 static void check_death(void)
@@ -700,6 +772,7 @@ static void check_death(void)
     if (wizard_x == player_x && wizard_y == player_y)
     {
         game_over = 1;
+        show_player_death();
         return;
     }
 
@@ -714,6 +787,7 @@ static void check_death(void)
         if (adjacent4((short)player_x, (short)player_y, mx, my))
         {
             game_over = 1;
+            show_player_death();
             return;
         }
     }
@@ -724,6 +798,7 @@ static void check_death(void)
         if (adjacent4((short)player_x, (short)player_y, king_x,     king_y))
         {
             game_over = 1;
+            show_player_death();
             return;
         }
     }
@@ -916,10 +991,11 @@ int main(void)
             _XL_SLEEP(1);
             _XL_SET_TEXT_COLOR(_XL_RED);
             _XL_PRINT(XSize/2-4,YSize/2-2, "GAME OVER");
-            _XL_SLEEP(1);
+            _XL_SLEEP(2);
             _XL_PRINT(XSize/2-4,YSize/2-2, "         ");
 
-            
+            _XL_SLEEP(1);
+            _XL_WAIT_FOR_INPUT();
             reset_game();
 
             continue;
