@@ -1,7 +1,7 @@
 #include "cross_lib.h"
 
-#define HORIZONTAL_TILE _TILE_0
-#define VERTICAL_TILE   _TILE_1
+#define HORIZONTAL_TILE _TILE_20
+#define VERTICAL_TILE   _TILE_21
 
 static uint8_t board[4][4];
 static uint8_t empty_r;
@@ -9,8 +9,9 @@ static uint8_t empty_c;
 static uint16_t move_count;
 
 
-#if _XL_NUMBER_OF_TILES>=62
-static uint8_t tiles[] = { \
+static uint8_t top_tile[] = { \
+_TILE_0,
+_TILE_1,
 _TILE_2,
 _TILE_3,
 _TILE_4,
@@ -18,7 +19,10 @@ _TILE_5,
 _TILE_6,
 _TILE_7,
 _TILE_8,
-_TILE_9,
+_TILE_9
+};
+
+static uint8_t bottom_tile[] = { \
 _TILE_10,
 _TILE_11,
 _TILE_12,
@@ -28,51 +32,10 @@ _TILE_15,
 _TILE_16,
 _TILE_17,
 _TILE_18,
-_TILE_19,
-_TILE_20,
-_TILE_21,
-_TILE_22,
-_TILE_23,
-_TILE_24,
-_TILE_25,
-_TILE_26,
-_TILE_27,
-_TILE_28,
-_TILE_29,
-_TILE_30,
-_TILE_31,
-_TILE_32,
-_TILE_33,
-_TILE_34,
-_TILE_35,
-_TILE_36,
-_TILE_37,
-_TILE_38,
-_TILE_39,
-_TILE_40,
-_TILE_41,
-_TILE_42,
-_TILE_43,
-_TILE_44,
-_TILE_45,
-_TILE_46,
-_TILE_47,
-_TILE_48,
-_TILE_49,
-_TILE_50,
-_TILE_51,
-_TILE_52,
-_TILE_53,
-_TILE_54,
-_TILE_55,
-_TILE_56,
-_TILE_57,
-_TILE_58,
-_TILE_59,
-_TILE_60,
-_TILE_61
+_TILE_19
 };
-#endif
+
+
 
 /*
  * Solvability: we start from the solved state and apply only legal
@@ -133,7 +96,7 @@ static void do_shuffle(void)
  */
 static void draw_tile(uint8_t r, uint8_t c)
 {
-    uint8_t val, px, py, base;
+    uint8_t val, px, py, digit0, digit1;
     val = board[r][c];
     px = (uint8_t)(c * 4);
     py = (uint8_t)(1 + r * 4);
@@ -154,11 +117,13 @@ static void draw_tile(uint8_t r, uint8_t c)
         _XL_DELETE(px + 1, py + 2);
         _XL_DELETE(px + 2, py + 2);
     } else {
-        base = (uint8_t)(4 * (val - 1));
-        _XL_DRAW(px + 1, py + 1, tiles[(uint8_t)(base + 0)], _XL_CYAN);
-        _XL_DRAW(px + 2, py + 1, tiles[(uint8_t)(base + 1)], _XL_CYAN);
-        _XL_DRAW(px + 1, py + 2, tiles[(uint8_t)(base + 2)], _XL_CYAN);
-        _XL_DRAW(px + 2, py + 2, tiles[(uint8_t)(base + 3)], _XL_CYAN);
+        // base = (uint8_t)(4 * (val - 1));
+        digit1 = val % 10;
+        digit0 = val / 10;
+        _XL_DRAW(px + 1, py + 1, top_tile[digit0], _XL_CYAN);
+        _XL_DRAW(px + 2, py + 1, top_tile[digit1], _XL_CYAN);
+        _XL_DRAW(px + 1, py + 2, bottom_tile[digit0], _XL_CYAN);
+        _XL_DRAW(px + 2, py + 2, bottom_tile[digit1], _XL_CYAN);
     }
 
     _XL_DRAW(px,     py + 3, HORIZONTAL_TILE, _XL_WHITE);
@@ -171,13 +136,15 @@ static void draw_tile(uint8_t r, uint8_t c)
  * cx is the column offset 0..3 within the block. */
 static void draw_col(uint8_t px, uint8_t py, uint8_t cx, uint8_t val)
 {
-    uint8_t base, c1, c2, c3, c4;
-    base = (uint8_t)(4 * (val - 1));
+    uint8_t digit0, digit1, c1, c2, c3, c4;
+    // base = (uint8_t)(4 * (val - 1));
     // TODO: Optimize this by avoiding useless computation 
-    c1 = tiles[(uint8_t)(base + 0)];
-    c2 = tiles[(uint8_t)(base + 1)];
-    c3 = tiles[(uint8_t)(base + 2)];
-    c4 = tiles[(uint8_t)(base + 3)];
+    digit0 = val / 10;
+    digit1 = val % 10;
+    c1 = top_tile[digit0];
+    c2 = top_tile[digit1];
+    c3 = bottom_tile[digit0];
+    c4 = bottom_tile[digit1];
 
     _XL_DRAW(px, py,     HORIZONTAL_TILE, _XL_WHITE);
     if (cx == 0 || cx == 3) {
@@ -206,13 +173,15 @@ static void clear_col(uint8_t px, uint8_t py)
  * ry is the row offset 0..3 within the block. */
 static void draw_row(uint8_t px, uint8_t py, uint8_t ry, uint8_t val)
 {
-    uint8_t base, c1, c2, c3, c4;
-    base = (uint8_t)(4 * (val - 1));
+    uint8_t digit0, digit1, c1, c2, c3, c4;
+    // base = (uint8_t)(4 * (val - 1));
     // TODO: Optimize this by avoiding useless cases
-    c1 = tiles[(uint8_t)(base + 0)];
-    c2 = tiles[(uint8_t)(base + 1)];
-    c3 = tiles[(uint8_t)(base + 2)];
-    c4 = tiles[(uint8_t)(base + 3)];
+    digit0 = val / 10;
+    digit1 = val % 10;
+    c1 = top_tile[digit0];
+    c2 = top_tile[digit1];
+    c3 = bottom_tile[digit0];
+    c4 = bottom_tile[digit1];
 
     if (ry == 0 || ry == 3) {
         _XL_DRAW(px,     py, HORIZONTAL_TILE, _XL_WHITE);
@@ -309,7 +278,14 @@ static uint8_t is_solved(void)
     uint8_t i, j;
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
+            if((i==3)&&(j==3))
+            {
+                return 1;
+            }
             if (board[i][j] != (uint8_t)(i * 4 + j + 1)) {
+                // _XL_PRINTD(0,YSize-1,2,i);
+                // _XL_PRINTD(6,YSize-1,2,j);
+                // _XL_WAIT_FOR_INPUT();
                 return 0;
             }
         }
