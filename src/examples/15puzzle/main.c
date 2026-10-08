@@ -1,9 +1,75 @@
 #include "cross_lib.h"
 
+#define HORIZONTAL_TILE _TILE_0
+#define VERTICAL_TILE   _TILE_1
+
 static uint8_t board[4][4];
 static uint8_t empty_r;
 static uint8_t empty_c;
 static uint16_t move_count;
+
+static uint8_t tiles[] = { \
+_TILE_2,
+_TILE_3,
+_TILE_4,
+_TILE_5,
+_TILE_6,
+_TILE_7,
+_TILE_8,
+_TILE_9,
+_TILE_10,
+_TILE_11,
+_TILE_12,
+_TILE_13,
+_TILE_14,
+_TILE_15,
+_TILE_16,
+_TILE_17,
+_TILE_18,
+_TILE_19,
+_TILE_20,
+_TILE_21,
+_TILE_22,
+_TILE_23,
+_TILE_24,
+_TILE_25,
+_TILE_26,
+_TILE_27,
+_TILE_28,
+_TILE_29,
+_TILE_30,
+_TILE_31,
+_TILE_32,
+_TILE_33,
+_TILE_34,
+_TILE_35,
+_TILE_36,
+_TILE_37,
+_TILE_38,
+_TILE_39,
+_TILE_40,
+_TILE_41,
+_TILE_42,
+_TILE_43,
+_TILE_44,
+_TILE_45,
+_TILE_46,
+_TILE_47,
+_TILE_48,
+_TILE_49,
+_TILE_50,
+_TILE_51,
+_TILE_52,
+_TILE_53,
+_TILE_54,
+_TILE_55,
+_TILE_56,
+_TILE_57,
+_TILE_58,
+_TILE_59,
+_TILE_60,
+_TILE_61
+};
 
 /*
  * Solvability: we start from the solved state and apply only legal
@@ -55,10 +121,10 @@ static void do_shuffle(void)
 /*
  * Draws one 4x4 screen-tile block for game cell (r, c).
  * Layout:
- *   Row 0: _TILE_16 x4
- *   Row 1: _TILE_0, C1, C2, _TILE_0
- *   Row 2: _TILE_0, C3, C4, _TILE_0
- *   Row 3: _TILE_16 x4
+ *   Row 0: HORIZONTAL_TILE x4
+ *   Row 1: VERTICAL_TILE, C1, C2, VERTICAL_TILE
+ *   Row 2: VERTICAL_TILE, C3, C4, VERTICAL_TILE
+ *   Row 3: HORIZONTAL_TILE x4
  * where C1..C4 are the 4 distinct centre tiles for this value.
  * Value v uses tiles _TILE_(4*(v-1)+1) .. _TILE_(4*(v-1)+4).
  */
@@ -69,15 +135,15 @@ static void draw_tile(uint8_t r, uint8_t c)
     px = (uint8_t)(c * 4);
     py = (uint8_t)(1 + r * 4);
 
-    _XL_DRAW(px,     py,     _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 1, py,     _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 2, py,     _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 3, py,     _TILE_16, _XL_WHITE);
+    _XL_DRAW(px,     py,     HORIZONTAL_TILE, _XL_WHITE);
+    _XL_DRAW(px + 1, py,     HORIZONTAL_TILE, _XL_WHITE);
+    _XL_DRAW(px + 2, py,     HORIZONTAL_TILE, _XL_WHITE);
+    _XL_DRAW(px + 3, py,     HORIZONTAL_TILE, _XL_WHITE);
 
-    _XL_DRAW(px,     py + 1, _TILE_0,  _XL_WHITE);
-    _XL_DRAW(px,     py + 2, _TILE_0,  _XL_WHITE);
-    _XL_DRAW(px + 3, py + 1, _TILE_0,  _XL_WHITE);
-    _XL_DRAW(px + 3, py + 2, _TILE_0,  _XL_WHITE);
+    _XL_DRAW(px,     py + 1, VERTICAL_TILE,  _XL_WHITE);
+    _XL_DRAW(px,     py + 2, VERTICAL_TILE,  _XL_WHITE);
+    _XL_DRAW(px + 3, py + 1, VERTICAL_TILE,  _XL_WHITE);
+    _XL_DRAW(px + 3, py + 2, VERTICAL_TILE,  _XL_WHITE);
 
     if (val == 0) {
         _XL_DELETE(px + 1, py + 1);
@@ -86,16 +152,16 @@ static void draw_tile(uint8_t r, uint8_t c)
         _XL_DELETE(px + 2, py + 2);
     } else {
         base = (uint8_t)(4 * (val - 1));
-        _XL_DRAW(px + 1, py + 1, (uint8_t)(base + 1), _XL_CYAN);
-        _XL_DRAW(px + 2, py + 1, (uint8_t)(base + 2), _XL_CYAN);
-        _XL_DRAW(px + 1, py + 2, (uint8_t)(base + 3), _XL_CYAN);
-        _XL_DRAW(px + 2, py + 2, (uint8_t)(base + 4), _XL_CYAN);
+        _XL_DRAW(px + 1, py + 1, tiles[(uint8_t)(base + 1)], _XL_CYAN);
+        _XL_DRAW(px + 2, py + 1, tiles[(uint8_t)(base + 2)], _XL_CYAN);
+        _XL_DRAW(px + 1, py + 2, tiles[(uint8_t)(base + 3)], _XL_CYAN);
+        _XL_DRAW(px + 2, py + 2, tiles[(uint8_t)(base + 4)], _XL_CYAN);
     }
 
-    _XL_DRAW(px,     py + 3, _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 1, py + 3, _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 2, py + 3, _TILE_16, _XL_WHITE);
-    _XL_DRAW(px + 3, py + 3, _TILE_16, _XL_WHITE);
+    _XL_DRAW(px,     py + 3, HORIZONTAL_TILE, _XL_WHITE);
+    _XL_DRAW(px + 1, py + 3, HORIZONTAL_TILE, _XL_WHITE);
+    _XL_DRAW(px + 2, py + 3, HORIZONTAL_TILE, _XL_WHITE);
+    _XL_DRAW(px + 3, py + 3, HORIZONTAL_TILE, _XL_WHITE);
 }
 
 /* Draw a single column (4 px tall) of the 4x4 block.
@@ -104,15 +170,16 @@ static void draw_col(uint8_t px, uint8_t py, uint8_t cx, uint8_t val)
 {
     uint8_t base, c1, c2, c3, c4;
     base = (uint8_t)(4 * (val - 1));
-    c1 = (uint8_t)(base + 1);
-    c2 = (uint8_t)(base + 2);
-    c3 = (uint8_t)(base + 3);
-    c4 = (uint8_t)(base + 4);
+    // TODO: Optimize this by avoiding useless computation 
+    c1 = tiles[(uint8_t)(base + 1)];
+    c2 = tiles[(uint8_t)(base + 2)];
+    c3 = tiles[(uint8_t)(base + 3)];
+    c4 = tiles[(uint8_t)(base + 4)];
 
-    _XL_DRAW(px, py,     _TILE_16, _XL_WHITE);
+    _XL_DRAW(px, py,     HORIZONTAL_TILE, _XL_WHITE);
     if (cx == 0 || cx == 3) {
-        _XL_DRAW(px, py + 1, _TILE_0, _XL_WHITE);
-        _XL_DRAW(px, py + 2, _TILE_0, _XL_WHITE);
+        _XL_DRAW(px, py + 1, VERTICAL_TILE, _XL_WHITE);
+        _XL_DRAW(px, py + 2, VERTICAL_TILE, _XL_WHITE);
     } else if (cx == 1) {
         _XL_DRAW(px, py + 1, c1, _XL_CYAN);
         _XL_DRAW(px, py + 2, c3, _XL_CYAN);
@@ -120,7 +187,7 @@ static void draw_col(uint8_t px, uint8_t py, uint8_t cx, uint8_t val)
         _XL_DRAW(px, py + 1, c2, _XL_CYAN);
         _XL_DRAW(px, py + 2, c4, _XL_CYAN);
     }
-    _XL_DRAW(px, py + 3, _TILE_16, _XL_WHITE);
+    _XL_DRAW(px, py + 3, HORIZONTAL_TILE, _XL_WHITE);
 }
 
 /* Clear a single column (4 px tall). */
@@ -138,18 +205,19 @@ static void draw_row(uint8_t px, uint8_t py, uint8_t ry, uint8_t val)
 {
     uint8_t base, c1, c2, c3, c4;
     base = (uint8_t)(4 * (val - 1));
-    c1 = (uint8_t)(base + 1);
-    c2 = (uint8_t)(base + 2);
-    c3 = (uint8_t)(base + 3);
-    c4 = (uint8_t)(base + 4);
+    // TODO: Optimize this by avoiding useless cases
+    c1 = tiles[(uint8_t)(base + 1)];
+    c2 = tiles[(uint8_t)(base + 2)];
+    c3 = tiles[(uint8_t)(base + 3)];
+    c4 = tiles[(uint8_t)(base + 4)];
 
     if (ry == 0 || ry == 3) {
-        _XL_DRAW(px,     py, _TILE_16, _XL_WHITE);
-        _XL_DRAW(px + 1, py, _TILE_16, _XL_WHITE);
-        _XL_DRAW(px + 2, py, _TILE_16, _XL_WHITE);
-        _XL_DRAW(px + 3, py, _TILE_16, _XL_WHITE);
+        _XL_DRAW(px,     py, HORIZONTAL_TILE, _XL_WHITE);
+        _XL_DRAW(px + 1, py, HORIZONTAL_TILE, _XL_WHITE);
+        _XL_DRAW(px + 2, py, HORIZONTAL_TILE, _XL_WHITE);
+        _XL_DRAW(px + 3, py, HORIZONTAL_TILE, _XL_WHITE);
     } else {
-        _XL_DRAW(px,     py, _TILE_0, _XL_WHITE);
+        _XL_DRAW(px,     py, VERTICAL_TILE, _XL_WHITE);
         if (ry == 1) {
             _XL_DRAW(px + 1, py, c1, _XL_CYAN);
             _XL_DRAW(px + 2, py, c2, _XL_CYAN);
@@ -157,7 +225,7 @@ static void draw_row(uint8_t px, uint8_t py, uint8_t ry, uint8_t val)
             _XL_DRAW(px + 1, py, c3, _XL_CYAN);
             _XL_DRAW(px + 2, py, c4, _XL_CYAN);
         }
-        _XL_DRAW(px + 3, py, _TILE_0, _XL_WHITE);
+        _XL_DRAW(px + 3, py, VERTICAL_TILE, _XL_WHITE);
     }
 }
 
