@@ -8,6 +8,8 @@ static uint8_t empty_r;
 static uint8_t empty_c;
 static uint16_t move_count;
 
+
+#if _XL_NUMBER_OF_TILES>=62
 static uint8_t tiles[] = { \
 _TILE_2,
 _TILE_3,
@@ -70,6 +72,7 @@ _TILE_59,
 _TILE_60,
 _TILE_61
 };
+#endif
 
 /*
  * Solvability: we start from the solved state and apply only legal
@@ -261,7 +264,7 @@ static void animate_move(uint8_t from_r, uint8_t from_c,
             /* moving left */
             for (s = 0; s < 4; s++) {
                 clear_col(src_px + 3 - s, src_py);
-                draw_col(src_px - 1 - s, src_py, s, val);
+                draw_col(src_px - 1 - s, src_py, 3-s, val);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
         }
@@ -277,7 +280,7 @@ static void animate_move(uint8_t from_r, uint8_t from_c,
             /* moving up */
             for (s = 0; s < 4; s++) {
                 clear_row(src_px, src_py + 3 - s);
-                draw_row(src_px, src_py - 1 - s, s, val);
+                draw_row(src_px, src_py - 1 - s, 3-s, val);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
         }
