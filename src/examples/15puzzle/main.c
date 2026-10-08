@@ -152,10 +152,10 @@ static void draw_tile(uint8_t r, uint8_t c)
         _XL_DELETE(px + 2, py + 2);
     } else {
         base = (uint8_t)(4 * (val - 1));
-        _XL_DRAW(px + 1, py + 1, tiles[(uint8_t)(base + 1)], _XL_CYAN);
-        _XL_DRAW(px + 2, py + 1, tiles[(uint8_t)(base + 2)], _XL_CYAN);
-        _XL_DRAW(px + 1, py + 2, tiles[(uint8_t)(base + 3)], _XL_CYAN);
-        _XL_DRAW(px + 2, py + 2, tiles[(uint8_t)(base + 4)], _XL_CYAN);
+        _XL_DRAW(px + 1, py + 1, tiles[(uint8_t)(base + 0)], _XL_CYAN);
+        _XL_DRAW(px + 2, py + 1, tiles[(uint8_t)(base + 1)], _XL_CYAN);
+        _XL_DRAW(px + 1, py + 2, tiles[(uint8_t)(base + 2)], _XL_CYAN);
+        _XL_DRAW(px + 2, py + 2, tiles[(uint8_t)(base + 3)], _XL_CYAN);
     }
 
     _XL_DRAW(px,     py + 3, HORIZONTAL_TILE, _XL_WHITE);
@@ -171,10 +171,10 @@ static void draw_col(uint8_t px, uint8_t py, uint8_t cx, uint8_t val)
     uint8_t base, c1, c2, c3, c4;
     base = (uint8_t)(4 * (val - 1));
     // TODO: Optimize this by avoiding useless computation 
-    c1 = tiles[(uint8_t)(base + 1)];
-    c2 = tiles[(uint8_t)(base + 2)];
-    c3 = tiles[(uint8_t)(base + 3)];
-    c4 = tiles[(uint8_t)(base + 4)];
+    c1 = tiles[(uint8_t)(base + 0)];
+    c2 = tiles[(uint8_t)(base + 1)];
+    c3 = tiles[(uint8_t)(base + 2)];
+    c4 = tiles[(uint8_t)(base + 3)];
 
     _XL_DRAW(px, py,     HORIZONTAL_TILE, _XL_WHITE);
     if (cx == 0 || cx == 3) {
@@ -206,10 +206,10 @@ static void draw_row(uint8_t px, uint8_t py, uint8_t ry, uint8_t val)
     uint8_t base, c1, c2, c3, c4;
     base = (uint8_t)(4 * (val - 1));
     // TODO: Optimize this by avoiding useless cases
-    c1 = tiles[(uint8_t)(base + 1)];
-    c2 = tiles[(uint8_t)(base + 2)];
-    c3 = tiles[(uint8_t)(base + 3)];
-    c4 = tiles[(uint8_t)(base + 4)];
+    c1 = tiles[(uint8_t)(base + 0)];
+    c2 = tiles[(uint8_t)(base + 1)];
+    c3 = tiles[(uint8_t)(base + 2)];
+    c4 = tiles[(uint8_t)(base + 3)];
 
     if (ry == 0 || ry == 3) {
         _XL_DRAW(px,     py, HORIZONTAL_TILE, _XL_WHITE);
@@ -254,14 +254,14 @@ static void animate_move(uint8_t from_r, uint8_t from_c,
             /* moving right */
             for (s = 0; s < 4; s++) {
                 clear_col(src_px + s, src_py);
-                draw_col(src_px + s + 4, src_py, 3, val);
+                draw_col(src_px + s + 4, src_py, s, val);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
         } else {
             /* moving left */
             for (s = 0; s < 4; s++) {
                 clear_col(src_px + 3 - s, src_py);
-                draw_col(src_px - 1 - s, src_py, 0, val);
+                draw_col(src_px - 1 - s, src_py, s, val);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
         }
@@ -270,14 +270,14 @@ static void animate_move(uint8_t from_r, uint8_t from_c,
             /* moving down */
             for (s = 0; s < 4; s++) {
                 clear_row(src_px, src_py + s);
-                draw_row(src_px, src_py + s + 4, 3, val);
+                draw_row(src_px, src_py + s + 4, s, val);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
         } else {
             /* moving up */
             for (s = 0; s < 4; s++) {
                 clear_row(src_px, src_py + 3 - s);
-                draw_row(src_px, src_py - 1 - s, 0, val);
+                draw_row(src_px, src_py - 1 - s, s, val);
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             }
         }
