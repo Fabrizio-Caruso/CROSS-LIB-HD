@@ -8,6 +8,8 @@
 #define MIN_WIZARD_INTERVAL       12
 #define INITIAL_WIZARD_INTERVAL  140
 
+#define RESPAWN_TIME 240
+
 typedef struct
 {
     uint8_t x;
@@ -38,7 +40,7 @@ static uint16_t flip_timer;
 static uint16_t respawn_timer;
 
 static uint8_t score;
-static uint8_t fire_held;
+// static uint8_t fire_held;
 
 static uint8_t king_alive;
 
@@ -52,13 +54,23 @@ static short king_x, king_y;
 /* Drawing helpers                                                                          */
 /* --------------------------------------------------------------------------------------- */
 
+static void _draw_castle(uint8_t x, uint8_t y)
+{
+    _XL_DRAW(x-1,y,   CASTLE_NW_TILE,_XL_WHITE);
+    _XL_DRAW(x,  y,   CASTLE_NE_TILE,_XL_WHITE);
+    _XL_DRAW(x-1,y+1, CASTLE_SW_TILE,_XL_WHITE);
+    _XL_DRAW(x,y+1,   CASTLE_SE_TILE,_XL_WHITE);
+    _XL_DRAW(x-2,y+1, BRIDGE_UP_TILE,_XL_WHITE);
+} 
+
 static void draw_castle(void)
 {
-    _XL_DRAW(XSize/2-1,YSize/2,  CASTLE_NW_TILE,_XL_WHITE);
-    _XL_DRAW(XSize/2,  YSize/2,  CASTLE_NE_TILE,_XL_WHITE);
-    _XL_DRAW(XSize/2-1,YSize/2+1,CASTLE_SW_TILE,_XL_WHITE);
-    _XL_DRAW(XSize/2,YSize/2+1,  CASTLE_SE_TILE,_XL_WHITE);
-    _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_UP_TILE,_XL_WHITE);
+    _draw_castle(XSize/2,YSize/2);
+    // _XL_DRAW(XSize/2-1,YSize/2,  CASTLE_NW_TILE,_XL_WHITE);
+    // _XL_DRAW(XSize/2,  YSize/2,  CASTLE_NE_TILE,_XL_WHITE);
+    // _XL_DRAW(XSize/2-1,YSize/2+1,CASTLE_SW_TILE,_XL_WHITE);
+    // _XL_DRAW(XSize/2,YSize/2+1,  CASTLE_SE_TILE,_XL_WHITE);
+    // _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_UP_TILE,_XL_WHITE);
 }
 
 static void draw_left_dragon(uint8_t x, uint8_t y, uint8_t color)
@@ -91,12 +103,21 @@ static void draw_dead_king_dragon(void)
 
 
 
-static void draw_king_dragon(void)
+static void _draw_king_dragon(uint8_t king_x, uint8_t king_y)
 {
     _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y,   BOSS_NW_TILE,_XL_CYAN);
     _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y,   BOSS_NE_TILE, _XL_CYAN);
     _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y+1, BOSS_SW_TILE,_XL_CYAN);
     _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y+1, BOSS_SE_TILE, _XL_CYAN);
+}
+
+static void draw_king_dragon(void)
+{
+    _draw_king_dragon(king_x, king_y);
+    // _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y,   BOSS_NW_TILE,_XL_CYAN);
+    // _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y,   BOSS_NE_TILE, _XL_CYAN);
+    // _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y+1, BOSS_SW_TILE,_XL_CYAN);
+    // _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y+1, BOSS_SE_TILE, _XL_CYAN);
 }
 
 static void delete_king_dragon(void)
@@ -144,7 +165,7 @@ static void draw_player(uint8_t x, uint8_t y)
 
 static uint8_t is_wall(short x, short y)
 {
-    if (x == 0 || y == 0 || x == (short)XSize - 1 || y == (short)YSize - 1)
+    if ((x == 0) || (y == 0) || (x == (short)XSize - 1) || (y == (short)YSize - 1))
         return 1;
     return 0;
 }
@@ -217,10 +238,11 @@ static uint8_t tile_is_dragon(short x, short y)
     return 0;
 }
 
-static void rebuild_passable(void)
+
+static void build_passable(void)
 {
-    uint8_t x, y, i, j;
-    short xs[4], ys[4];
+    uint8_t x, y;
+    // short xs[4], ys[4];
 
     for (y = 0; y < (uint8_t)YSize && y < MAP_H; ++y)
     {
@@ -231,11 +253,27 @@ static void rebuild_passable(void)
                               !is_king((short)x, (short)y)) ? 1 : 0;
         }
     }
+}
+
+static void rebuild_passable(void)
+{
+    uint8_t i, j;
+    short xs[4], ys[4];
+
+    // for (y = 0; y < (uint8_t)YSize && y < MAP_H; ++y)
+    // {
+        // for (x = 0; x < (uint8_t)XSize && x < MAP_W; ++x)
+        // {
+            // passable[y][x] = (!is_wall((short)x, (short)y) &&
+                              // !is_castle((short)x, (short)y) &&
+                              // !is_king((short)x, (short)y)) ? 1 : 0;
+        // }
+    // }
 
     for (i = 0; i < MAX_DRAGONS; ++i)
     {
-        if (!dragons[i].alive)
-            continue;
+        // if (!dragons[i].alive)
+            // continue;
 
         xs[0] = (short)dragons[i].x - 1;
         xs[1] = (short)dragons[i].x;
@@ -253,7 +291,7 @@ static void rebuild_passable(void)
                 xs[j] < (short)XSize && ys[j] < (short)YSize &&
                 xs[j] < MAP_W && ys[j] < MAP_H)
             {
-                passable[ys[j]][xs[j]] = 0;
+                passable[ys[j]][xs[j]] = !dragons[i].alive;
             }
         }
     }
@@ -261,8 +299,8 @@ static void rebuild_passable(void)
 
 static uint8_t can_move(short x, short y)
 {
-    if (x < 0 || y < 0) return 0;
-    if (x >= (short)XSize || y >= (short)YSize) return 0;
+    if (x <= 0 || y <= 0) return 0;
+    if (x >= (short)XSize-1 || y >= (short)YSize-1) return 0;
     if (x >= MAP_W || y >= MAP_H) return 0;
 
     return passable[y][x] != 0;
@@ -651,7 +689,7 @@ static void update_respawn(void)
             spawn_dragon();
             _XL_TOCK_SOUND();
             rebuild_passable();
-            respawn_timer = 90;
+            respawn_timer = RESPAWN_TIME;
         }
         else
         {
@@ -832,7 +870,7 @@ static void reset_game(void)
 
     game_over = 0;
     // game_over_drawn = 0;
-    fire_held = 0;
+    // fire_held = 0;
     score = 0;
     frames = 0;
     wizard_timer = 0;
@@ -951,6 +989,7 @@ static void reset_game(void)
 
     draw_king_dragon();
 
+    build_passable();
     rebuild_passable();
 
     draw_wizard();
@@ -959,75 +998,132 @@ static void reset_game(void)
     scene_drawn = 1;
 }
 
+#if YSize<=20
+    #define KING_Y (YSize-3)
+
+#else
+    #define KING_Y (YSize/2+8)
+#endif
+
+void intro_screen(void)
+{
+    _XL_CLEAR_SCREEN();
+    
+    draw_wall();
+    _draw_castle(XSize/2, 1);
+    
+    #if YSize>=20
+    _XL_SET_TEXT_COLOR(_XL_CYAN);
+    _XL_PRINT(XSize/2-6, YSize/2-7, "DRAGONMASTER");
+
+
+    _XL_SET_TEXT_COLOR(_XL_WHITE);
+
+    _XL_PRINT(XSize/2-1, YSize/2-5, "BY");
+
+    _XL_PRINT(XSize/2-7, YSize/2-3, "FABRIZIO CARUSO");
+    
+    _XL_PRINT(XSize/2-8, YSize/2+3, "ORIGINAL GAME BY");
+    _XL_PRINT(XSize/2-6, YSize/2+5, "DAVID BERDAN");
+
+    _XL_SET_TEXT_COLOR(_XL_YELLOW);
+
+    _XL_PRINT(XSize/2-6, YSize/2-1, "AIDED BY AI");
+    #else
+    _XL_SET_TEXT_COLOR(_XL_CYAN);
+    _XL_PRINT(XSize/2-6, 3, "DRAGONMASTER");
+
+
+    _XL_SET_TEXT_COLOR(_XL_WHITE);
+
+    _XL_PRINT(XSize/2-7, 5, "FABRIZIO CARUSO");
+    
+    _XL_PRINT(XSize/2-8, 8, "ORIGINAL GAME BY");
+    _XL_PRINT(XSize/2-6, 10, "DAVID BERDAN");
+
+    _XL_SET_TEXT_COLOR(_XL_YELLOW);
+
+    _XL_PRINT(XSize/2-6, 12, "AIDED BY AI");
+    #endif
+
+    _draw_king_dragon(XSize/2+1,KING_Y);
+    draw_player(XSize/2-2,KING_Y+1);
+
+    #if XSize>=23
+    {
+        uint8_t i;
+        
+        for(i=3;i<=YSize-1-3;i+=4)
+        {
+            draw_right_dragon(2,i,(i/4)&1 ? _XL_WHITE : _XL_RED);
+            draw_left_dragon(XSize-1-1,i,(i/4)&1 ? _XL_RED : _XL_WHITE);
+        }
+    }
+    #elif XSize>16
+
+        draw_right_dragon(2,2,       _XL_WHITE);
+        draw_left_dragon(XSize-1-1,YSize-1-3,_XL_RED);
+        draw_right_dragon(2,YSize-1-3,       _XL_WHITE);
+        draw_left_dragon(XSize-1-1,2,_XL_RED);
+    #else
+        draw_right_dragon(2,1,       _XL_WHITE);
+        draw_left_dragon(XSize-1-1,YSize-1-2,_XL_RED);
+        draw_right_dragon(2,YSize-1-2,       _XL_WHITE);
+        draw_left_dragon(XSize-1-1,1,_XL_RED);
+    #endif
+
+    _XL_SLEEP(1);
+    _XL_WAIT_FOR_INPUT();
+    
+    _XL_CLEAR_SCREEN();
+}
+
+
 /* --------------------------------------------------------------------------------------- */
 /* Main game loop                                                                           */
 /* --------------------------------------------------------------------------------------- */
 
 int main(void)
 {
+    uint8_t input;
+    uint8_t fire;
+    // uint8_t fire_pressed;
+    
     _XL_INIT_GRAPHICS();
     _XL_INIT_SOUND();
     _XL_INIT_INPUT();
 
     _XL_CLEAR_SCREEN();
 
-    reset_game();
-
     while (1)
     {
-        if (game_over)
+        intro_screen();
+        
+        reset_game();
+
+        while(!game_over)
         {
-            if(king_alive)
+
+
+            ++frames;
+
+            if (wizard_interval > MIN_WIZARD_INTERVAL)
             {
-                _XL_SET_TEXT_COLOR(_XL_YELLOW);
-                _XL_PRINT(XSize/2-4,0, "YOU LOST");
-                
+                --wizard_interval;
             }
-            else
-            {
-                _XL_SET_TEXT_COLOR(_XL_GREEN);
-                _XL_PRINT(XSize/2-4,0, "YOU WON");
-            }
-            _XL_SLEEP(1);
-            _XL_SET_TEXT_COLOR(_XL_RED);
-            _XL_PRINT(XSize/2-4,YSize/2-2, "GAME OVER");
-            _XL_SLEEP(2);
-            _XL_PRINT(XSize/2-4,YSize/2-2, "         ");
 
-            _XL_SLEEP(1);
-            _XL_WAIT_FOR_INPUT();
-            reset_game();
-
-            continue;
-        }
-
-        ++frames;
-
-        if (wizard_interval > MIN_WIZARD_INTERVAL)
-        {
-            --wizard_interval;
-        }
-
-        update_flip();
-        update_respawn();
-
-        {
-            uint8_t input;
-            uint8_t fire;
-            uint8_t fire_pressed;
+            update_flip();
+            update_respawn();
 
             input = (uint8_t)_XL_INPUT();
             fire = (uint8_t)_XL_FIRE(input);
-
-            fire_pressed = (fire != 0) && (fire_held == 0);
-            fire_held = fire;
 
             move_player(get_direction(input));
 
             if (game_over)
                 continue;
 
-            if (fire_pressed)
+            if (fire)
                 kill_dragons();
 
             ++wizard_timer;
@@ -1042,10 +1138,29 @@ int main(void)
                 continue;
 
             check_death();
+
+            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+            
         }
 
-        _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
-        
+        if(king_alive)
+        {
+            _XL_SET_TEXT_COLOR(_XL_YELLOW);
+            _XL_PRINT(XSize/2-4,0, "YOU LOST");
+            
+        }
+        else
+        {
+            _XL_SET_TEXT_COLOR(_XL_GREEN);
+            _XL_PRINT(XSize/2-4,0, "YOU WON");
+        }
+        _XL_SLEEP(1);
+        _XL_SET_TEXT_COLOR(_XL_RED);
+        _XL_PRINT(XSize/2-4,YSize/2-2, "GAME OVER");
+        _XL_SLEEP(1);
+        _XL_WAIT_FOR_INPUT();
+        _XL_PRINT(XSize/2-4,YSize/2-2, "         ");
+
 
     }
 
