@@ -10,6 +10,18 @@
 
 #define RESPAWN_TIME 240
 
+#define INITIAL_LIVES 3
+
+#define DRAGON_POINTS 5
+#define KING_POINTS 100
+
+#define MAX_BONUS 50
+
+static uint8_t lives;
+static uint16_t record;
+static uint8_t bonus;
+
+
 typedef struct
 {
     uint8_t x;
@@ -28,7 +40,7 @@ static uint8_t initial_dragons;
 static uint8_t player_x, player_y;
 static uint8_t wizard_x, wizard_y;
 
-static uint8_t game_over;
+// static uint8_t game_over;
 // static uint8_t game_over_drawn;
 static uint8_t scene_drawn;
 
@@ -39,7 +51,7 @@ static uint8_t wizard_interval;
 static uint16_t flip_timer;
 static uint16_t respawn_timer;
 
-static uint8_t score;
+static uint16_t score;
 // static uint8_t fire_held;
 
 static uint8_t king_alive;
@@ -49,6 +61,8 @@ static uint8_t king_alive;
  *   (king_x, king_y+1)     (king_x+1, king_y+1)
  */
 static short king_x, king_y;
+
+static uint16_t steps;
 
 /* --------------------------------------------------------------------------------------- */
 /* Drawing helpers                                                                          */
@@ -239,7 +253,7 @@ static uint8_t tile_is_dragon(short x, short y)
 }
 
 
-static void build_passable(void)
+static void build_initial_passable(void)
 {
     uint8_t x, y;
     // short xs[4], ys[4];
@@ -255,7 +269,7 @@ static void build_passable(void)
     }
 }
 
-static void rebuild_passable(void)
+static void build_dragon_passable(void)
 {
     uint8_t i, j;
     short xs[4], ys[4];
@@ -420,17 +434,18 @@ static void move_player(uint8_t dir)
     if (!can_move(nx, ny))
         return;
 
-    if (nx == (short)wizard_x && ny == (short)wizard_y)
-    {
-        game_over = 1;
-        return;
-    }
+    // if (nx == (short)wizard_x && ny == (short)wizard_y)
+    // {
+        // game_over = 1;
+        // return;
+    // }
 
     player_x = (uint8_t)nx;
     player_y = (uint8_t)ny;
 
     _XL_DELETE(old_x, old_y);
     draw_player(player_x, player_y);
+    ++steps;
 }
 
 /* --------------------------------------------------------------------------------------- */
@@ -449,6 +464,154 @@ static short wizard_dirs[8][2] =
     { 0,  1}
 };
 
+static void show_player_death(void)
+{
+    _XL_EXPLOSION_SOUND();
+    _XL_SLEEP(1);
+    _XL_TICK_SOUND();
+    _XL_DRAW(player_x,player_y,DEAD_1_TILE, _XL_WHITE);
+    _XL_SLEEP(1);
+    _XL_TICK_SOUND();
+    _XL_DRAW(player_x,player_y,DEAD_2_TILE, _XL_WHITE);
+    _XL_SLEEP(1);
+    _XL_DELETE(player_x,player_y);
+
+}
+
+static void reset_player(void)
+{
+    uint8_t found;
+    uint8_t x,y;
+    
+    player_x = (uint8_t)((short)XSize / 2 - 1);
+    player_y = 2;
+
+    if (!basic_free((short)player_x, (short)player_y))
+    {
+        player_x = 1;
+        player_y = 1;
+
+        if (!basic_free((short)player_x, (short)player_y))
+        {
+            found = 0;
+
+            for (y = 1; y < (short)YSize - 1 && !found; ++y)
+            {
+                for (x = 1; x < (short)XSize - 1; ++x)
+                {
+                    if (basic_free(x, y))
+                    {
+                        player_x = (uint8_t)x;
+                        player_y = (uint8_t)y;
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                player_x = 1;
+                player_y = 1;
+            }
+        }
+    }
+}
+
+static void display_lives(void)
+{
+    uint8_t i;
+    
+    for(i=1;i<=INITIAL_LIVES;++i)
+    {
+        if(i<=lives)
+        {
+            _XL_DRAW(XSize/2-3+i,0,PLAYER_TILE,_XL_WHITE);
+        }
+        else
+        {
+            _XL_DRAW(XSize/2-3+i,0,WALL_TILE,_XL_WHITE);
+        }
+    }
+}
+
+static void player_dies(void)
+{
+    --lives;
+    show_player_death();
+    reset_player();
+    draw_player(player_x,player_y);
+    display_lives();
+}
+
+
+
+static void reset_wizard(void)
+{
+    uint8_t x, y, found;
+    
+    wizard_x = 1;
+    wizard_y = (YSize > 2) ? (uint8_t)(YSize - 2) : 1;
+
+    if (!basic_free((short)wizard_x, (short)wizard_y) ||
+        (wizard_x == player_x && wizard_y == player_y))
+    {
+        wizard_x = (XSize > 2) ? (uint8_t)(XSize - 2) : 1;
+        wizard_y = (YSize > 2) ? (uint8_t)(YSize - 2) : 1;
+    }
+
+    if (!basic_free((short)wizard_x, (short)wizard_y) ||
+        (wizard_x == player_x && wizard_y == player_y))
+    {
+        wizard_x = (XSize > 2) ? (uint8_t)(XSize - 2) : 1;
+        wizard_y = 1;
+    }
+
+    if (!basic_free((short)wizard_x, (short)wizard_y) ||
+        (wizard_x == player_x && wizard_y == player_y))
+    {
+        wizard_x = 1;
+        wizard_y = 1;
+    }
+
+    if (wizard_x == player_x && wizard_y == player_y)
+    {
+        found = 0;
+
+        for (y = 1; y < (short)YSize - 1 && !found; ++y)
+        {
+            for (x = 1; x < (short)XSize - 1; ++x)
+            {
+                if (basic_free(x, y) &&
+                    !(x == (short)player_x && y == (short)player_y))
+                {
+                    wizard_x = (uint8_t)x;
+                    wizard_y = (uint8_t)y;
+                    found = 1;
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+        {
+            wizard_x = player_x;
+            wizard_y = player_y;
+        }
+    }
+}
+
+
+static void check_wizard_player_collision(void)
+{
+    if (wizard_x == player_x && wizard_y == player_y)
+    {
+        player_dies();
+        reset_wizard();
+    }
+}
+
+
 static void wizard_step(void)
 {
     short dx;
@@ -458,11 +621,11 @@ static void wizard_step(void)
     uint8_t i;
     uint8_t tried;
 
-    if (wizard_x == player_x && wizard_y == player_y)
-    {
-        game_over = 1;
-        return;
-    }
+    // if (wizard_x == player_x && wizard_y == player_y)
+    // {
+        // game_over = 1;
+        // return;
+    // }
 
     /* Desired direction toward the player */
     dx = (short)player_x - (short)wizard_x;
@@ -510,8 +673,8 @@ static void wizard_step(void)
         }
     }
 
-    if (wizard_x == player_x && wizard_y == player_y)
-        game_over = 1;
+    // if (wizard_x == player_x && wizard_y == player_y)
+        // game_over = 1;
 }
 
 /* --------------------------------------------------------------------------------------- */
@@ -688,7 +851,7 @@ static void update_respawn(void)
         {
             spawn_dragon();
             _XL_TOCK_SOUND();
-            rebuild_passable();
+            build_dragon_passable();
             respawn_timer = RESPAWN_TIME;
         }
         else
@@ -701,6 +864,14 @@ static void update_respawn(void)
         respawn_timer = 0;
     }
 }
+
+
+static void display_score(void)
+{
+    _XL_SET_TEXT_COLOR(_XL_WHITE);
+    _XL_PRINTD(0,0,4,score);
+}
+
 
 static void kill_dragons(void)
 {
@@ -729,8 +900,8 @@ static void kill_dragons(void)
             _XL_SHOOT_SOUND();
             _XL_SLOW_DOWN(4*_XL_SLOW_DOWN_FACTOR);
 
-            if (score < 255)
-                ++score;
+            score+=DRAGON_POINTS;
+            display_score();
 
             respawn_timer = 90;
             killed = 1;
@@ -754,13 +925,13 @@ static void kill_dragons(void)
             _XL_SLOW_DOWN(10*_XL_SLOW_DOWN_FACTOR);
 
             _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
-
-
-            if (score < 255)
-                ++score;
+            
+            score+=KING_POINTS;
+            _XL_TICK_SOUND();
+            display_score();
 
             killed = 1;
-            game_over = 1;
+            // game_over = 1;
             delete_king_dragon();
             _XL_TICK_SOUND();
             _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
@@ -779,29 +950,40 @@ static void kill_dragons(void)
             _XL_SLEEP(1);
             _XL_TOCK_SOUND();
             _XL_DELETE(player_x+3, player_y);
+            
+            if(steps < XSize/4 * YSize/4)
+            {
+                bonus = 100;
+            }
+            else if(steps < XSize/2 * YSize/4)
+            {
+                bonus = 50;
+            }
+            else if(steps < XSize/2 * YSize/2)
+            {
+                bonus = 25;
+            }
+            else
+            {
+                bonus = 0;
+            }
+            
+            score+=bonus;
+            _XL_TICK_SOUND();
+            display_score();
             _XL_SLEEP(1);
+            
         }
     }
 
     if (killed)
     {
-        rebuild_passable();
+        build_dragon_passable();
     }
 }
 
-static void show_player_death(void)
-{
-    _XL_EXPLOSION_SOUND();
-    _XL_SLEEP(1);
-    _XL_TICK_SOUND();
-    _XL_DRAW(player_x,player_y,DEAD_1_TILE, _XL_WHITE);
-    _XL_SLEEP(1);
-    _XL_TICK_SOUND();
-    _XL_DRAW(player_x,player_y,DEAD_2_TILE, _XL_WHITE);
-    _XL_SLEEP(1);
-}
 
-static void check_death(void)
+static void check_dragon_player_collissions(void)
 {
     uint8_t i;
     short mx;
@@ -809,8 +991,7 @@ static void check_death(void)
 
     if (wizard_x == player_x && wizard_y == player_y)
     {
-        game_over = 1;
-        show_player_death();
+        player_dies();
         return;
     }
 
@@ -824,8 +1005,7 @@ static void check_death(void)
 
         if (adjacent4((short)player_x, (short)player_y, mx, my))
         {
-            game_over = 1;
-            show_player_death();
+            player_dies();
             return;
         }
     }
@@ -835,8 +1015,7 @@ static void check_death(void)
     {
         if (adjacent4((short)player_x, (short)player_y, king_x,     king_y))
         {
-            game_over = 1;
-            show_player_death();
+            player_dies();
             return;
         }
     }
@@ -846,12 +1025,13 @@ static void check_death(void)
 /* Reset                                                                                    */
 /* --------------------------------------------------------------------------------------- */
 
+
 static void reset_game(void)
 {
     uint8_t i;
-    short x;
-    short y;
-    uint8_t found;
+    // uint8_t x;
+    // uint8_t y;
+    // uint8_t found;
 
     if (scene_drawn)
     {
@@ -868,7 +1048,7 @@ static void reset_game(void)
             delete_king_dragon();
     }
 
-    game_over = 0;
+    lives = INITIAL_LIVES;
     // game_over_drawn = 0;
     // fire_held = 0;
     score = 0;
@@ -896,89 +1076,9 @@ static void reset_game(void)
     if (initial_dragons > MAX_DRAGONS)
         initial_dragons = MAX_DRAGONS;
 
-    player_x = (uint8_t)((short)XSize / 2 - 1);
-    player_y = 2;
+    reset_player();
 
-    if (!basic_free((short)player_x, (short)player_y))
-    {
-        player_x = 1;
-        player_y = 1;
-
-        if (!basic_free((short)player_x, (short)player_y))
-        {
-            found = 0;
-
-            for (y = 1; y < (short)YSize - 1 && !found; ++y)
-            {
-                for (x = 1; x < (short)XSize - 1; ++x)
-                {
-                    if (basic_free(x, y))
-                    {
-                        player_x = (uint8_t)x;
-                        player_y = (uint8_t)y;
-                        found = 1;
-                        break;
-                    }
-                }
-            }
-
-            if (!found)
-            {
-                player_x = 1;
-                player_y = 1;
-            }
-        }
-    }
-
-    wizard_x = 1;
-    wizard_y = (YSize > 2) ? (uint8_t)(YSize - 2) : 1;
-
-    if (!basic_free((short)wizard_x, (short)wizard_y) ||
-        (wizard_x == player_x && wizard_y == player_y))
-    {
-        wizard_x = (XSize > 2) ? (uint8_t)(XSize - 2) : 1;
-        wizard_y = (YSize > 2) ? (uint8_t)(YSize - 2) : 1;
-    }
-
-    if (!basic_free((short)wizard_x, (short)wizard_y) ||
-        (wizard_x == player_x && wizard_y == player_y))
-    {
-        wizard_x = (XSize > 2) ? (uint8_t)(XSize - 2) : 1;
-        wizard_y = 1;
-    }
-
-    if (!basic_free((short)wizard_x, (short)wizard_y) ||
-        (wizard_x == player_x && wizard_y == player_y))
-    {
-        wizard_x = 1;
-        wizard_y = 1;
-    }
-
-    if (wizard_x == player_x && wizard_y == player_y)
-    {
-        found = 0;
-
-        for (y = 1; y < (short)YSize - 1 && !found; ++y)
-        {
-            for (x = 1; x < (short)XSize - 1; ++x)
-            {
-                if (basic_free(x, y) &&
-                    !(x == (short)player_x && y == (short)player_y))
-                {
-                    wizard_x = (uint8_t)x;
-                    wizard_y = (uint8_t)y;
-                    found = 1;
-                    break;
-                }
-            }
-        }
-
-        if (!found)
-        {
-            wizard_x = player_x;
-            wizard_y = player_y;
-        }
-    }
+    reset_wizard();
 
     draw_background();
 
@@ -989,8 +1089,8 @@ static void reset_game(void)
 
     draw_king_dragon();
 
-    build_passable();
-    rebuild_passable();
+    build_initial_passable();
+    build_dragon_passable();
 
     draw_wizard();
     draw_player(player_x, player_y);
@@ -1005,6 +1105,17 @@ static void reset_game(void)
     #define KING_Y (YSize/2+8)
 #endif
 
+static void display_record(uint8_t x)
+{
+    
+    _XL_SET_TEXT_COLOR(_XL_GREEN);
+    _XL_PRINT(x,0,"HI");
+
+    _XL_SET_TEXT_COLOR(_XL_WHITE);
+    _XL_PRINTD(x+2,0,4,record);
+}
+
+
 void intro_screen(void)
 {
     _XL_CLEAR_SCREEN();
@@ -1012,6 +1123,8 @@ void intro_screen(void)
     draw_wall();
     _draw_castle(XSize/2, 1);
     
+    display_record(XSize/2-3);
+
     #if YSize>=20
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(XSize/2-6, YSize/2-7, "DRAGONMASTER");
@@ -1023,7 +1136,7 @@ void intro_screen(void)
 
     _XL_PRINT(XSize/2-7, YSize/2-3, "FABRIZIO CARUSO");
     
-    _XL_PRINT(XSize/2-8, YSize/2+3, "ORIGINAL GAME BY");
+    _XL_PRINT(XSize/2-7, YSize/2+3, "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, YSize/2+5, "DAVID BERDAN");
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
@@ -1038,7 +1151,7 @@ void intro_screen(void)
 
     _XL_PRINT(XSize/2-7, 5, "FABRIZIO CARUSO");
     
-    _XL_PRINT(XSize/2-8, 8, "ORIGINAL GAME BY");
+    _XL_PRINT(XSize/2-7, 8,  "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, 10, "DAVID BERDAN");
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
@@ -1087,24 +1200,26 @@ int main(void)
 {
     uint8_t input;
     uint8_t fire;
-    // uint8_t fire_pressed;
     
     _XL_INIT_GRAPHICS();
     _XL_INIT_SOUND();
     _XL_INIT_INPUT();
 
     _XL_CLEAR_SCREEN();
+    record = 0;
 
     while (1)
     {
         intro_screen();
         
         reset_game();
+        display_score();
+        display_record(XSize-1-3-2);
+        display_lives();
+        steps = 0;
 
-        while(!game_over)
+        while(lives && king_alive)
         {
-
-
             ++frames;
 
             if (wizard_interval > MIN_WIZARD_INTERVAL)
@@ -1114,13 +1229,15 @@ int main(void)
 
             update_flip();
             update_respawn();
+            check_dragon_player_collissions();
 
             input = (uint8_t)_XL_INPUT();
             fire = (uint8_t)_XL_FIRE(input);
 
             move_player(get_direction(input));
+            check_dragon_player_collissions();
 
-            if (game_over)
+            if (!lives)
                 continue;
 
             if (fire)
@@ -1128,16 +1245,17 @@ int main(void)
 
             ++wizard_timer;
 
+            check_wizard_player_collision();
             if (wizard_timer >= wizard_interval)
             {
                 wizard_timer = 0;
                 wizard_step();
             }
+            check_wizard_player_collision();
 
-            if (game_over)
+            if (!lives)
                 continue;
 
-            check_death();
 
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
             
@@ -1156,10 +1274,18 @@ int main(void)
         }
         _XL_SLEEP(1);
         _XL_SET_TEXT_COLOR(_XL_RED);
-        _XL_PRINT(XSize/2-4,YSize/2-2, "GAME OVER");
+        _XL_PRINT(XSize/2-4,YSize/2-2,   "GAME OVER");
         _XL_SLEEP(1);
+        if(score>record)
+        {
+            record = score;
+            _XL_SET_TEXT_COLOR(_XL_GREEN);
+            _XL_PRINT(XSize/2-5,YSize-1, "NEW RECORD");
+            display_record(XSize-1-3-2);
+            _XL_SLEEP(1);
+        }
         _XL_WAIT_FOR_INPUT();
-        _XL_PRINT(XSize/2-4,YSize/2-2, "         ");
+        _XL_PRINT(XSize/2-4,YSize/2-2,   "          ");
 
 
     }
