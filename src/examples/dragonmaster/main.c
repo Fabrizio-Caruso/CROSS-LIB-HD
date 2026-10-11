@@ -981,6 +981,7 @@ static void kill_dragons(void)
             _XL_PRINT(XSize/2-3, YSize-3, "BONUS ");
             _XL_SET_TEXT_COLOR(_XL_WHITE);
             _XL_PRINTD(XSize/2+3, YSize-3, 2, bonus);
+            _XL_SLEEP(1);
             
             score+=bonus;
             _XL_TICK_SOUND();
