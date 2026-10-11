@@ -21,6 +21,8 @@ static uint8_t lives;
 static uint16_t record;
 static uint8_t bonus;
 
+uint8_t player_color[] = {_XL_WHITE, _XL_CYAN};
+uint8_t wizard_color[] = {_XL_WHITE, _XL_YELLOW};
 
 typedef struct
 {
@@ -35,7 +37,7 @@ static Dragon dragons[MAX_DRAGONS];
 
 static uint8_t passable[MAP_W][MAP_H];
 
-static uint8_t initial_dragons;
+static uint8_t level_dragons;
 
 static uint8_t player_x, player_y;
 static uint8_t wizard_x, wizard_y;
@@ -172,6 +174,11 @@ static void draw_player(uint8_t x, uint8_t y)
     _XL_DRAW(x,y,PLAYER_TILE, _XL_WHITE);
 }
 
+static void draw_player_with_color(uint8_t x, uint8_t y, uint8_t color)
+{
+    _XL_DRAW(x,y,PLAYER_TILE, color);
+}
+
 /* --------------------------------------------------------------------------------------- */
 /* Small helpers                                                                            */
 /* --------------------------------------------------------------------------------------- */
@@ -243,7 +250,7 @@ static uint8_t tile_is_dragon(short x, short y)
 {
     uint8_t i;
 
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         if (dragon_tile_equals(&dragons[i], x, y))
             return 1;
@@ -269,22 +276,15 @@ static void build_initial_passable(void)
     }
 }
 
+
+
+
 static void build_dragon_passable(void)
 {
     uint8_t i, j;
     short xs[4], ys[4];
 
-    // for (y = 0; y < (uint8_t)YSize && y < MAP_H; ++y)
-    // {
-        // for (x = 0; x < (uint8_t)XSize && x < MAP_W; ++x)
-        // {
-            // passable[y][x] = (!is_wall((short)x, (short)y) &&
-                              // !is_castle((short)x, (short)y) &&
-                              // !is_king((short)x, (short)y)) ? 1 : 0;
-        // }
-    // }
-
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         // if (!dragons[i].alive)
             // continue;
@@ -324,7 +324,7 @@ static uint8_t all_dragons_dead(void)
 {
     uint8_t i;
 
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         if (dragons[i].alive)
             return 0;
@@ -346,6 +346,11 @@ static void draw_background(void)
 static void draw_wizard(void)
 {
     _XL_DRAW(wizard_x, wizard_y, CHASE_TILE, _XL_WHITE);
+}
+
+static void draw_wizard_with_color(uint8_t color)
+{
+    _XL_DRAW(wizard_x, wizard_y, CHASE_TILE, color);
 }
 
 static void draw_dragon(const Dragon *d)
@@ -444,7 +449,6 @@ static void move_player(uint8_t dir)
     player_y = (uint8_t)ny;
 
     _XL_DELETE(old_x, old_y);
-    draw_player(player_x, player_y);
     ++steps;
 }
 
@@ -466,6 +470,7 @@ static short wizard_dirs[8][2] =
 
 static void show_player_death(void)
 {
+    draw_player_with_color(player_x, player_y, _XL_WHITE);
     _XL_EXPLOSION_SOUND();
     _XL_SLEEP(1);
     _XL_TICK_SOUND();
@@ -647,7 +652,7 @@ static void wizard_step(void)
         _XL_DELETE(wizard_x, wizard_y);
         wizard_x = (uint8_t)nx;
         wizard_y = (uint8_t)ny;
-        draw_wizard();
+        // draw_wizard();
     }
     else
     {
@@ -665,7 +670,7 @@ static void wizard_step(void)
                 _XL_DELETE(wizard_x, wizard_y);
                 wizard_x = (uint8_t)nx;
                 wizard_y = (uint8_t)ny;
-                draw_wizard();
+                // draw_wizard();
                 break;
             }
 
@@ -771,7 +776,7 @@ static void spawn_dragon(void)
                 continue;
         }
 
-        for (i = 0; i < MAX_DRAGONS; ++i)
+        for (i = 0; i < level_dragons; ++i)
         {
             if (!dragons[i].alive)
             {
@@ -782,7 +787,7 @@ static void spawn_dragon(void)
                 dragons[i].color = (uint8_t)(_XL_RAND() & 1) ? _XL_RED : _XL_WHITE;
 
                 draw_dragon(&dragons[i]);
-
+                build_dragon_passable();
                 return;
             }
         }
@@ -797,7 +802,7 @@ static void update_flip(void)
 
     alive = 0;
 
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         if (dragons[i].alive)
             ++alive;
@@ -809,7 +814,7 @@ static void update_flip(void)
         {
             pick = (uint16_t)(_XL_RAND() % (uint16_t)alive);
 
-            for (i = 0; i < MAX_DRAGONS; ++i)
+            for (i = 0; i < level_dragons; ++i)
             {
                 if (dragons[i].alive)
                 {
@@ -839,19 +844,19 @@ static void update_respawn(void)
 
     alive = 0;
 
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         if (dragons[i].alive)
             ++alive;
     }
 
-    if (alive < initial_dragons)
+    if (alive < level_dragons)
     {
         if (respawn_timer == 0)
         {
             spawn_dragon();
             _XL_TOCK_SOUND();
-            build_dragon_passable();
+            //build_dragon_passable(); WHY DOESN'T THIS SUFFICE???
             respawn_timer = RESPAWN_TIME;
         }
         else
@@ -883,7 +888,7 @@ static void kill_dragons(void)
     killed = 0;
 
     /* Kill regular dragons adjacent to their mouth (bottom row) */
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         if (!dragons[i].alive)
             continue;
@@ -926,6 +931,7 @@ static void kill_dragons(void)
 
             _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
             
+            
             score+=KING_POINTS;
             _XL_TICK_SOUND();
             display_score();
@@ -951,22 +957,30 @@ static void kill_dragons(void)
             _XL_TOCK_SOUND();
             _XL_DELETE(player_x+3, player_y);
             
-            if(steps < XSize/4 * YSize/4)
+            if(steps < XSize/2 * YSize/4)
             {
-                bonus = 100;
-            }
-            else if(steps < XSize/2 * YSize/4)
-            {
-                bonus = 50;
+                bonus = 80;
             }
             else if(steps < XSize/2 * YSize/2)
             {
-                bonus = 25;
+                bonus = 50;
+            }
+            else if(steps < XSize/2 * YSize)
+            {
+                bonus = 30;
+            }
+            else if(steps < XSize * YSize)
+            {
+                bonus = 20;
             }
             else
             {
                 bonus = 0;
             }
+            _XL_SET_TEXT_COLOR(_XL_CYAN);
+            _XL_PRINT(XSize/2-3, YSize-3, "BONUS ");
+            _XL_SET_TEXT_COLOR(_XL_WHITE);
+            _XL_PRINTD(XSize/2+3, YSize-3, 2, bonus);
             
             score+=bonus;
             _XL_TICK_SOUND();
@@ -995,7 +1009,7 @@ static void check_dragon_player_collissions(void)
         return;
     }
 
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         if (!dragons[i].alive)
             continue;
@@ -1038,7 +1052,7 @@ static void reset_game(void)
         _XL_DELETE(player_x, player_y);
         _XL_DELETE(wizard_x, wizard_y);
 
-        for (i = 0; i < MAX_DRAGONS; ++i)
+        for (i = 0; i < level_dragons; ++i)
         {
             if (dragons[i].alive)
                 delete_dragon(i);
@@ -1063,18 +1077,18 @@ static void reset_game(void)
     king_x = (short)XSize / 2 - 4;
     king_y = (short)YSize / 2;
 
-    for (i = 0; i < MAX_DRAGONS; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         dragons[i].alive = 0;
     }
 
-    initial_dragons = (uint8_t)(((short)XSize / 5) * ((short)YSize / 10));
+    level_dragons = (uint8_t)(((short)XSize / 5) * ((short)YSize / 10));
 
-    if (initial_dragons == 0)
-        initial_dragons = 1;
+    if (level_dragons == 0)
+        level_dragons = 1;
 
-    if (initial_dragons > MAX_DRAGONS)
-        initial_dragons = MAX_DRAGONS;
+    if (level_dragons > MAX_DRAGONS)
+        level_dragons = MAX_DRAGONS;
 
     reset_player();
 
@@ -1082,7 +1096,7 @@ static void reset_game(void)
 
     draw_background();
 
-    for (i = 0; i < initial_dragons; ++i)
+    for (i = 0; i < level_dragons; ++i)
     {
         spawn_dragon();
     }
@@ -1196,6 +1210,7 @@ void intro_screen(void)
 /* Main game loop                                                                           */
 /* --------------------------------------------------------------------------------------- */
 
+
 int main(void)
 {
     uint8_t input;
@@ -1221,6 +1236,8 @@ int main(void)
         while(lives && king_alive)
         {
             ++frames;
+            draw_player_with_color(player_x, player_y,player_color[frames&1]);
+            draw_wizard_with_color(wizard_color[frames&1]);
 
             if (wizard_interval > MIN_WIZARD_INTERVAL)
             {
