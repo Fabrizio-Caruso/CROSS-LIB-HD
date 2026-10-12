@@ -7,7 +7,7 @@
 #define MAP_W       64
 #define MAP_H       64
 
-#define MIN_WIZARD_INTERVAL       12
+#define MIN_WIZARD_INTERVAL        8
 #define INITIAL_WIZARD_INTERVAL  140
 
 #define RESPAWN_TIME 240
@@ -1273,7 +1273,7 @@ int main(void)
                 draw_player_with_color(player_x, player_y,player_color[frames&1]);
                 draw_wizard_with_color(wizard_color[frames&1]);
 
-                if (wizard_interval > MIN_WIZARD_INTERVAL)
+                if (wizard_interval > MIN_WIZARD_INTERVAL - level)
                 {
                     --wizard_interval;
                 }
