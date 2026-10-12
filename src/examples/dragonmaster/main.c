@@ -15,16 +15,22 @@
 #define INITIAL_LIVES 3
 
 #define DRAGON_POINTS 5
-#define KING_POINTS 100
+#define KING_POINTS 1000
+
+#define MAX_LIVES 9
 
 #define INITIAL_LEVEL 1
 #define LAST_LEVEL    4
+
+#define BONUS_LIFE 1000
 
 static uint8_t lives;
 static uint16_t record;
 static uint8_t bonus;
 
 static uint8_t level;
+
+static uint8_t extra_life_counter;
 
 uint8_t player_color[] = {_XL_WHITE, _XL_CYAN};
 uint8_t wizard_color[] = {_XL_WHITE, _XL_YELLOW};
@@ -448,12 +454,6 @@ static void move_player(uint8_t dir)
     if (!can_move(nx, ny))
         return;
 
-    // if (nx == (short)wizard_x && ny == (short)wizard_y)
-    // {
-        // game_over = 1;
-        // return;
-    // }
-
     player_x = (uint8_t)nx;
     player_y = (uint8_t)ny;
 
@@ -536,7 +536,7 @@ static void display_lives(void)
 {
     uint8_t i;
     
-    for(i=1;i<=INITIAL_LIVES;++i)
+    for(i=1;i<=MAX_LIVES;++i)
     {
         if(i<=lives)
         {
@@ -635,12 +635,6 @@ static void wizard_step(void)
     uint8_t i;
     uint8_t tried;
 
-    // if (wizard_x == player_x && wizard_y == player_y)
-    // {
-        // game_over = 1;
-        // return;
-    // }
-
     /* Desired direction toward the player */
     dx = (short)player_x - (short)wizard_x;
     dy = (short)player_y - (short)wizard_y;
@@ -661,7 +655,6 @@ static void wizard_step(void)
         _XL_DELETE(wizard_x, wizard_y);
         wizard_x = (uint8_t)nx;
         wizard_y = (uint8_t)ny;
-        // draw_wizard();
     }
     else
     {
@@ -679,16 +672,12 @@ static void wizard_step(void)
                 _XL_DELETE(wizard_x, wizard_y);
                 wizard_x = (uint8_t)nx;
                 wizard_y = (uint8_t)ny;
-                // draw_wizard();
                 break;
             }
 
             ++tried;
         }
     }
-
-    // if (wizard_x == player_x && wizard_y == player_y)
-        // game_over = 1;
 }
 
 /* --------------------------------------------------------------------------------------- */
@@ -865,7 +854,6 @@ static void update_respawn(void)
         {
             spawn_dragon();
             _XL_TOCK_SOUND();
-            //init_dragon_passable(); WHY DOESN'T THIS SUFFICE???
             respawn_timer = RESPAWN_TIME;
         }
         else
@@ -907,6 +895,27 @@ uint8_t compute_bonus(uint8_t steps)
     return bonus;
 }
 
+
+static void handle_extra_life(void)
+{
+    if(score> BONUS_LIFE*extra_life_counter)
+    {
+        ++extra_life_counter;
+        ++lives;
+        display_lives();
+        _XL_ZAP_SOUND();
+    }
+}
+
+
+static void increase_score(uint8_t points)
+{
+    score+=points;
+    display_score();
+    handle_extra_life();
+}
+
+
 static void kill_dragons(void)
 {
     uint8_t i;
@@ -934,8 +943,7 @@ static void kill_dragons(void)
             _XL_SHOOT_SOUND();
             _XL_SLOW_DOWN(4*_XL_SLOW_DOWN_FACTOR);
 
-            score+=DRAGON_POINTS;
-            display_score();
+            increase_score(DRAGON_POINTS);
 
             respawn_timer = 90;
             killed = 1;
@@ -990,10 +998,8 @@ static void kill_dragons(void)
             _XL_SET_TEXT_COLOR(_XL_WHITE);
             _XL_PRINTD(XSize/2-6+12, YSize-5, 3, KING_POINTS*level);
 
-            _XL_TICK_SOUND();
-            score+=KING_POINTS*level;
-
-            display_score();
+            increase_score(KING_POINTS*level);
+            _XL_SLEEP(1);
             
             bonus = compute_bonus(steps);
             _XL_SET_TEXT_COLOR(_XL_CYAN);
@@ -1002,10 +1008,10 @@ static void kill_dragons(void)
             _XL_PRINTD(XSize/2+3, YSize-3, 2, bonus);
             _XL_SLEEP(1);
             
-            score+=bonus;
-            _XL_TICK_SOUND();
-            display_score();
+            increase_score(bonus);
+
             _XL_SLEEP(1);
+            _XL_WAIT_FOR_INPUT();
             _XL_CLEAR_SCREEN();
         }
     }
@@ -1105,7 +1111,7 @@ static void init_level(void)
         dragons[i].alive = 0;
     }
 
-    level_dragons = (1+level) *(XSize / 8) * (YSize/8);
+    level_dragons = (1+level) *(XSize / 16) * (YSize/8);
 
     if (level_dragons < MIN_DRAGONS)
         level_dragons = MIN_DRAGONS;
@@ -1236,6 +1242,7 @@ void display_level(void)
     _XL_PRINTD(XSize/2-1,YSize-1,1,level);
 }
 
+
 /* --------------------------------------------------------------------------------------- */
 /* Main game loop                                                                           */
 /* --------------------------------------------------------------------------------------- */
@@ -1259,6 +1266,7 @@ int main(void)
         
         reset_game();
         steps = 0;
+        extra_life_counter = 1;
 
         while(lives && level<=LAST_LEVEL)
         {
@@ -1306,7 +1314,6 @@ int main(void)
 
                 if (!lives)
                     continue;
-
 
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
                 
