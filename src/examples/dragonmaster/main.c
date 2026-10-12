@@ -18,7 +18,7 @@
 #define KING_POINTS 100
 
 #define INITIAL_LEVEL 1
-#define LAST_LEVEL    3
+#define LAST_LEVEL    4
 
 static uint8_t lives;
 static uint16_t record;
@@ -282,37 +282,40 @@ static void build_initial_passable(void)
 }
 
 
-
-
-static void build_dragon_passable(void)
+static void update_single_dragon_passable(uint8_t i)
 {
-    uint8_t i, j;
-    short xs[4], ys[4];
+    uint8_t xs[4], ys[4];
+    uint8_t j;
+
+    xs[0] = dragons[i].x - 1;
+    xs[1] = dragons[i].x;
+    xs[2] = dragons[i].x - 1;
+    xs[3] = dragons[i].x;
+
+    ys[0] = dragons[i].y;
+    ys[1] = dragons[i].y;
+    ys[2] = dragons[i].y + 1;
+    ys[3] = dragons[i].y + 1;
+
+    for (j = 0; j < 4; ++j)
+    {
+        if (xs[j] >= 0 && ys[j] >= 0 &&
+            xs[j] < (short)XSize && ys[j] < (short)YSize &&
+            xs[j] < MAP_W && ys[j] < MAP_H)
+        {
+            passable[ys[j]][xs[j]] = !dragons[i].alive;
+        }
+    }
+}
+
+
+static void init_dragon_passable(void)
+{
+    uint8_t i;
 
     for (i = 0; i < level_dragons; ++i)
     {
-        // if (!dragons[i].alive)
-            // continue;
-
-        xs[0] = (short)dragons[i].x - 1;
-        xs[1] = (short)dragons[i].x;
-        xs[2] = (short)dragons[i].x - 1;
-        xs[3] = (short)dragons[i].x;
-
-        ys[0] = (short)dragons[i].y;
-        ys[1] = (short)dragons[i].y;
-        ys[2] = (short)dragons[i].y + 1;
-        ys[3] = (short)dragons[i].y + 1;
-
-        for (j = 0; j < 4; ++j)
-        {
-            if (xs[j] >= 0 && ys[j] >= 0 &&
-                xs[j] < (short)XSize && ys[j] < (short)YSize &&
-                xs[j] < MAP_W && ys[j] < MAP_H)
-            {
-                passable[ys[j]][xs[j]] = !dragons[i].alive;
-            }
-        }
+        update_single_dragon_passable(i);
     }
 }
 
@@ -367,6 +370,7 @@ static void draw_dragon(const Dragon *d)
         draw_left_dragon(d->x, d->y, d->color);
     else
         draw_right_dragon(d->x, d->y, d->color);
+    
 }
 
 static void delete_dragon(uint8_t i)
@@ -792,7 +796,7 @@ static void spawn_dragon(void)
                 dragons[i].color = (uint8_t)(_XL_RAND() & 1) ? _XL_RED : _XL_WHITE;
 
                 draw_dragon(&dragons[i]);
-                build_dragon_passable();
+                update_single_dragon_passable(i);
                 return;
             }
         }
@@ -861,7 +865,7 @@ static void update_respawn(void)
         {
             spawn_dragon();
             _XL_TOCK_SOUND();
-            //build_dragon_passable(); WHY DOESN'T THIS SUFFICE???
+            //init_dragon_passable(); WHY DOESN'T THIS SUFFICE???
             respawn_timer = RESPAWN_TIME;
         }
         else
@@ -936,7 +940,7 @@ static void kill_dragons(void)
             respawn_timer = 90;
             killed = 1;
             delete_dragon(i);
-
+            update_single_dragon_passable(i);
         }
     }
 
@@ -1006,10 +1010,10 @@ static void kill_dragons(void)
         }
     }
 
-    if (killed)
-    {
-        build_dragon_passable();
-    }
+    // if (killed)
+    // {
+        // init_dragon_passable();
+    // }
 }
 
 
@@ -1101,7 +1105,7 @@ static void init_level(void)
         dragons[i].alive = 0;
     }
 
-    level_dragons = (level + 1) *(XSize / 10) * (YSize/10);
+    level_dragons = (1+level) *(XSize / 8) * (YSize/8);
 
     if (level_dragons < MIN_DRAGONS)
         level_dragons = MIN_DRAGONS;
@@ -1123,7 +1127,7 @@ static void init_level(void)
     draw_king_dragon();
 
     build_initial_passable();
-    build_dragon_passable();
+    init_dragon_passable();
 
     draw_wizard();
     draw_player(player_x, player_y);
