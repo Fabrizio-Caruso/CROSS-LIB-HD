@@ -1,23 +1,29 @@
 #include "cross_lib.h"
 #include "images.h"
 
-#define MAX_DRAGONS 32
+#define MAX_DRAGONS 30
 #define MIN_DRAGONS  6
 
 #define MAP_W       64
 #define MAP_H       64
 
-#define MIN_WIZARD_INTERVAL        8
-#define INITIAL_WIZARD_INTERVAL  140
+#define MIN_WIZARD_INTERVAL        6
+#define INITIAL_WIZARD_INTERVAL  120
 
 #define RESPAWN_TIME 240
 
 #define INITIAL_LIVES 3
 
-#define DRAGON_POINTS 5
-#define KING_POINTS 1000
+#define DRAGON_POINTS 25
+#define KING_POINTS   50
 
-#define MAX_LIVES 9
+#if XSize>=32
+    #define MAX_SHOWN_LIVES 8
+#elif XSize>=20
+    #define MAX_SHOWN_LIVES 6
+#else
+    #define MAX_SHOWN_LIVES 5
+#endif
 
 #define INITIAL_LEVEL 1
 #define LAST_LEVEL    4
@@ -458,9 +464,9 @@ static void move_player(uint8_t dir)
 
     player_x = (uint8_t)nx;
     player_y = (uint8_t)ny;
+    ++steps;
 
     _XL_DELETE(old_x, old_y);
-    ++steps;
 }
 
 /* --------------------------------------------------------------------------------------- */
@@ -538,7 +544,7 @@ static void display_lives(void)
 {
     uint8_t i;
     
-    for(i=1;i<=MAX_LIVES;++i)
+    for(i=1;i<=MAX_SHOWN_LIVES;++i)
     {
         if(i<=lives)
         {
@@ -550,6 +556,17 @@ static void display_lives(void)
         }
     }
 }
+
+static void delete_top_text(void)
+{
+    uint8_t i;
+    
+    for(i=1;i<=9;++i)
+    {
+        _XL_DRAW(XSize/2-6+i,0,WALL_TILE,_XL_WHITE);
+    }
+}
+
 
 static void player_dies(void)
 {
@@ -674,6 +691,7 @@ static void wizard_step(void)
                 _XL_DELETE(wizard_x, wizard_y);
                 wizard_x = (uint8_t)nx;
                 wizard_y = (uint8_t)ny;
+                draw_wizard_with_color(wizard_color[frames&1]);
                 break;
             }
 
@@ -829,7 +847,7 @@ static void update_flip(void)
             }
         }
 
-        flip_timer = (uint16_t)(30 + (_XL_RAND()&31));
+        flip_timer = (uint16_t)(30 + (_XL_RAND()&31) - level*4);
     }
     else
     {
@@ -856,7 +874,7 @@ static void update_respawn(void)
         {
             spawn_dragon();
             _XL_TOCK_SOUND();
-            respawn_timer = RESPAWN_TIME;
+            respawn_timer = RESPAWN_TIME - level*8;
         }
         else
         {
@@ -880,15 +898,15 @@ uint8_t compute_bonus(uint8_t steps)
 {
     if(steps < XSize/2 * YSize)
     {
-        bonus = 50;
+        bonus = 100;
     }
     else if(steps < (short) XSize * YSize)
     {
-        bonus = 30;
+        bonus = 50;
     }
     else if(steps < 2 * (short) XSize * YSize)
     {
-        bonus = 20;
+        bonus = 25;
     }
     else
     {
@@ -921,11 +939,11 @@ static void increase_score(uint8_t points)
 static void kill_dragons(void)
 {
     uint8_t i;
-    uint8_t killed;
+    // uint8_t killed;
     short bx;
     short by;
 
-    killed = 0;
+    // killed = 0;
 
     /* Kill regular dragons adjacent to their mouth (bottom row) */
     for (i = 0; i < level_dragons; ++i)
@@ -948,7 +966,7 @@ static void kill_dragons(void)
             increase_score(DRAGON_POINTS);
 
             respawn_timer = 90;
-            killed = 1;
+            // killed = 1;
             delete_dragon(i);
             update_single_dragon_passable(i);
         }
@@ -971,7 +989,7 @@ static void kill_dragons(void)
             _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
             
             
-            killed = 1;
+            // killed = 1;
             // game_over = 1;
             delete_king_dragon();
             _XL_TICK_SOUND();
@@ -1005,9 +1023,9 @@ static void kill_dragons(void)
             
             bonus = compute_bonus(steps);
             _XL_SET_TEXT_COLOR(_XL_CYAN);
-            _XL_PRINT(XSize/2-3, YSize-3, "BONUS ");
+            _XL_PRINT(XSize/2-6, YSize-3, "TIME BONUS  ");
             _XL_SET_TEXT_COLOR(_XL_WHITE);
-            _XL_PRINTD(XSize/2+3, YSize-3, 2, bonus);
+            _XL_PRINTD(XSize/2-6+12, YSize-3, 3, bonus);
             _XL_SLEEP(1);
             
             increase_score(bonus);
@@ -1153,8 +1171,10 @@ static void init_level(void)
 static void display_record(uint8_t x)
 {
     
+    #if XSize>=16
     _XL_SET_TEXT_COLOR(_XL_GREEN);
     _XL_PRINT(x,0,"HI");
+    #endif
 
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINTD(x+2,0,4,record);
@@ -1286,7 +1306,6 @@ int main(void)
             while(lives && king_alive)
                 {
                 ++frames;
-                draw_player_with_color(player_x, player_y,player_color[frames&1]);
                 draw_wizard_with_color(wizard_color[frames&1]);
 
                 if (wizard_interval > MIN_WIZARD_INTERVAL - level)
@@ -1302,6 +1321,8 @@ int main(void)
                 fire = (uint8_t)_XL_FIRE(input);
 
                 move_player(get_direction(input));
+                draw_player_with_color(player_x, player_y,player_color[frames&1]);
+
                 check_dragon_player_collissions();
 
                 if (!lives)
@@ -1338,6 +1359,8 @@ int main(void)
                 _XL_SET_TEXT_COLOR(_XL_GREEN);
                 _XL_PRINT(XSize/2-4,0, "YOU WON");
             }
+            _XL_SLEEP(1);
+            delete_top_text();
             ++level;
         }
         if(level>LAST_LEVEL)
@@ -1346,31 +1369,32 @@ int main(void)
             _XL_CLEAR_SCREEN();
             _XL_SET_TEXT_COLOR(_XL_CYAN);
 
-            for(i=YSize-1-2;i>YSize/2-3;--i)
+            for(i=YSize-1-3;i>YSize/2-4;--i)
             {
-                _XL_PRINT(XSize/2-7, i,      "AND THEY LIVED");
-                _XL_PRINT(XSize/2-9, i +2,   "HAPPILY EVER AFTER");
+                _XL_PRINT(XSize/2-7, i + 1,       "              ");
+                _XL_PRINT(XSize/2-9, i + 2 + 1,   "                  ");
                 
-                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*2);
+                _XL_PRINT(XSize/2-7, i,           "AND THEY LIVED");
+                _XL_PRINT(XSize/2-9, i +2,        "HAPPILY EVER AFTER");
                 
-                _XL_PRINT(XSize/2-7, i,      "              ");
-                _XL_PRINT(XSize/2-9, i +2,   "                  ");
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*4);
+                
+
             }
             _XL_SLEEP(1);
             _XL_WAIT_FOR_INPUT();
         }
         
         
-        _XL_SLEEP(1);
         _XL_SET_TEXT_COLOR(_XL_RED);
-        _XL_PRINT(XSize/2-4,YSize/2-2,   "GAME OVER");
+        _XL_PRINT(XSize/2-4,YSize/2-6,   "GAME OVER");
         _XL_SLEEP(1);
         if(score>record)
         {
             record = score;
             _XL_SET_TEXT_COLOR(_XL_GREEN);
             _XL_PRINT(XSize/2-5,YSize-1, "NEW RECORD");
-            display_record(XSize-1-3-2);
+            display_record(XSize/2-3);
             _XL_SLEEP(1);
         }
         _XL_WAIT_FOR_INPUT();
