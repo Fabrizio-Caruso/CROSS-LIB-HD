@@ -1,14 +1,11 @@
 #include "cross_lib.h"
 #include "images.h"
 
-#define MAX_DRAGONS 30
-#define MIN_DRAGONS  6
-
-#define MAP_W       64
-#define MAP_H       64
+#define MAX_DRAGONS 28
+#define MIN_DRAGONS  8
 
 #define MIN_WIZARD_INTERVAL        6
-#define INITIAL_WIZARD_INTERVAL  120
+#define INITIAL_WIZARD_INTERVAL  220
 
 #define RESPAWN_TIME 240
 
@@ -54,15 +51,13 @@ typedef struct
 
 static Dragon dragons[MAX_DRAGONS];
 
-static uint8_t passable[MAP_W][MAP_H];
+static uint8_t passable[XSize][YSize];
 
 static uint8_t level_dragons;
 
 static uint8_t player_x, player_y;
 static uint8_t wizard_x, wizard_y;
 
-// static uint8_t game_over;
-// static uint8_t game_over_drawn;
 static uint8_t scene_drawn;
 
 static uint16_t frames;
@@ -73,14 +68,9 @@ static uint16_t flip_timer;
 static uint16_t respawn_timer;
 
 static uint16_t score;
-// static uint8_t fire_held;
 
 static uint8_t king_alive;
 
-/* King dragon occupies a 2x2 area:
- *   (king_x, king_y)       (king_x+1, king_y)
- *   (king_x, king_y+1)     (king_x+1, king_y+1)
- */
 static short king_x, king_y;
 
 static uint16_t steps;
@@ -96,16 +86,11 @@ static void _draw_castle(uint8_t x, uint8_t y)
     _XL_DRAW(x-1,y+1, CASTLE_SW_TILE,_XL_WHITE);
     _XL_DRAW(x,y+1,   CASTLE_SE_TILE,_XL_WHITE);
     _XL_DRAW(x-2,y+1, BRIDGE_UP_TILE,_XL_WHITE);
-} 
+}
 
 static void draw_castle(void)
 {
     _draw_castle(XSize/2,YSize/2);
-    // _XL_DRAW(XSize/2-1,YSize/2,  CASTLE_NW_TILE,_XL_WHITE);
-    // _XL_DRAW(XSize/2,  YSize/2,  CASTLE_NE_TILE,_XL_WHITE);
-    // _XL_DRAW(XSize/2-1,YSize/2+1,CASTLE_SW_TILE,_XL_WHITE);
-    // _XL_DRAW(XSize/2,YSize/2+1,  CASTLE_SE_TILE,_XL_WHITE);
-    // _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_UP_TILE,_XL_WHITE);
 }
 
 static void draw_left_dragon(uint8_t x, uint8_t y, uint8_t color)
@@ -136,23 +121,17 @@ static void draw_dead_king_dragon(void)
     _XL_DRAW(king_x+1,king_y+1,     DEAD_BOSS_SE_TILE,_XL_WHITE);
 }
 
-
-
 static void _draw_king_dragon(uint8_t king_x, uint8_t king_y)
 {
     _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y,   BOSS_NW_TILE,_XL_CYAN);
     _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y,   BOSS_NE_TILE, _XL_CYAN);
     _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y+1, BOSS_SW_TILE,_XL_CYAN);
-    _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y+1, BOSS_SE_TILE, _XL_CYAN);
+    _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y+1, BOSS_SE_TILE,_XL_CYAN);
 }
 
 static void draw_king_dragon(void)
 {
     _draw_king_dragon(king_x, king_y);
-    // _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y,   BOSS_NW_TILE,_XL_CYAN);
-    // _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y,   BOSS_NE_TILE, _XL_CYAN);
-    // _XL_DRAW((uint8_t)king_x,       (uint8_t)king_y+1, BOSS_SW_TILE,_XL_CYAN);
-    // _XL_DRAW((uint8_t)king_x + 1,   (uint8_t)king_y+1, BOSS_SE_TILE, _XL_CYAN);
 }
 
 static void delete_king_dragon(void)
@@ -201,7 +180,6 @@ static void draw_player_with_color(uint8_t x, uint8_t y, uint8_t color)
 /* --------------------------------------------------------------------------------------- */
 /* Small helpers                                                                            */
 /* --------------------------------------------------------------------------------------- */
-
 
 static uint8_t is_wall(short x, short y)
 {
@@ -278,23 +256,20 @@ static uint8_t tile_is_dragon(short x, short y)
     return 0;
 }
 
-
 static void build_initial_passable(void)
 {
     uint8_t x, y;
-    // short xs[4], ys[4];
 
-    for (y = 0; y < (uint8_t)YSize && y < MAP_H; ++y)
+    for (x = 0; x < (uint8_t)XSize; ++x)
     {
-        for (x = 0; x < (uint8_t)XSize && x < MAP_W; ++x)
+        for (y = 0; y < (uint8_t)YSize; ++y)
         {
-            passable[y][x] = (!is_wall((short)x, (short)y) &&
+            passable[x][y] = (!is_wall((short)x, (short)y) &&
                               !is_castle((short)x, (short)y) &&
                               !is_king((short)x, (short)y)) ? 1 : 0;
         }
     }
 }
-
 
 static void update_single_dragon_passable(uint8_t i)
 {
@@ -313,15 +288,9 @@ static void update_single_dragon_passable(uint8_t i)
 
     for (j = 0; j < 4; ++j)
     {
-        if (xs[j] >= 0 && ys[j] >= 0 &&
-            xs[j] < (short)XSize && ys[j] < (short)YSize &&
-            xs[j] < MAP_W && ys[j] < MAP_H)
-        {
-            passable[ys[j]][xs[j]] = !dragons[i].alive;
-        }
+        passable[xs[j]][ys[j]] = !dragons[i].alive;
     }
 }
-
 
 static void init_dragon_passable(void)
 {
@@ -335,11 +304,10 @@ static void init_dragon_passable(void)
 
 static uint8_t can_move(short x, short y)
 {
-    if (x <= 0 || y <= 0) return 0;
-    if (x >= (short)XSize-1 || y >= (short)YSize-1) return 0;
-    if (x >= MAP_W || y >= MAP_H) return 0;
+    if (x == 0 || y == 0) return 0;
+    if (x == (short)XSize - 1 || y == (short)YSize - 1) return 0;
 
-    return passable[y][x] != 0;
+    return passable[x][y] != 0;
 }
 
 static uint8_t all_dragons_dead(void)
@@ -384,7 +352,6 @@ static void draw_dragon(const Dragon *d)
         draw_left_dragon(d->x, d->y, d->color);
     else
         draw_right_dragon(d->x, d->y, d->color);
-    
 }
 
 static void delete_dragon(uint8_t i)
@@ -497,14 +464,13 @@ static void show_player_death(void)
     _XL_DRAW(player_x,player_y,DEAD_2_TILE, _XL_WHITE);
     _XL_SLEEP(1);
     _XL_DELETE(player_x,player_y);
-
 }
 
 static void reset_player(void)
 {
     uint8_t found;
-    uint8_t x,y;
-    
+    uint8_t x, y;
+
     player_x = (uint8_t)((short)XSize / 2 - 1);
     player_y = 2;
 
@@ -543,7 +509,7 @@ static void reset_player(void)
 static void display_lives(void)
 {
     uint8_t i;
-    
+
     for(i=1;i<=MAX_SHOWN_LIVES;++i)
     {
         if(i<=lives)
@@ -560,13 +526,12 @@ static void display_lives(void)
 static void delete_top_text(void)
 {
     uint8_t i;
-    
+
     for(i=1;i<=9;++i)
     {
         _XL_DRAW(XSize/2-6+i,0,WALL_TILE,_XL_WHITE);
     }
 }
-
 
 static void player_dies(void)
 {
@@ -577,26 +542,24 @@ static void player_dies(void)
     display_lives();
 }
 
-
-
 static void reset_wizard(void)
 {
     uint8_t x, y, found;
-    
+
     wizard_x = 1;
-    wizard_y = (YSize > 2) ? (uint8_t)(YSize - 2) : 1;
+    wizard_y = (uint8_t)(YSize - 2);
 
     if (!basic_free((short)wizard_x, (short)wizard_y) ||
         (wizard_x == player_x && wizard_y == player_y))
     {
-        wizard_x = (XSize > 2) ? (uint8_t)(XSize - 2) : 1;
-        wizard_y = (YSize > 2) ? (uint8_t)(YSize - 2) : 1;
+        wizard_x = (uint8_t)(XSize - 2);
+        wizard_y = (uint8_t)(YSize - 2);
     }
 
     if (!basic_free((short)wizard_x, (short)wizard_y) ||
         (wizard_x == player_x && wizard_y == player_y))
     {
-        wizard_x = (XSize > 2) ? (uint8_t)(XSize - 2) : 1;
+        wizard_x = (uint8_t)(XSize - 2);
         wizard_y = 1;
     }
 
@@ -634,7 +597,6 @@ static void reset_wizard(void)
     }
 }
 
-
 static void check_wizard_player_collision(void)
 {
     if (wizard_x == player_x && wizard_y == player_y)
@@ -643,7 +605,6 @@ static void check_wizard_player_collision(void)
         reset_wizard();
     }
 }
-
 
 static void wizard_step(void)
 {
@@ -654,7 +615,6 @@ static void wizard_step(void)
     uint8_t i;
     uint8_t tried;
 
-    /* Desired direction toward the player */
     dx = (short)player_x - (short)wizard_x;
     dy = (short)player_y - (short)wizard_y;
 
@@ -677,7 +637,6 @@ static void wizard_step(void)
     }
     else
     {
-        /* Blocked: pick a random passable neighbor */
         tried = 0;
 
         while (tried < 8)
@@ -713,7 +672,6 @@ static short dragon_belly_x(const Dragon *d)
 {
     return d->facing ? (short)d->x + 1 : (short)d->x - 2;
 }
-
 
 static uint8_t player_not_near_mouth(short x, short y, uint8_t facing)
 {
@@ -773,9 +731,6 @@ static void spawn_dragon(void)
     short x;
     short y;
     short facing;
-
-    if (XSize < 6 || YSize < 6)
-        return;
 
     for (attempt = 0; attempt < 24; ++attempt)
     {
@@ -887,26 +842,25 @@ static void update_respawn(void)
     }
 }
 
-
 static void display_score(void)
 {
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINTD(0,0,4,score);
 }
 
-uint8_t compute_bonus(uint8_t steps)
+uint8_t compute_bonus(uint16_t steps)
 {
-    if(steps < XSize/2 * YSize)
+    if(steps < (short)(XSize/2) * YSize)
     {
-        bonus = 100;
+        bonus = 150;
     }
     else if(steps < (short) XSize * YSize)
     {
-        bonus = 50;
+        bonus = 100;
     }
     else if(steps < 2 * (short) XSize * YSize)
     {
-        bonus = 25;
+        bonus = 50;
     }
     else
     {
@@ -915,10 +869,9 @@ uint8_t compute_bonus(uint8_t steps)
     return bonus;
 }
 
-
 static void handle_extra_life(void)
 {
-    if(score> BONUS_LIFE*extra_life_counter)
+    if(score > BONUS_LIFE * extra_life_counter)
     {
         ++extra_life_counter;
         ++lives;
@@ -927,25 +880,19 @@ static void handle_extra_life(void)
     }
 }
 
-
 static void increase_score(uint8_t points)
 {
-    score+=points;
+    score += points;
     display_score();
     handle_extra_life();
 }
 
-
 static void kill_dragons(void)
 {
     uint8_t i;
-    // uint8_t killed;
     short bx;
     short by;
 
-    // killed = 0;
-
-    /* Kill regular dragons adjacent to their mouth (bottom row) */
     for (i = 0; i < level_dragons; ++i)
     {
         if (!dragons[i].alive)
@@ -954,8 +901,7 @@ static void kill_dragons(void)
         bx = dragon_belly_x(&dragons[i]);
         by = (short)dragons[i].y + 1;
 
-        // if (adjacent4((short)player_x, (short)player_y, bx, by))
-        if((player_x==bx) && (player_y==by))
+        if((player_x == bx) && (player_y == by))
         {
             dragons[i].alive = 0;
 
@@ -966,84 +912,67 @@ static void kill_dragons(void)
             increase_score(DRAGON_POINTS);
 
             respawn_timer = 90;
-            // killed = 1;
             delete_dragon(i);
             update_single_dragon_passable(i);
         }
     }
 
-    /* Kill king dragon only if all regular dragons are dead */
     if (king_alive && all_dragons_dead())
     {
-        /* King mouth is the bottom row of its 2x2 area */
-        // if (adjacent4((short)player_x, (short)player_y, king_x,     king_y + 1))
-            
-        
-        if ((player_x == king_x-1) && (player_y == king_y + 1))
+        if ((player_x == king_x - 1) && (player_y == king_y + 1))
         {
             king_alive = 0;
             draw_dead_king_dragon();
             _XL_SHOOT_SOUND();
             _XL_SLOW_DOWN(10*_XL_SLOW_DOWN_FACTOR);
 
-            _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
-            
-            
-            // killed = 1;
-            // game_over = 1;
+            _XL_DRAW(XSize/2-2, YSize/2+1, BRIDGE_DOWN_TILE, _XL_WHITE);
+
             delete_king_dragon();
             _XL_TICK_SOUND();
-            _XL_DRAW(XSize/2-2,YSize/2+1, BRIDGE_DOWN_TILE,_XL_WHITE);
+            _XL_DRAW(XSize/2-2, YSize/2+1, BRIDGE_DOWN_TILE, _XL_WHITE);
             _XL_SLEEP(1);
             _XL_TOCK_SOUND();
             _XL_DELETE(player_x, player_y);
-            draw_player(player_x+1,player_y);
+            draw_player(player_x+1, player_y);
             _XL_SLEEP(1);
             _XL_TOCK_SOUND();
             _XL_DELETE(player_x+1, player_y);
-            draw_player(player_x+2,player_y);
+            draw_player(player_x+2, player_y);
             _XL_SLEEP(1);
             _XL_TOCK_SOUND();
             _XL_DELETE(player_x+2, player_y);
-            draw_player(player_x+3,player_y);
+            draw_player(player_x+3, player_y);
             _XL_SLEEP(1);
             _XL_TOCK_SOUND();
             _XL_DELETE(player_x+3, player_y);
-            
-            
-            
+
             _XL_SLEEP(1);
             _XL_SET_TEXT_COLOR(_XL_CYAN);
-            _XL_PRINT(XSize/2-6, YSize-5, "KING POINTS ");
+            _XL_PRINT(XSize/2-7, YSize-5, "KING POINTS ");
             _XL_SET_TEXT_COLOR(_XL_WHITE);
-            _XL_PRINTD(XSize/2-6+12, YSize-5, 3, KING_POINTS*level);
+            _XL_PRINTD(XSize/2-7+12, YSize-5, 3, KING_POINTS*level);
 
             increase_score(KING_POINTS*level);
             _XL_SLEEP(1);
-            
+
             bonus = compute_bonus(steps);
-            _XL_SET_TEXT_COLOR(_XL_CYAN);
-            _XL_PRINT(XSize/2-6, YSize-3, "TIME BONUS  ");
+            _XL_SET_TEXT_COLOR(_XL_YELLOW);
+            _XL_PRINT(XSize/2-7, YSize-3, "TIME BONUS  ");
             _XL_SET_TEXT_COLOR(_XL_WHITE);
-            _XL_PRINTD(XSize/2-6+12, YSize-3, 3, bonus);
+            _XL_PRINTD(XSize/2-7+12, YSize-3, 3, bonus);
             _XL_SLEEP(1);
-            
+
             increase_score(bonus);
 
             _XL_SLEEP(1);
             _XL_WAIT_FOR_INPUT();
-            _XL_CLEAR_SCREEN();
+            // _XL_CLEAR_SCREEN();
         }
     }
-
-    // if (killed)
-    // {
-        // init_dragon_passable();
-    // }
 }
 
-
-static void check_dragon_player_collissions(void)
+static void check_dragon_player_collisons(void)
 {
     uint8_t i;
     short mx;
@@ -1070,10 +999,9 @@ static void check_dragon_player_collissions(void)
         }
     }
 
-    /* King dragon kills the player on its top row (mouth side) */
     if (king_alive)
     {
-        if (adjacent4((short)player_x, (short)player_y, king_x,     king_y))
+        if (adjacent4((short)player_x, (short)player_y, king_x, king_y))
         {
             player_dies();
             return;
@@ -1084,8 +1012,6 @@ static void check_dragon_player_collissions(void)
 /* --------------------------------------------------------------------------------------- */
 /* Reset                                                                                    */
 /* --------------------------------------------------------------------------------------- */
-
-
 
 static void reset_game(void)
 {
@@ -1098,6 +1024,7 @@ static void init_level(void)
 {
     uint8_t i;
 
+    _XL_CLEAR_SCREEN();
     if (scene_drawn)
     {
         _XL_DELETE(player_x, player_y);
@@ -1113,9 +1040,8 @@ static void init_level(void)
             delete_king_dragon();
     }
 
-    // game_over_drawn = 0;
-    // fire_held = 0;
     frames = 0;
+    steps = 0;
     wizard_timer = 0;
     wizard_interval = INITIAL_WIZARD_INTERVAL / level;
 
@@ -1131,10 +1057,14 @@ static void init_level(void)
         dragons[i].alive = 0;
     }
 
-    level_dragons = (1+level) *(XSize / 16) * (YSize/8);
+    #if XSize<=31
+    level_dragons = (1 + level) * (XSize / 10) * (YSize / 8);
+    #else
+    level_dragons = (1 + level) * (XSize / 16) * (YSize / 8);
+    #endif
 
-    if (level_dragons < MIN_DRAGONS)
-        level_dragons = MIN_DRAGONS;
+    if (level_dragons < MIN_DRAGONS + level*2)
+        level_dragons = MIN_DRAGONS + level*2;
 
     if (level_dragons > MAX_DRAGONS)
         level_dragons = MAX_DRAGONS;
@@ -1163,14 +1093,12 @@ static void init_level(void)
 
 #if YSize<=20
     #define KING_Y (YSize-3)
-
 #else
     #define KING_Y (YSize/2+8)
 #endif
 
 static void display_record(uint8_t x)
 {
-    
     #if XSize>=16
     _XL_SET_TEXT_COLOR(_XL_GREEN);
     _XL_PRINT(x,0,"HI");
@@ -1180,107 +1108,90 @@ static void display_record(uint8_t x)
     _XL_PRINTD(x+2,0,4,record);
 }
 
-
 void intro_screen(void)
 {
     _XL_CLEAR_SCREEN();
-    
+
     draw_wall();
     _draw_castle(XSize/2, 1);
-    
+
     display_record(XSize/2-3);
 
     #if YSize>=20
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(XSize/2-6, YSize/2-7, "DRAGONMASTER");
 
-
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-
     _XL_PRINT(XSize/2-1, YSize/2-5, "BY");
-
     _XL_PRINT(XSize/2-7, YSize/2-3, "FABRIZIO CARUSO");
-    
     _XL_PRINT(XSize/2-7, YSize/2+3, "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, YSize/2+5, "DAVID BERDAN");
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-
     _XL_PRINT(XSize/2-6, YSize/2-1, "AIDED BY AI");
-    
     #else
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(XSize/2-6, 3, "DRAGONMASTER");
 
-
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-
     _XL_PRINT(XSize/2-7, 5, "FABRIZIO CARUSO");
-    
-    _XL_PRINT(XSize/2-7, 8,  "ORIGINALLY BY");
+    _XL_PRINT(XSize/2-7, 8, "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, 10, "DAVID BERDAN");
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-
     _XL_PRINT(XSize/2-6, 12, "AIDED BY AI");
     #endif
 
     #if defined(BETA)
-        _XL_PRINT(XSize-1-4,YSize-1,"BETA");
+        _XL_PRINT(XSize-1-4, YSize-1, "BETA");
     #endif
 
-    _draw_king_dragon(XSize/2+1,KING_Y);
-    draw_player(XSize/2-2,KING_Y+1);
+    _draw_king_dragon(XSize/2+1, KING_Y);
+    draw_player(XSize/2-2, KING_Y+1);
 
     #if XSize>=23
     {
         uint8_t i;
-        
-        for(i=3;i<=YSize-1-3;i+=4)
+
+        for(i=3; i<=YSize-1-3; i+=4)
         {
-            draw_right_dragon(2,i,(i/4)&1 ? _XL_WHITE : _XL_RED);
-            draw_left_dragon(XSize-1-1,i,(i/4)&1 ? _XL_RED : _XL_WHITE);
+            draw_right_dragon(2, i, (i/4)&1 ? _XL_WHITE : _XL_RED);
+            draw_left_dragon(XSize-1-1, i, (i/4)&1 ? _XL_RED : _XL_WHITE);
         }
     }
     #elif XSize>16
-
-        draw_right_dragon(2,2,       _XL_WHITE);
-        draw_left_dragon(XSize-1-1,YSize-1-3,_XL_RED);
-        draw_right_dragon(2,YSize-1-3,       _XL_WHITE);
-        draw_left_dragon(XSize-1-1,2,_XL_RED);
+        draw_right_dragon(2, 2, _XL_WHITE);
+        draw_left_dragon(XSize-1-1, YSize-1-3, _XL_RED);
+        draw_right_dragon(2, YSize-1-3, _XL_WHITE);
+        draw_left_dragon(XSize-1-1, 2, _XL_RED);
     #else
-        draw_right_dragon(2,1,       _XL_WHITE);
-        draw_left_dragon(XSize-1-1,YSize-1-2,_XL_RED);
-        draw_right_dragon(2,YSize-1-2,       _XL_WHITE);
-        draw_left_dragon(XSize-1-1,1,_XL_RED);
+        draw_right_dragon(2, 1, _XL_WHITE);
+        draw_left_dragon(XSize-1-1, YSize-1-2, _XL_RED);
+        draw_right_dragon(2, YSize-1-2, _XL_WHITE);
+        draw_left_dragon(XSize-1-1, 1, _XL_RED);
     #endif
 
     _XL_SLEEP(1);
     _XL_WAIT_FOR_INPUT();
-    
     _XL_CLEAR_SCREEN();
 }
-
 
 void display_level(void)
 {
     _XL_SET_TEXT_COLOR(_XL_WHITE);
-    
-    _XL_PRINTD(XSize/2-1,YSize-1,1,level);
+    _XL_PRINTD(XSize/2-1, YSize-1, 1, level);
 }
-
 
 /* --------------------------------------------------------------------------------------- */
 /* Main game loop                                                                           */
 /* --------------------------------------------------------------------------------------- */
-
 
 int main(void)
 {
     uint8_t input;
     uint8_t fire;
     uint8_t i;
-    
+
     _XL_INIT_GRAPHICS();
     _XL_INIT_SOUND();
     _XL_INIT_INPUT();
@@ -1291,20 +1202,20 @@ int main(void)
     while (1)
     {
         intro_screen();
-        
+
         reset_game();
-        steps = 0;
         extra_life_counter = 1;
 
-        while(lives && level<=LAST_LEVEL)
+        while(lives && level <= LAST_LEVEL)
         {
             init_level();
             display_score();
             display_record(XSize-1-3-2);
             display_lives();
             display_level();
+
             while(lives && king_alive)
-                {
+            {
                 ++frames;
                 draw_wizard_with_color(wizard_color[frames&1]);
 
@@ -1315,15 +1226,15 @@ int main(void)
 
                 update_flip();
                 update_respawn();
-                check_dragon_player_collissions();
+                check_dragon_player_collisons();
 
                 input = (uint8_t)_XL_INPUT();
                 fire = (uint8_t)_XL_FIRE(input);
 
                 move_player(get_direction(input));
-                draw_player_with_color(player_x, player_y,player_color[frames&1]);
+                draw_player_with_color(player_x, player_y, player_color[frames&1]);
 
-                check_dragon_player_collissions();
+                check_dragon_player_collisons();
 
                 if (!lives)
                     continue;
@@ -1345,64 +1256,56 @@ int main(void)
                     continue;
 
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
-                
             }
-        
 
             if(king_alive)
             {
                 _XL_SET_TEXT_COLOR(_XL_YELLOW);
-                _XL_PRINT(XSize/2-4,0, "YOU LOST");
+                _XL_PRINT(XSize/2-4, 0, "YOU LOST");
             }
             else
             {
                 _XL_SET_TEXT_COLOR(_XL_GREEN);
-                _XL_PRINT(XSize/2-4,0, "YOU WON");
+                _XL_PRINT(XSize/2-4, 0, "YOU WON");
+                ++level;
             }
             _XL_SLEEP(1);
             delete_top_text();
-            ++level;
         }
-        if(level>LAST_LEVEL)
+
+        if(level > LAST_LEVEL)
         {
-            
             _XL_CLEAR_SCREEN();
             _XL_SET_TEXT_COLOR(_XL_CYAN);
 
-            for(i=YSize-1-3;i>YSize/2-4;--i)
+            for(i = YSize-1-3; i > YSize/2-4; --i)
             {
                 _XL_PRINT(XSize/2-7, i + 1,       "              ");
                 _XL_PRINT(XSize/2-9, i + 2 + 1,   "                  ");
-                
                 _XL_PRINT(XSize/2-7, i,           "AND THEY LIVED");
-                _XL_PRINT(XSize/2-9, i +2,        "HAPPILY EVER AFTER");
-                
+                _XL_PRINT(XSize/2-9, i + 2,       "HAPPILY EVER AFTER");
                 _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*4);
-                
-
             }
             _XL_SLEEP(1);
             _XL_WAIT_FOR_INPUT();
         }
-        
-        
+
         _XL_SET_TEXT_COLOR(_XL_RED);
-        _XL_PRINT(XSize/2-4,YSize/2-6,   "GAME OVER");
+        _XL_PRINT(XSize/2-4, YSize/2-6, "GAME OVER");
         _XL_SLEEP(1);
-        if(score>record)
+
+        if(score > record)
         {
             record = score;
             _XL_SET_TEXT_COLOR(_XL_GREEN);
-            _XL_PRINT(XSize/2-5,YSize-1, "NEW RECORD");
+            _XL_PRINT(XSize/2-5, YSize-1, "NEW RECORD");
             display_record(XSize/2-3);
             _XL_SLEEP(1);
         }
+
         _XL_WAIT_FOR_INPUT();
-        _XL_PRINT(XSize/2-4,YSize/2-2,   "          ");
-
-
+        _XL_PRINT(XSize/2-4, YSize/2-2, "          ");
     }
 
     return 0;
 }
-
