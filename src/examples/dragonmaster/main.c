@@ -871,7 +871,7 @@ uint8_t compute_bonus(uint16_t steps)
 
 static void handle_extra_life(void)
 {
-    if(score > BONUS_LIFE * extra_life_counter)
+    if(score >= BONUS_LIFE * extra_life_counter)
     {
         ++extra_life_counter;
         ++lives;
