@@ -533,18 +533,13 @@ static void delete_top_text(void)
     }
 }
 
-static void player_dies(void)
-{
-    --lives;
-    show_player_death();
-    reset_player();
-    draw_player(player_x,player_y);
-    display_lives();
-}
 
 static void reset_wizard(void)
 {
     uint8_t x, y, found;
+
+    wizard_timer = 0;
+    wizard_interval = INITIAL_WIZARD_INTERVAL / level;
 
     wizard_x = 1;
     wizard_y = (uint8_t)(YSize - 2);
@@ -597,12 +592,24 @@ static void reset_wizard(void)
     }
 }
 
+
+static void player_dies(void)
+{
+    --lives;
+    show_player_death();
+    reset_player();
+    draw_player(player_x,player_y);
+    display_lives();
+    _XL_DELETE(wizard_x, wizard_y);
+    reset_wizard();
+}
+
+
 static void check_wizard_player_collision(void)
 {
     if (wizard_x == player_x && wizard_y == player_y)
     {
         player_dies();
-        reset_wizard();
     }
 }
 
@@ -1020,6 +1027,7 @@ static void reset_game(void)
     score = 0;
 }
 
+
 static void init_level(void)
 {
     uint8_t i;
@@ -1042,8 +1050,6 @@ static void init_level(void)
 
     frames = 0;
     steps = 0;
-    wizard_timer = 0;
-    wizard_interval = INITIAL_WIZARD_INTERVAL / level;
 
     flip_timer = 12;
     respawn_timer = 0;
@@ -1129,17 +1135,30 @@ void intro_screen(void)
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
     _XL_PRINT(XSize/2-6, YSize/2-1, "AIDED BY AI");
+    #elif YSize>=14
+    _XL_SET_TEXT_COLOR(_XL_CYAN);
+    _XL_PRINT(XSize/2-6, 3, "DRAGONMASTER");
+
+    _XL_SET_TEXT_COLOR(_XL_WHITE);
+    _XL_PRINT(XSize/2-7, 5, "FABRIZIO CARUSO");
+    _XL_PRINT(XSize/2-7, 10, "ORIGINALLY BY");
+    _XL_PRINT(XSize/2-6, 12, "DAVID BERDAN");
+
+    _XL_SET_TEXT_COLOR(_XL_YELLOW);
+    _XL_PRINT(XSize/2-6, 7, "AIDED BY AI");
+    
     #else
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(XSize/2-6, 3, "DRAGONMASTER");
 
     _XL_SET_TEXT_COLOR(_XL_WHITE);
     _XL_PRINT(XSize/2-7, 5, "FABRIZIO CARUSO");
-    _XL_PRINT(XSize/2-7, 8, "ORIGINALLY BY");
-    _XL_PRINT(XSize/2-6, 10, "DAVID BERDAN");
+    _XL_PRINT(XSize/2-7, 7, "ORIGINALLY BY");
+    _XL_PRINT(XSize/2-6, 8, "DAVID BERDAN");
 
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(XSize/2-6, 12, "AIDED BY AI");
+    _XL_PRINT(XSize/2-6, 6, "AIDED BY AI");
+    
     #endif
 
     #if defined(BETA)
