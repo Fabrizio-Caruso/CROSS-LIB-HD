@@ -1299,7 +1299,7 @@ int main(void)
             record = score;
             _XL_SET_TEXT_COLOR(_XL_GREEN);
             _XL_PRINT(XSize/2-5, YSize-1, "NEW RECORD");
-            display_record(XSize/2-3);
+            display_record(XSize-1-3-2);
             _XL_SLEEP(1);
         }
 
