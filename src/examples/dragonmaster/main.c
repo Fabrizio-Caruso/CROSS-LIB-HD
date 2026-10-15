@@ -1,15 +1,19 @@
 #include "cross_lib.h"
 #include "images.h"
 
-#if XSize>=38 && YSize>=16
+#if XSize>=60 && YSize >=12
+    #define MAX_DRAGONS 36
+#elif XSize>=38 && YSize>=16
     #define MAX_DRAGONS 28
 #elif XSize>=20 && YSize>=12
     #define MAX_DRAGONS 26
 #else
-    #define MAX_DRAGONS 22
+    #define MAX_DRAGONS 20
 #endif
 
-#if XSize>=38
+#if XSize>=60 && YSize >=12
+    #define MIN_DRAGONS  20
+#elif XSize>=38
     #define MIN_DRAGONS  16
 #elif XSize>= 20
     #define MIN_DRAGONS  14
