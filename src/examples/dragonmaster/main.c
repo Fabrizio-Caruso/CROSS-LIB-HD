@@ -1,8 +1,21 @@
 #include "cross_lib.h"
 #include "images.h"
 
-#define MAX_DRAGONS 28
-#define MIN_DRAGONS  8
+#if XSize>=38 && YSize>=16
+    #define MAX_DRAGONS 28
+#elif XSize>=20 && YSize>=12
+    #define MAX_DRAGONS 26
+#else
+    #define MAX_DRAGONS 22
+#endif
+
+#if XSize>=38
+    #define MIN_DRAGONS  16
+#elif XSize>= 20
+    #define MIN_DRAGONS  14
+#else
+    #define MIN_DRAGONS  10
+#endif
 
 #define MIN_WIZARD_INTERVAL        6
 #define INITIAL_WIZARD_INTERVAL  220
@@ -1063,17 +1076,30 @@ static void init_level(void)
         dragons[i].alive = 0;
     }
 
-    // #if XSize<=31 && YSize<=15
-    // level_dragons = (1 + level) * 2;
-    // #else
-    level_dragons = (1 + level) * (XSize / 16) * (YSize / 8);
-    // #endif
+    switch(level)
+    {
+        case 1:
+            level_dragons = MIN_DRAGONS;
+        break;
+        case 2:
+            level_dragons = (MAX_DRAGONS-MIN_DRAGONS)/3 + MIN_DRAGONS;
+        break;
+        case 3:
+            level_dragons = ((MAX_DRAGONS-MIN_DRAGONS)/3)*2 + MIN_DRAGONS;
+        break;
+        case 4:
+            level_dragons = MAX_DRAGONS;
+        break;
+    }   
+            
+            
+    // level_dragons = (1 + level) * (XSize / 16) * (YSize / 8);
 
-    if (level_dragons < MIN_DRAGONS + level*2)
-        level_dragons = MIN_DRAGONS + level*2;
+    // if (level_dragons < MIN_DRAGONS)
+        // level_dragons = MIN_DRAGONS;
 
-    if (level_dragons > MAX_DRAGONS)
-        level_dragons = MAX_DRAGONS;
+    // if (level_dragons > MAX_DRAGONS)
+        // level_dragons = MAX_DRAGONS;
 
     reset_player();
 
