@@ -58,7 +58,7 @@ static uint8_t level_dragons;
 static uint8_t player_x, player_y;
 static uint8_t wizard_x, wizard_y;
 
-static uint8_t scene_drawn;
+// static uint8_t scene_drawn;
 
 static uint16_t frames;
 static uint16_t wizard_timer;
@@ -1033,20 +1033,20 @@ static void init_level(void)
     uint8_t i;
 
     _XL_CLEAR_SCREEN();
-    if (scene_drawn)
-    {
-        _XL_DELETE(player_x, player_y);
-        _XL_DELETE(wizard_x, wizard_y);
+    // if (scene_drawn)
+    // {
+        // _XL_DELETE(player_x, player_y);
+        // _XL_DELETE(wizard_x, wizard_y);
 
-        for (i = 0; i < level_dragons; ++i)
-        {
-            if (dragons[i].alive)
-                delete_dragon(i);
-        }
+        // for (i = 0; i < level_dragons; ++i)
+        // {
+            // if (dragons[i].alive)
+                // delete_dragon(i);
+        // }
 
-        if (king_alive)
-            delete_king_dragon();
-    }
+        // if (king_alive)
+            // delete_king_dragon();
+    // }
 
     frames = 0;
     steps = 0;
@@ -1063,11 +1063,11 @@ static void init_level(void)
         dragons[i].alive = 0;
     }
 
-    #if XSize<=31
-    level_dragons = (1 + level) * (XSize / 10) * (YSize / 8);
-    #else
+    // #if XSize<=31 && YSize<=15
+    // level_dragons = (1 + level) * 2;
+    // #else
     level_dragons = (1 + level) * (XSize / 16) * (YSize / 8);
-    #endif
+    // #endif
 
     if (level_dragons < MIN_DRAGONS + level*2)
         level_dragons = MIN_DRAGONS + level*2;
@@ -1094,7 +1094,7 @@ static void init_level(void)
     draw_wizard();
     draw_player(player_x, player_y);
 
-    scene_drawn = 1;
+    // scene_drawn = 1;
 }
 
 #if YSize<=20
