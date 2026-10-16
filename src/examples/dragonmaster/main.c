@@ -21,6 +21,7 @@
     #define MIN_DRAGONS  10
 #endif
 
+
 #define MIN_WIZARD_INTERVAL        6
 #define INITIAL_WIZARD_INTERVAL  220
 
@@ -1163,8 +1164,8 @@ void intro_screen(void)
     _XL_PRINT(XSize/2-7, YSize/2+3, "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, YSize/2+5, "DAVID BERDAN");
 
-    _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(XSize/2-6, YSize/2-1, "AIDED BY AI");
+    // _XL_SET_TEXT_COLOR(_XL_YELLOW);
+    // _XL_PRINT(XSize/2-6, YSize/2-1, "AIDED BY AI");
     #elif YSize>=14
     _XL_SET_TEXT_COLOR(_XL_CYAN);
     _XL_PRINT(XSize/2-6, 3, "DRAGONMASTER");
@@ -1174,8 +1175,8 @@ void intro_screen(void)
     _XL_PRINT(XSize/2-7, 10, "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, 12, "DAVID BERDAN");
 
-    _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(XSize/2-6, 7, "AIDED BY AI");
+    // _XL_SET_TEXT_COLOR(_XL_YELLOW);
+    // _XL_PRINT(XSize/2-6, 7, "AIDED BY AI");
     
     #else
     _XL_SET_TEXT_COLOR(_XL_CYAN);
@@ -1186,12 +1187,13 @@ void intro_screen(void)
     _XL_PRINT(XSize/2-7, 7, "ORIGINALLY BY");
     _XL_PRINT(XSize/2-6, 8, "DAVID BERDAN");
 
-    _XL_SET_TEXT_COLOR(_XL_YELLOW);
-    _XL_PRINT(XSize/2-6, 6, "AIDED BY AI");
+    // _XL_SET_TEXT_COLOR(_XL_YELLOW);
+    // _XL_PRINT(XSize/2-6, 6, "AIDED BY AI");
     
     #endif
 
     #if defined(BETA)
+        _XL_SET_TEXT_COLOR(_XL_YELLOW);
         _XL_PRINT(XSize-1-4, YSize-1, "BETA");
     #endif
 
