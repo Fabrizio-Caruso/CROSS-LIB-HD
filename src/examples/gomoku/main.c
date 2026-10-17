@@ -476,7 +476,7 @@ void show_game_over(void)
         _XL_TOCK_SOUND();
     }
     _XL_SLEEP(1);
-    _XL_WAIT_FOR_INPUT();
+    // _XL_WAIT_FOR_INPUT();
 }
 
 int main(void)
