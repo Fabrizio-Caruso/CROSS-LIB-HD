@@ -21,8 +21,8 @@ Coordinates must respect the following limits:
 - 0 ≤ y ≤ YSize-1
 
 Where XSize and YSize are macros with ranges:
-- 6 ≤ XSize ≤ 160
-- 4 ≤ YSize ≤ 160
+- 16 ≤ XSize ≤ 40
+- 16 ≤ YSize ≤ 40
 
 ## Screen Output Functions
 
@@ -31,7 +31,7 @@ Where XSize and YSize are macros with ranges:
 void _XL_DRAW(uint8_t x, uint8_t y, uint8_t tile_id, uint8_t color_id);
 ```
 Draws the tile `tile_id` at position (x,y) with color `color_id`.
-Valid tile IDs: `_TILE_0`, `_TILE_1`, `_TILE_2`, ..., `_TILE_26`
+Valid tile IDs: `_TILE_0`, `_TILE_1`, `_TILE_2`, ..., `_TILE_26`. Do not use integer literals for tile_id.
 
 ### Deleting Tiles
 ```c
@@ -73,7 +73,7 @@ Displays values with a given fixed number of digits (padding with zeros on the l
 ```c
 void _XL_PRINT(uint8_t x, uint8_t y, char * string);
 ```
-Displays text using only capital letters, digits, and space characters
+Displays text using only capital letters, digits, and space characters. No other characters such as comma, colon, period, exclamation mark, etc. 
 
 ### Single Character Output
 ```c
