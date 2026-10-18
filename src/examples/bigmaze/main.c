@@ -296,7 +296,7 @@ static void draw_all_enemies(void)
     }
 }
 
-/* ---- Draw items ---- */
+/* ---- Draw items (using proper tile ID constants) ---- */
 static void draw_item(uint8_t idx)
 {
     uint8_t tile, col;
@@ -316,6 +316,26 @@ static void draw_all_items(void)
     uint8_t i;
     for (i = 0; i < 3; i++) {
         if (item_active[i]) draw_item(i);
+    }
+}
+
+/* Redraw items that are not currently covered by an enemy.
+   Called after enemy movement so items reappear when an enemy moves away. */
+static void redraw_uncovered_items(void)
+{
+    uint8_t i, j;
+    for (i = 0; i < 3; i++) {
+        if (!item_active[i]) continue;
+        for (j = 0; j < num_enemies; j++) {
+            if (enemy_alive[j] &&
+                item_x[i] >= ex[j] && item_x[i] <= ex[j] + 1 &&
+                item_y[i] >= ey[j] && item_y[i] <= ey[j] + 1) {
+                break;
+            }
+        }
+        if (j >= num_enemies) {
+            draw_item(i);
+        }
     }
 }
 
@@ -693,8 +713,10 @@ static void fire_enemy_bullet(uint8_t idx)
     }
 }
 
-/* ---- Update all enemy bullets (checks old AND new tile vs player and enemies)
-       Returns 1 if the player was hit by any bullet this frame, 0 otherwise. ---- */
+/* ---- Update all enemy bullets.
+       Returns 1 if the player was hit (and is NOT invincible), 0 otherwise.
+       When the player IS invincible, bullets that overlap the player are
+       still stopped (disappear) but do NOT set the return to 1. ---- */
 static uint8_t update_e_bullets(void)
 {
     uint8_t i;
@@ -735,26 +757,28 @@ static uint8_t update_e_bullets(void)
             continue;
         }
 
-        /* Check collision at NEW position vs player (any tile of 2x2) */
-        if (invincible_timer == 0) {
-            if (ebx[i] >= px && ebx[i] <= px + 1 &&
-                eby[i] >= py && eby[i] <= py + 1) {
-                eba[i] = 0;
-                enemy_bullets_active--;
+        /* Check collision at NEW position vs player (any tile of 2x2).
+           Bullet is always stopped on overlap; only kills if not invincible. */
+        if (ebx[i] >= px && ebx[i] <= px + 1 &&
+            eby[i] >= py && eby[i] <= py + 1) {
+            eba[i] = 0;
+            enemy_bullets_active--;
+            if (invincible_timer == 0) {
                 player_hit = 1;
-                continue;
             }
+            continue;
         }
 
-        /* Check collision at OLD position vs player (any tile of 2x2) */
-        if (invincible_timer == 0) {
-            if (old_x >= px && old_x <= px + 1 &&
-                old_y >= py && old_y <= py + 1) {
-                eba[i] = 0;
-                enemy_bullets_active--;
+        /* Check collision at OLD position vs player (any tile of 2x2).
+           Bullet is always stopped on overlap; only kills if not invincible. */
+        if (old_x >= px && old_x <= px + 1 &&
+            old_y >= py && old_y <= py + 1) {
+            eba[i] = 0;
+            enemy_bullets_active--;
+            if (invincible_timer == 0) {
                 player_hit = 1;
-                continue;
             }
+            continue;
         }
 
         _XL_DRAW(ebx[i], eby[i], _TILE_20, _XL_CYAN);
@@ -1143,6 +1167,8 @@ int main(void)
                         if (frame_count >= enemy_interval) {
                             frame_count = 0;
                             update_enemies();
+                            /* Redraw items that were covered by enemies which moved away */
+                            redraw_uncovered_items();
                         }
                     }
 
@@ -1233,5 +1259,4 @@ int main(void)
 
     return 0;
 }
-
 
