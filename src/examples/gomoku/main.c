@@ -509,6 +509,7 @@ int main(void)
         while (1) {
             input = _XL_INPUT();
             _XL_DRAW((XSIZE - 12) / 2 - 1, 6 + sel_level, T_ARROW, _XL_RED);
+            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
 
             if (_XL_UP(input)) {
                 if (sel_level > 1) {
@@ -525,7 +526,9 @@ int main(void)
                 _XL_TICK_SOUND();
             }
             if (_XL_FIRE(input)) {
-                difficulty = sel_level;
+                difficulty   = sel_level;
+                _XL_DRAW((XSIZE - 12) / 2 - 1, 6 + sel_level, T_ARROW, _XL_YELLOW);
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*4);
                 break;
             }
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
