@@ -22,8 +22,8 @@
 #endif
 
 
-#define MIN_WIZARD_INTERVAL        6
-#define INITIAL_WIZARD_INTERVAL  220
+#define MIN_WIZARD_INTERVAL        7
+#define INITIAL_WIZARD_INTERVAL  230
 
 #define RESPAWN_TIME 240
 
