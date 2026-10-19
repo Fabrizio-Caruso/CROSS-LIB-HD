@@ -1,0 +1,30 @@
+DRAGONMASTER
+Cross-Lib version
+by Fabrizio Caruso
+
+Original game by David Berdan
+
+GAMEPLAY:
+- The goal
+You need to defeat 4 king dragons to save your princess.
+In order to kill a king dragon no other dragon has to be present.
+If there are dragons left, the king dragon is invincible.
+
+- The dragons 
+The chest of the dragons is the only vulnerable part.
+Dragons instantly kill you if you are directly in front of their mouth or above their heads.
+Dragons do not move but can randomly flip from one side to the other.
+Moreover new dragons can be spawned randomly. So, you need to be fast.
+
+- The wizard
+As the game progresses an invincible wizard will chase you at an increasing speed.
+
+- Scoring
+25 points for a dragon
+50/100/150/200 for the king dragon
+150/100/50/0 as time bonus
+
+- Extra lives
+An extra life is awarded every 1000 points.
+
+
