@@ -46,6 +46,8 @@
 #define T_SELECT_3  _TILE_10
 #define T_SELECT_4  _TILE_11
 
+#define BETA 1
+
 uint8_t board[BOARD_SIZE][BOARD_SIZE];
 uint8_t difficulty;
 uint8_t current_turn;
@@ -516,6 +518,9 @@ int main(void)
         _XL_SLEEP(1);
         _XL_SET_TEXT_COLOR(_XL_YELLOW);
         _XL_PRINT(5, 13, "FIRE TO START");
+        #if defined(BETA)
+            _XL_PRINT(XSize-1-4,YSize-1,"BETA");
+        #endif
         while (1) {
             input = _XL_INPUT();
             _XL_DRAW((XSize - 12) / 2 - 1, 6 + sel_level, T_ARROW, _XL_RED);
