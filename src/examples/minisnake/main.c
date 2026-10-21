@@ -69,11 +69,22 @@
 
 #define WALL_COLOR _XL_CYAN
 uint8_t special_colors[] = {_XL_YELLOW,_XL_RED,_XL_GREEN,_XL_CYAN};
+
+uint8_t head_colors[] = {_XL_GREEN, _XL_RED};
+
+
 #define SELECTION_ARROW_COLOR _XL_YELLOW
 
 /* Wall tile size (2x2 block) and minimum Chebyshev distance between walls. */
 #define WALL_SIZE 2
 #define WALL_MIN_DIST 4
+
+// Hunger
+// #define STARVING 200
+// #define STARVED  250
+
+#define STARVING 150
+#define STARVED  250
 
 // BETA
 #define BETA 1
@@ -87,6 +98,8 @@ uint16_t score;
 uint8_t game_over;
 uint16_t apples_spawned;
 uint16_t slowdown;
+uint8_t hunger;
+uint8_t starving;
 
 /* One high-score record per mode */
 uint16_t hiscore[MODE_COUNT];
@@ -594,6 +607,27 @@ void spawn_walls(void)
     }
 }
 
+void handle_slowdown(void)
+{
+    if(score>=200)
+    {
+        slowdown = 3 * _XL_SLOW_DOWN_FACTOR;
+    }
+    else if(score>=100)
+    {
+        slowdown = 4 * _XL_SLOW_DOWN_FACTOR;
+    }
+    else if(score>=50)
+    {
+        slowdown = 5 * _XL_SLOW_DOWN_FACTOR;
+    }
+    else
+    {
+        slowdown = 6 * _XL_SLOW_DOWN_FACTOR;
+    }
+}
+
+
 void init_game(void)
 {
     uint8_t i;
@@ -602,9 +636,12 @@ void init_game(void)
     direction = 1;
     score = 0;
     game_over = 0;
-    slowdown = 6 * _XL_SLOW_DOWN_FACTOR;
+    // slowdown = 6 * _XL_SLOW_DOWN_FACTOR;
     apples_spawned = 0;
     // ate_apple = 0;
+    hunger = 0;
+    starving = 0;
+    handle_slowdown();
 
     special_active = 0;
     special_x = 0;
@@ -625,6 +662,24 @@ void init_game(void)
 
     if (is_deluxe_mode())
         spawn_special_item();
+}
+
+
+void increase_score(uint8_t amount)
+{
+    
+    hunger = 0;
+    starving = 0;
+    score+=amount;
+    display_score();
+    
+    handle_slowdown();
+        // if (score == 10)
+            // slowdown = 5 * _XL_SLOW_DOWN_FACTOR;
+        // else if (score == 50)
+            // slowdown = 4 * _XL_SLOW_DOWN_FACTOR;
+        // else if (score == 100)
+            // slowdown = 3 * _XL_SLOW_DOWN_FACTOR;
 }
 
 void move_snake(void)
@@ -676,6 +731,20 @@ void move_snake(void)
     if (apple_slot != 0xFF)
     {
         // ate_apple = 1;
+
+        for(i=0;i<8;++i)
+        {
+            if(game_mode==MODE_CLASSIC || game_mode==MODE_FRENZY || game_mode==MODE_INSANITY)
+            {
+                _XL_DRAW(XSize/2-5+i,0,TILE_BORDER,_XL_YELLOW);
+            }
+            else
+            {
+                _XL_DELETE(XSize/2-5+i,0);
+            }
+        }
+        
+        
         eaten_apple_x = apple_x[apple_slot];
         eaten_apple_y = apple_y[apple_slot];
 
@@ -685,16 +754,11 @@ void move_snake(void)
         if (snake_length < (uint8_t)SNAKE_MAX_LENGTH)
             snake_length++;
 
-        score++;
-        display_score();
+        // score++;
+        // display_score();
+        increase_score(1);
         _XL_PING_SOUND();
 
-        if (score == 10)
-            slowdown = 5 * _XL_SLOW_DOWN_FACTOR;
-        else if (score == 50)
-            slowdown = 4 * _XL_SLOW_DOWN_FACTOR;
-        else if (score == 100)
-            slowdown = 3 * _XL_SLOW_DOWN_FACTOR;
     }
 
     /* Check special item pickup */
@@ -703,12 +767,12 @@ void move_snake(void)
     {
         special_active = 0;
         _XL_DELETE(special_x, special_y);
-        score += SPECIAL_ITEM_POINTS + special_count;
+        increase_score(SPECIAL_ITEM_POINTS + special_count);
         if(special_count<MAX_SPECIAL_COUNT)
         {
             ++special_count;
         }
-        display_score();
+        // display_score();
         _XL_PING_SOUND();
         special_respawn_timer = DELUXE_RESPAWN_INTERVAL;
     }
@@ -804,6 +868,7 @@ static uint8_t get_tail_tile_from_delta(signed char dx, signed char dy)
     return TILE_TAIL_RIGHT;
 }
 
+
 void draw_snake_initial(void)
 {
     uint8_t i;
@@ -858,7 +923,7 @@ void handle_input(uint8_t input)
         direction = 3;
 }
 
-#if XSize<=20
+#if XSize<=24
     #define SELECT_X 1
 #else
     #define SELECT_X (XSize/2-12)
@@ -896,7 +961,7 @@ uint8_t show_title_screen(void)
 
     _XL_SET_TEXT_COLOR(_XL_GREEN);
     
-    #if XSize<=20
+    #if XSize<=24
     _XL_PRINT(SELECT_X+3, y[0], "CLASSIC");
     _XL_PRINT(SELECT_X+3, y[1], "FRENZY");
     _XL_PRINT(SELECT_X+3, y[2], "INSANE");
@@ -1037,7 +1102,24 @@ int main(void)
 
         while (!game_over)
         {
-            ++i;
+            ++hunger;
+            if(hunger==STARVING)
+            {
+                slowdown/=2;
+                starving = 1;
+                _XL_SET_TEXT_COLOR(_XL_YELLOW);
+                _XL_PRINT(XSize/2-5,0,"STARVING");
+                _XL_PING_SOUND();
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+                
+            }
+            else if(hunger==STARVED)
+            {
+                game_over = 1;
+                _XL_SET_TEXT_COLOR(_XL_RED);
+                _XL_PRINT(XSize/2-4,YSize-3,"STARVED");
+                _XL_SLEEP(1);
+            }
             input = _XL_INPUT();
 
             if (input != 0)
@@ -1053,7 +1135,7 @@ int main(void)
             #if !defined(_XL_NO_COLOR)
             if(special_active)
             {
-                draw_special_item(special_colors[i&3]);
+                draw_special_item(special_colors[hunger&3]);
             }
             #endif
             if (check_collision())
@@ -1098,14 +1180,14 @@ int main(void)
                 if (snake_length > old_length)
                 {
                     _XL_DRAW(old_head_x, old_head_y, TILE_SNAKE_BODY, _XL_GREEN);
-                    _XL_DRAW(snake_x[0], snake_y[0], head_tile, _XL_GREEN);
+                    _XL_DRAW(snake_x[0], snake_y[0], head_tile, head_colors[starving]);
                     _XL_DRAW(snake_x[snake_length - 1], snake_y[snake_length - 1], tail_tile, _XL_GREEN);
                 }
                 else
                 {
                     _XL_DELETE(old_tail_x, old_tail_y);
                     _XL_DRAW(old_head_x, old_head_y, TILE_SNAKE_BODY, _XL_GREEN);
-                    _XL_DRAW(snake_x[0], snake_y[0], head_tile, _XL_GREEN);
+                    _XL_DRAW(snake_x[0], snake_y[0], head_tile, head_colors[starving]);
                     _XL_DRAW(snake_x[snake_length - 1], snake_y[snake_length - 1], tail_tile, _XL_GREEN);
                 }
 
