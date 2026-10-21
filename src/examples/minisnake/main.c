@@ -68,7 +68,7 @@
 
 
 #define WALL_COLOR _XL_CYAN
-#define SPECIAL_COLOR _XL_YELLOW
+uint8_t special_colors[] = {_XL_YELLOW,_XL_RED,_XL_GREEN,_XL_CYAN};
 #define SELECTION_ARROW_COLOR _XL_YELLOW
 
 /* Wall tile size (2x2 block) and minimum Chebyshev distance between walls. */
@@ -132,7 +132,6 @@ void move_snake(void);
 uint8_t check_collision(void);
 void draw_border(void);
 void draw_walls(void);
-void draw_special_item(void);
 void draw_snake_initial(void);
 void draw_apples(void);
 void handle_input(uint8_t input);
@@ -150,6 +149,13 @@ static uint8_t spawn_special_item(void);
 static uint8_t wall_position_ok(uint8_t x, uint8_t y);
 static uint8_t get_head_tile(uint8_t dir);
 static uint8_t get_tail_tile_from_delta(signed char dx, signed char dy);
+
+
+void draw_special_item(uint8_t color)
+{
+    if (is_deluxe_mode() && special_active)
+        _XL_DRAW(special_x, special_y, TILE_SPECIAL, color);
+}
 
 
 static void display_score(void)
@@ -348,7 +354,7 @@ static uint8_t spawn_special_item(void)
             special_y = y;
             special_active = 1;
             special_timer = (uint16_t)DELUXE_STEP_LIMIT;
-            draw_special_item();
+            draw_special_item(_XL_YELLOW);
             return 1;
         }
     }
@@ -781,12 +787,6 @@ void draw_walls(void)
     }
 }
 
-void draw_special_item(void)
-{
-    if (is_deluxe_mode() && special_active)
-        _XL_DRAW(special_x, special_y, TILE_SPECIAL, SPECIAL_COLOR);
-}
-
 static uint8_t get_head_tile(uint8_t dir)
 {
     if (dir == 0) return TILE_HEAD_UP;
@@ -1030,13 +1030,14 @@ int main(void)
         draw_walls();
         draw_snake_initial();
         draw_apples();
-        draw_special_item();
+        // draw_special_item(_);
 
         _XL_SLEEP(1);
         _XL_WAIT_FOR_INPUT();
 
         while (!game_over)
         {
+            ++i;
             input = _XL_INPUT();
 
             if (input != 0)
@@ -1049,7 +1050,12 @@ int main(void)
             old_length = snake_length;
 
             move_snake();
-
+            #if !defined(_XL_NO_COLOR)
+            if(special_active)
+            {
+                draw_special_item(special_colors[i&3]);
+            }
+            #endif
             if (check_collision())
             {
                 game_over = 1;
