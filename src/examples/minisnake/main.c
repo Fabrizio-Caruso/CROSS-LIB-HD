@@ -32,10 +32,10 @@
 #define MODE_COUNT            9
 
 /* Frenzy / insanity maximum simultaneous apples. */
-#define FRENZY_MAX_APPLES (XSize/2)
+#define MAX_APPLES (XSize/2)
 
 /* Apple arrays must be large enough for the maximum mode. */
-#define MAX_APPLES FRENZY_MAX_APPLES
+// #define MAX_APPLES FRENZY_MAX_APPLES/2)
 
 /* Special item points and count */
 #define SPECIAL_ITEM_POINTS 5
@@ -45,7 +45,7 @@
  * Non-classic modes start with one apple.
  * A new apple is unlocked every APPLE_SPAWN_INTERVAL ticks.
  */
-#define APPLE_SPAWN_INTERVAL 100
+#define APPLE_SPAWN_INTERVAL 140
 
 /* Deluxe special item: steps allowed before it vanishes. */
 #define DELUXE_STEP_LIMIT ((XSize) + (YSize))
@@ -267,13 +267,7 @@ static uint8_t max_apple_count(void)
     if (game_mode == MODE_CLASSIC || game_mode == MODE_CLASSIC_WRAP)
         return 1;
 
-    if (FRENZY_MAX_APPLES < 1)
-        return 1;
-
-    if (FRENZY_MAX_APPLES > MAX_APPLES)
-        return (uint8_t)MAX_APPLES;
-
-    return (uint8_t)FRENZY_MAX_APPLES;
+    return (uint8_t)MAX_APPLES;
 }
 
 static uint8_t spawn_apple_at_slot(uint8_t slot)
@@ -492,7 +486,14 @@ void update_apple_timer(void)
 
     if (apple_timer >= APPLE_SPAWN_INTERVAL)
     {
-        apple_timer = 0;
+        if(game_mode == MODE_FRENZY || game_mode == MODE_FRENZY_WRAP)
+        {
+            apple_timer = APPLE_SPAWN_INTERVAL/2;
+        }
+        else
+        {
+            apple_timer = 0;
+        }
 
         if (unlocked_apples < max_apples)
             unlocked_apples++;
