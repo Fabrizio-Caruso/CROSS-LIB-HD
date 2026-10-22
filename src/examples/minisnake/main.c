@@ -100,6 +100,8 @@ uint8_t head_colors[] = {_XL_GREEN, _XL_RED};
 
 #define STARVED  253
 
+#define STARVING_X (XSize/2-4)
+
 // BETA
 #define BETA 1
 
@@ -766,11 +768,11 @@ void move_snake(void)
         {
             if(game_mode==MODE_CLASSIC || game_mode==MODE_FRENZY || game_mode==MODE_INSANITY)
             {
-                _XL_DRAW(XSize/2-5+i,0,TILE_BORDER,_XL_YELLOW);
+                _XL_DRAW(STARVING_X+i,YSize-1,TILE_BORDER,_XL_YELLOW);
             }
             else
             {
-                _XL_DELETE(XSize/2-5+i,0);
+                _XL_DELETE(STARVING_X+i,YSize-1);
             }
         }
         
@@ -1045,7 +1047,7 @@ uint8_t show_title_screen(void)
     old_arrow_y = y[selected];
     _XL_SET_TEXT_COLOR(SELECTION_ARROW_COLOR);
     _XL_DRAW(SELECT_X, old_arrow_y, TILE_HEAD_DOWN, _XL_GREEN);
-
+    _XL_SLEEP(1);
     while (1)
     {
         input = _XL_INPUT();
@@ -1147,9 +1149,9 @@ int main(void)
                 for(i=0;i<40;++i)
                 {
                     _XL_SET_TEXT_COLOR(_XL_RED);
-                    _XL_PRINT(XSize/2-5,0,"STARVING");
+                    _XL_PRINT(STARVING_X,YSize-1,"STARVING");
                     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-                    _XL_PRINT(XSize/2-5,0,"STARVING");
+                    _XL_PRINT(STARVING_X,YSize-1,"STARVING");
                 }
             _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*8);
                 
