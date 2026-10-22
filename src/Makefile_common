@@ -96,14 +96,14 @@ cc65_targets_sequential: \
     c64 \
     cbm510 \
     cbm610 \
-    creativision \
     gamate \
     oric  \
     nes \
     pet \
     pce \
     supervision \
-    vic20 
+    vic20 \
+    creativision
 else
 cc65_targets_sequential: \
     apple2 \
@@ -116,14 +116,14 @@ cc65_targets_sequential: \
     c64 \
     cbm510 \
     cbm610 \
-    creativision \
     gamate \
     oric  \
     nes \
     pet \
     pce \
     supervision \
-    vic20 
+    vic20 \
+    creativision
 endif
 
 
