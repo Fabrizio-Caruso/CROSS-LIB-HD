@@ -83,11 +83,26 @@ uint8_t head_colors[] = {_XL_GREEN, _XL_RED};
 // #define STARVING 200
 // #define STARVED  250
 
-#define STARVING 150
-#define STARVED  250
+#define EASY_STARVING   110
+
+#if XSize>40
+    #define MEDIUM_STARVING  90
+#else
+    #define MEDIUM_STARVING  80
+#endif
+
+#if XSize>40
+    #define HARD_STARVING XSize
+#else
+    #define HARD_STARVING 60
+#endif
+
+#define STARVED  253
 
 // BETA
 #define BETA 1
+
+uint8_t starving_threshold;
 
 /* Game state variables */
 uint8_t snake_x[SNAKE_MAX_LENGTH];
@@ -530,7 +545,7 @@ void spawn_walls(void)
 
     if (game_mode == MODE_INSANITY || game_mode == MODE_INSANITY_WRAP)
     {
-        desired = (uint16_t) INSANITY_WALLS;
+        desired = (uint16_t)INSANITY_WALLS;
     }
     else if (game_mode == MODE_DELUXE_EASY)
     {
@@ -662,6 +677,19 @@ void init_game(void)
 
     if (is_deluxe_mode())
         spawn_special_item();
+    
+    if(game_mode==DELUXE_WALLS_MED)
+    {
+        starving_threshold = MEDIUM_STARVING;
+    }
+    else if(game_mode==DELUXE_WALLS_HARD)
+    {
+        starving_threshold = HARD_STARVING;
+    }
+    else
+    {
+        starving_threshold = EASY_STARVING;
+    }
 }
 
 
@@ -1103,14 +1131,19 @@ int main(void)
         while (!game_over)
         {
             ++hunger;
-            if(hunger==STARVING)
+            if(hunger==starving_threshold)
             {
                 slowdown/=2;
                 starving = 1;
-                _XL_SET_TEXT_COLOR(_XL_YELLOW);
-                _XL_PRINT(XSize/2-5,0,"STARVING");
                 _XL_PING_SOUND();
-                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
+                for(i=0;i<40;++i)
+                {
+                    _XL_SET_TEXT_COLOR(_XL_RED);
+                    _XL_PRINT(XSize/2-5,0,"STARVING");
+                    _XL_SET_TEXT_COLOR(_XL_YELLOW);
+                    _XL_PRINT(XSize/2-5,0,"STARVING");
+                }
+            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*8);
                 
             }
             else if(hunger==STARVED)
@@ -1119,6 +1152,7 @@ int main(void)
                 _XL_SET_TEXT_COLOR(_XL_RED);
                 _XL_PRINT(XSize/2-4,YSize-3,"STARVED");
                 _XL_SLEEP(1);
+                _XL_WAIT_FOR_INPUT();
             }
             input = _XL_INPUT();
 
