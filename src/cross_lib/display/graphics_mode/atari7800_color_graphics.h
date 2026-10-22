@@ -15,11 +15,7 @@ uint16_t loc(uint8_t x, uint8_t y);
 #define DISPLAY_POKE(addr,val) (screen[addr] = (val))
 
 #define _XL_DRAW(x, y, tile, color) \
-    DISPLAY_POKE((uint16_t) loc(x,y), (unsigned char) (tile));
-
-//     DISPLAY_POKE((uint16_t) loc(x,y), (unsigned char) (tile)+((color)*54U));
-
-// +(tile+color)
+    DISPLAY_POKE((uint16_t) loc(x,y), (unsigned char) (tile))
 
 
 #define _XL_DELETE(x,y) DISPLAY_POKE(loc(x,y), 0)

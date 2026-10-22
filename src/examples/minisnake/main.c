@@ -39,7 +39,8 @@
 
 /* Special item points and count */
 #define SPECIAL_ITEM_POINTS 5
-#define MAX_SPECIAL_COUNT 20
+#define SPECIAL_ITEM_INCREACE_POINTS 5
+#define MAX_SPECIAL_COUNT 10
 
 /*
  * Non-classic modes start with one apple.
@@ -796,7 +797,7 @@ void move_snake(void)
     {
         special_active = 0;
         _XL_DELETE(special_x, special_y);
-        increase_score(SPECIAL_ITEM_POINTS + special_count);
+        increase_score(SPECIAL_ITEM_POINTS + SPECIAL_ITEM_INCREACE_POINTS * special_count);
         if(special_count<MAX_SPECIAL_COUNT)
         {
             ++special_count;
@@ -921,11 +922,17 @@ void draw_snake_initial(void)
     for (i = 0; i < snake_length; i++)
     {
         if (i == 0)
+        {
             _XL_DRAW(snake_x[i], snake_y[i], head_tile, _XL_GREEN);
+        }
         else if (i == snake_length - 1)
+        {
             _XL_DRAW(snake_x[i], snake_y[i], tail_tile, _XL_GREEN);
+        }
         else
+        {
             _XL_DRAW(snake_x[i], snake_y[i], TILE_SNAKE_BODY, _XL_GREEN);
+        }
     }
 }
 
