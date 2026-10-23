@@ -5,7 +5,12 @@
 #define INITIAL_SNAKE_LENGTH 3
 #define TILE_SNAKE_BODY _TILE_2
 #define TILE_FOOD       _TILE_3
+
 #define TILE_BORDER     _TILE_26
+#define TILE_HORIZ_TELE _TILE_24
+#define TILE_VERT_TELE  _TILE_22
+
+
 #define TILE_HEAD_UP    _TILE_1
 #define TILE_HEAD_RIGHT _TILE_4
 #define TILE_HEAD_DOWN  _TILE_5
@@ -14,7 +19,20 @@
 #define TILE_TAIL_RIGHT _TILE_8
 #define TILE_TAIL_DOWN  _TILE_9
 #define TILE_TAIL_LEFT  _TILE_10
+
 #define TILE_SPECIAL    _TILE_25
+
+/* Bonus item: 2x2 block of 4 different tiles */
+#define BONUS_TILE_0    _TILE_11
+#define BONUS_TILE_1    _TILE_12
+#define BONUS_TILE_2    _TILE_13
+#define BONUS_TILE_3    _TILE_14
+#define BONUS_COLOR_0   _XL_RED
+#define BONUS_COLOR_1   _XL_CYAN
+#define BONUS_COLOR_2   _XL_GREEN
+#define BONUS_COLOR_3   _XL_MAGENTA
+#define BONUS_POINTS    10
+#define SPECIAL_STREAK_TARGET 3
 
 #define SCORE_X 6
 #define HISCORE_X (XSize-1-4)
@@ -34,13 +52,10 @@
 /* Frenzy / insanity maximum simultaneous apples. */
 #define MAX_APPLES (XSize/2)
 
-/* Apple arrays must be large enough for the maximum mode. */
-// #define MAX_APPLES FRENZY_MAX_APPLES/2)
-
 /* Special item points and count */
 #define SPECIAL_ITEM_POINTS 5
-#define SPECIAL_ITEM_INCREACE_POINTS 5
-#define MAX_SPECIAL_COUNT 10
+#define SPECIAL_ITEM_INCREACE_POINTS 1
+#define MAX_SPECIAL_COUNT 15
 
 /*
  * Non-classic modes start with one apple.
@@ -52,7 +67,8 @@
 #define DELUXE_STEP_LIMIT ((XSize) + (YSize))
 
 /* Deluxe special item: ticks until it reappears after vanishing. */
-#define DELUXE_RESPAWN_INTERVAL 200
+#define DELUXE_RESPAWN_INTERVAL 100
+//160
 
 #define INSANITY_WALLS ((XSize/3) + (YSize/3))
 
@@ -84,18 +100,18 @@ uint8_t head_colors[] = {_XL_GREEN, _XL_RED};
 // #define STARVING 200
 // #define STARVED  250
 
-#define EASY_STARVING   110
+#define EASY_STARVING   100
 
 #if XSize>40
-    #define MEDIUM_STARVING  90
-#else
     #define MEDIUM_STARVING  80
+#else
+    #define MEDIUM_STARVING  70
 #endif
 
 #if XSize>40
     #define HARD_STARVING XSize
 #else
-    #define HARD_STARVING 60
+    #define HARD_STARVING 40
 #endif
 
 #define STARVED  253
@@ -151,6 +167,14 @@ uint16_t special_respawn_timer;
 /* deluxe count */
 uint8_t special_count;
 
+/* Bonus item state (2x2 block) */
+uint8_t special_streak;
+uint8_t bonus_active;
+uint8_t bonus_x;
+uint8_t bonus_y;
+
+uint8_t bonus_growth;
+
 /* Function declarations */
 void init_game(void);
 void clear_apples(void);
@@ -180,6 +204,12 @@ static uint8_t spawn_special_item(void);
 static uint8_t wall_position_ok(uint8_t x, uint8_t y);
 static uint8_t get_head_tile(uint8_t dir);
 static uint8_t get_tail_tile_from_delta(signed char dx, signed char dy);
+static uint8_t is_bonus_item(uint8_t x, uint8_t y);
+static uint8_t bonus_position_ok(uint8_t x, uint8_t y);
+static void draw_bonus_item(void);
+static void delete_bonus_item(void);
+static void spawn_bonus_item(void);
+static void collect_bonus_item(void);
 
 
 void draw_special_item(uint8_t color)
@@ -252,6 +282,147 @@ static uint8_t is_deluxe_mode(void)
     return (game_mode >= MODE_DELUXE_EASY && game_mode <= MODE_DELUXE_HARD);
 }
 
+static uint8_t is_bonus_item(uint8_t x, uint8_t y)
+{
+    if (!bonus_active)
+        return 0;
+
+    if (x < bonus_x || x > (uint8_t)(bonus_x + 1))
+        return 0;
+    if (y < bonus_y || y > (uint8_t)(bonus_y + 1))
+        return 0;
+
+    return 1;
+}
+
+static uint8_t bonus_position_ok(uint8_t x, uint8_t y)
+{
+    uint8_t k;
+    uint8_t cx, cy;
+
+    if (x < 1 || y < 1)
+        return 0;
+
+    if (x + 1 >= (uint8_t)(XSize - 1) || y + 1 >= (uint8_t)(YSize - 1))
+        return 0;
+
+    for (k = 0; k < 4; k++)
+    {
+        cx = x + (uint8_t)(k % 2);
+        cy = y + (uint8_t)(k / 2);
+
+        if (is_on_snake(cx, cy))
+            return 0;
+        if (is_wall(cx, cy))
+            return 0;
+        if (is_apple(cx, cy))
+            return 0;
+    }
+
+    if (is_deluxe_mode() && special_active)
+    {
+        if (special_x >= x && special_x <= (uint8_t)(x + 1) &&
+            special_y >= y && special_y <= (uint8_t)(y + 1))
+            return 0;
+    }
+
+    return 1;
+}
+
+static void draw_bonus_item(void)
+{
+    if (bonus_active)
+    {
+        _XL_DRAW(bonus_x, bonus_y, BONUS_TILE_0, BONUS_COLOR_0);
+        _XL_DRAW((uint8_t)(bonus_x + 1), bonus_y, BONUS_TILE_1, BONUS_COLOR_1);
+        _XL_DRAW(bonus_x, (uint8_t)(bonus_y + 1), BONUS_TILE_2, BONUS_COLOR_2);
+        _XL_DRAW((uint8_t)(bonus_x + 1), (uint8_t)(bonus_y + 1), BONUS_TILE_3, BONUS_COLOR_3);
+    }
+}
+
+static void delete_bonus_item(void)
+{
+    if (bonus_active)
+    {
+        _XL_DELETE(bonus_x, bonus_y);
+        _XL_DELETE((uint8_t)(bonus_x + 1), bonus_y);
+        _XL_DELETE(bonus_x, (uint8_t)(bonus_y + 1));
+        _XL_DELETE((uint8_t)(bonus_x + 1), (uint8_t)(bonus_y + 1));
+        bonus_active = 0;
+    }
+}
+
+static void spawn_bonus_item(void)
+{
+    uint8_t x, y;
+    uint16_t tries;
+
+    if (bonus_active)
+        return;
+
+    for (tries = 0; tries < 500; tries++)
+    {
+        x = (uint8_t)(_XL_RAND() % (XSize - 3) + 1);
+        y = (uint8_t)(_XL_RAND() % (YSize - 3) + 1);
+
+        if (bonus_position_ok(x, y))
+        {
+            bonus_x = x;
+            bonus_y = y;
+            bonus_active = 1;
+            draw_bonus_item();
+            _XL_TOCK_SOUND();
+            return;
+        }
+    }
+}
+
+void handle_slowdown(void)
+{
+    if (score >= 500)
+    {
+        slowdown = 4 * _XL_SLOW_DOWN_FACTOR;
+    }
+    else if (score >= 300)
+    {
+        slowdown = 5 * _XL_SLOW_DOWN_FACTOR;
+    }
+    else
+    {
+        slowdown = 6 * _XL_SLOW_DOWN_FACTOR;
+    }
+}
+
+void delete_starving(void)
+{
+    uint8_t i;
+    uint8_t tile_type;
+    
+    tile_type = (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY) ? TILE_BORDER : TILE_HORIZ_TELE;
+    for (i = 0; i < 8; ++i)
+    {
+        // if (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY)
+        // {
+            _XL_DRAW(STARVING_X + i, YSize - 1, tile_type, _XL_YELLOW);
+        // }
+        // else
+        // {
+            // _XL_DELETE(STARVING_X + i, YSize - 1);
+        // }
+    }
+}
+
+void increase_score(uint8_t amount)
+{
+    hunger = 0;
+    starving = 0;
+    score += amount;
+    display_score();
+    handle_slowdown();
+    delete_starving();
+}
+
+
 static uint8_t find_empty_apple_slot(void)
 {
     uint8_t i;
@@ -307,6 +478,9 @@ static uint8_t spawn_apple_at_slot(uint8_t slot)
                 valid = 0;
 
             if (is_deluxe_mode() && special_active && x == special_x && y == special_y)
+                valid = 0;
+
+            if (is_bonus_item(x, y))
                 valid = 0;
 
             if (relaxed == 0)
@@ -371,6 +545,8 @@ static uint8_t spawn_special_item(void)
         if (is_wall(x, y))
             valid = 0;
         if (is_apple(x, y))
+            valid = 0;
+        if (is_bonus_item(x, y))
             valid = 0;
 
         if (valid)
@@ -489,9 +665,9 @@ void update_apple_timer(void)
 
     if (apple_timer >= APPLE_SPAWN_INTERVAL)
     {
-        if(game_mode == MODE_FRENZY || game_mode == MODE_FRENZY_WRAP)
+        if (game_mode == MODE_FRENZY || game_mode == MODE_FRENZY_WRAP)
         {
-            apple_timer = APPLE_SPAWN_INTERVAL/2;
+            apple_timer = APPLE_SPAWN_INTERVAL - 1 - APPLE_SPAWN_INTERVAL/8;
         }
         else
         {
@@ -522,6 +698,7 @@ void update_special_item(void)
             special_active = 0;
             _XL_DELETE(special_x, special_y);
             special_respawn_timer = DELUXE_RESPAWN_INTERVAL;
+            special_streak = 0;
         }
     }
     else
@@ -567,12 +744,6 @@ void spawn_walls(void)
     {
         return;
     }
-
-    // if (desired > (uint16_t)MAX_WALL_COUNT)
-        // desired = (uint16_t)MAX_WALL_COUNT;
-
-    // if (desired == 0)
-        // return;
 
     /* Random pass */
     for (i = 0; i < desired; i++)
@@ -626,26 +797,56 @@ void spawn_walls(void)
     }
 }
 
-void handle_slowdown(void)
+
+static void collect_bonus_item(void)
 {
-    if(score>=200)
-    {
-        slowdown = 3 * _XL_SLOW_DOWN_FACTOR;
-    }
-    else if(score>=100)
-    {
-        slowdown = 4 * _XL_SLOW_DOWN_FACTOR;
-    }
-    else if(score>=50)
-    {
-        slowdown = 5 * _XL_SLOW_DOWN_FACTOR;
-    }
-    else
-    {
-        slowdown = 6 * _XL_SLOW_DOWN_FACTOR;
-    }
+    // uint8_t i;
+
+    delete_bonus_item();
+    // score += BONUS_POINTS;
+    // hunger = 0;
+    // starving = 0;
+    increase_score(BONUS_POINTS);
+    special_streak = 0;
+    // display_score();
+    // handle_slowdown();
+    _XL_SHOOT_SOUND();
+
+    // if (snake_length <= (uint8_t)SNAKE_MAX_LENGTH-4)
+    // {
+        // snake_length+=4;
+    // }
+    // else
+    // {
+        // snake_length = SNAKE_MAX_LENGTH;
+    // }
+
+    bonus_growth = 5;
+    // for (i = 0; i < 8; i++)
+    // {
+        // if (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY)
+        // {
+            // _XL_DRAW(STARVING_X + i, YSize - 1, TILE_BORDER, _XL_YELLOW);
+        // }
+        // else
+        // {
+            // _XL_DELETE(STARVING_X + i, YSize - 1);
+        // }
+    // }
 }
 
+
+static void handle_bonus_growth(void)
+{
+    if(bonus_growth)
+    {
+        if (snake_length <(uint8_t)SNAKE_MAX_LENGTH)
+        {
+            ++snake_length;
+        }
+        --bonus_growth;
+    }
+}
 
 void init_game(void)
 {
@@ -655,9 +856,7 @@ void init_game(void)
     direction = 1;
     score = 0;
     game_over = 0;
-    // slowdown = 6 * _XL_SLOW_DOWN_FACTOR;
     apples_spawned = 0;
-    // ate_apple = 0;
     hunger = 0;
     starving = 0;
     handle_slowdown();
@@ -667,8 +866,14 @@ void init_game(void)
     special_y = 0;
     special_timer = 0;
     special_respawn_timer = 0;
-    
     special_count = 0;
+    special_streak = 0;
+
+    bonus_active = 0;
+    bonus_x = 0;
+    bonus_y = 0;
+    
+    bonus_growth = 0;
 
     for (i = 0; i < snake_length; i++)
     {
@@ -681,38 +886,21 @@ void init_game(void)
 
     if (is_deluxe_mode())
         spawn_special_item();
-    
-    if(game_mode==DELUXE_WALLS_MED)
+
+    if (game_mode == DELUXE_WALLS_MED)
     {
         starving_threshold = MEDIUM_STARVING;
     }
-    else if(game_mode==DELUXE_WALLS_HARD)
+    else if ((game_mode == DELUXE_WALLS_HARD) || (game_mode==MODE_INSANITY)||(game_mode==MODE_INSANITY_WRAP))
     {
         starving_threshold = HARD_STARVING;
     }
-    else
+    else 
     {
         starving_threshold = EASY_STARVING;
     }
 }
 
-
-void increase_score(uint8_t amount)
-{
-    
-    hunger = 0;
-    starving = 0;
-    score+=amount;
-    display_score();
-    
-    handle_slowdown();
-        // if (score == 10)
-            // slowdown = 5 * _XL_SLOW_DOWN_FACTOR;
-        // else if (score == 50)
-            // slowdown = 4 * _XL_SLOW_DOWN_FACTOR;
-        // else if (score == 100)
-            // slowdown = 3 * _XL_SLOW_DOWN_FACTOR;
-}
 
 void move_snake(void)
 {
@@ -758,25 +946,8 @@ void move_snake(void)
         }
     }
 
-    // ate_apple = 0;
-
     if (apple_slot != 0xFF)
     {
-        // ate_apple = 1;
-
-        for(i=0;i<8;++i)
-        {
-            if(game_mode==MODE_CLASSIC || game_mode==MODE_FRENZY || game_mode==MODE_INSANITY)
-            {
-                _XL_DRAW(STARVING_X+i,YSize-1,TILE_BORDER,_XL_YELLOW);
-            }
-            else
-            {
-                _XL_DELETE(STARVING_X+i,YSize-1);
-            }
-        }
-        
-        
         eaten_apple_x = apple_x[apple_slot];
         eaten_apple_y = apple_y[apple_slot];
 
@@ -786,11 +957,8 @@ void move_snake(void)
         if (snake_length < (uint8_t)SNAKE_MAX_LENGTH)
             snake_length++;
 
-        // score++;
-        // display_score();
         increase_score(1);
         _XL_PING_SOUND();
-
     }
 
     /* Check special item pickup */
@@ -800,13 +968,30 @@ void move_snake(void)
         special_active = 0;
         _XL_DELETE(special_x, special_y);
         increase_score(SPECIAL_ITEM_POINTS + SPECIAL_ITEM_INCREACE_POINTS * special_count);
-        if(special_count<MAX_SPECIAL_COUNT)
+        if (special_count < MAX_SPECIAL_COUNT)
         {
             ++special_count;
         }
-        // display_score();
         _XL_PING_SOUND();
         special_respawn_timer = DELUXE_RESPAWN_INTERVAL;
+
+        /* Only build streak when no bonus is on screen */
+        if (!bonus_active)
+        {
+            special_streak++;
+
+            if (special_streak >= SPECIAL_STREAK_TARGET)
+            {
+                special_streak = 0;
+                spawn_bonus_item();
+            }
+        }
+    }
+
+    /* Check bonus item pickup (2x2 block) */
+    if (bonus_active && is_bonus_item(new_head_x, new_head_y))
+    {
+        collect_bonus_item();
     }
 
     for (i = snake_length - 1; i > 0; i--)
@@ -849,20 +1034,24 @@ uint8_t check_collision(void)
 void draw_border(void)
 {
     uint8_t i;
+    uint8_t tile_type;
 
-    if (is_borderless_mode())
-        return;
+    // if (is_borderless_mode())
+        // return;
 
+    tile_type = (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY) ? TILE_BORDER : TILE_HORIZ_TELE;
     for (i = 0; i < XSize; i++)
     {
-        _XL_DRAW(i, 0, TILE_BORDER, _XL_YELLOW);
-        _XL_DRAW(i, YSize - 1, TILE_BORDER, _XL_YELLOW);
+        _XL_DRAW(i, 0, tile_type, _XL_YELLOW);
+        _XL_DRAW(i, YSize - 1, tile_type, _XL_YELLOW);
     }
+
+    tile_type = (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY) ? TILE_BORDER : TILE_VERT_TELE;
 
     for (i = 1; i < YSize - 1; i++)
     {
-        _XL_DRAW(0, i, TILE_BORDER, _XL_YELLOW);
-        _XL_DRAW(XSize - 1, i, TILE_BORDER, _XL_YELLOW);
+        _XL_DRAW(0, i, tile_type, _XL_YELLOW);
+        _XL_DRAW(XSize - 1, i, tile_type, _XL_YELLOW);
     }
 }
 
@@ -975,18 +1164,19 @@ uint8_t show_title_screen(void)
     uint8_t new_arrow_y;
     uint8_t y[MODE_COUNT];
     uint8_t i;
-    
-    selected = MODE_CLASSIC;
 
-    y[0] = 5;   /* 1 CLASSIC    */
-    y[1] = 6;   /* 2 FRENZY     */
-    y[2] = 7;   /* 3 INSANITY   */
-    y[3] = 8;   /* 4 C.WRAP     */
-    y[4] = 9;   /* 5 F.WRAP     */
-    y[5] = 10;  /* 6 I.WRAP     */
-    y[6] = 11;  /* 7 D.EASY     */
-    y[7] = 12;  /* 8 D.MED      */
-    y[8] = 13;  /* 9 D.HARD     */
+    selected = MODE_CLASSIC;
+    game_mode = MODE_CLASSIC;
+    
+    y[0] = 5;
+    y[1] = 6;
+    y[2] = 7;
+    y[3] = 8;
+    y[4] = 9;
+    y[5] = 10;
+    y[6] = 11;
+    y[7] = 12;
+    y[8] = 13;
 
     _XL_CLEAR_SCREEN();
     draw_border();
@@ -998,7 +1188,7 @@ uint8_t show_title_screen(void)
     _XL_PRINT(SELECT_X, 3, "SELECT MODE");
 
     _XL_SET_TEXT_COLOR(_XL_GREEN);
-    
+
     #if XSize<=24
     _XL_PRINT(SELECT_X+3, y[0], "CLASSIC");
     _XL_PRINT(SELECT_X+3, y[1], "FRENZY");
@@ -1011,7 +1201,6 @@ uint8_t show_title_screen(void)
     _XL_PRINT(SELECT_X+3, y[8], "DELUXE  3");
     for(i=0;i<9;++i)
     {
-        
         _XL_SET_TEXT_COLOR(_XL_WHITE);
         _XL_PRINTD(SELECT_X+2, y[i], 1, i+1);
         _XL_PRINTD(SELECT_X+4+9, y[i], 4, hiscore[i]);
@@ -1028,18 +1217,15 @@ uint8_t show_title_screen(void)
     _XL_PRINT(SELECT_X+4, y[8], "DELUXE HARD");
     for(i=0;i<9;++i)
     {
-        
         _XL_SET_TEXT_COLOR(_XL_WHITE);
         _XL_PRINTD(SELECT_X+2, y[i], 1, i+1);
         _XL_PRINTD(SELECT_X+4+14, y[i], 4, hiscore[i]);
     }
     #endif
 
-
-
     _XL_SET_TEXT_COLOR(_XL_YELLOW);
     _XL_PRINT(SELECT_X, YSize - 2, "FIRE TO START");
-    
+
     #if defined(BETA)
     _XL_PRINT(XSize-1-4,YSize-1, "BETA");
     #endif
@@ -1102,6 +1288,7 @@ int main(void)
     signed char dx, dy;
     uint8_t mode;
     uint8_t i;
+    uint8_t j;
 
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
@@ -1119,6 +1306,7 @@ int main(void)
 
         _XL_CLEAR_SCREEN();
         draw_border();
+        // while(1){};
 
         _XL_SET_TEXT_COLOR(_XL_GREEN);
         _XL_PRINT(HISCORE_X - 2, 0, "HI");
@@ -1133,37 +1321,37 @@ int main(void)
         draw_walls();
         draw_snake_initial();
         draw_apples();
-        // draw_special_item(_);
 
         _XL_SLEEP(1);
         _XL_WAIT_FOR_INPUT();
 
         while (!game_over)
         {
+            handle_bonus_growth();
             ++hunger;
-            if(hunger==starving_threshold)
+            if (hunger == starving_threshold)
             {
-                slowdown/=2;
+                slowdown /= 2;
                 starving = 1;
                 _XL_PING_SOUND();
-                for(i=0;i<40;++i)
+                for (j = 0; j < 40; ++j)
                 {
                     _XL_SET_TEXT_COLOR(_XL_RED);
-                    _XL_PRINT(STARVING_X,YSize-1,"STARVING");
+                    _XL_PRINT(STARVING_X, YSize - 1, "STARVING");
                     _XL_SET_TEXT_COLOR(_XL_YELLOW);
-                    _XL_PRINT(STARVING_X,YSize-1,"STARVING");
+                    _XL_PRINT(STARVING_X, YSize - 1, "STARVING");
                 }
-            _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR*8);
-                
+                _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR * 8);
             }
-            else if(hunger==STARVED)
+            else if (hunger == STARVED)
             {
                 game_over = 1;
                 _XL_SET_TEXT_COLOR(_XL_RED);
-                _XL_PRINT(XSize/2-4,YSize-3,"STARVED");
+                _XL_PRINT(XSize/2-4, YSize-3, "STARVED");
                 _XL_SLEEP(1);
                 _XL_WAIT_FOR_INPUT();
             }
+
             input = _XL_INPUT();
 
             if (input != 0)
@@ -1176,12 +1364,14 @@ int main(void)
             old_length = snake_length;
 
             move_snake();
+
             #if !defined(_XL_NO_COLOR)
-            if(special_active)
+            if (special_active)
             {
-                draw_special_item(special_colors[hunger&3]);
+                draw_special_item(special_colors[hunger & 3]);
             }
             #endif
+
             if (check_collision())
             {
                 game_over = 1;
@@ -1217,9 +1407,6 @@ int main(void)
                 {
                     tail_tile = head_tile;
                 }
-
-                // if (ate_apple)
-                    // _XL_DELETE(eaten_apple_x, eaten_apple_y);
 
                 if (snake_length > old_length)
                 {
