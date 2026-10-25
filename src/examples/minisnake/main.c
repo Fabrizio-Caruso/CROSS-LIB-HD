@@ -61,6 +61,7 @@
 
 #define BONUS_POINTS    10
 
+#define BONUS_GROWTH 5
 // #define SPECIAL_ITEM_INCREACE_POINTS 1
 // #define MAX_SPECIAL_COUNT 7
 
@@ -828,7 +829,7 @@ static void collect_bonus_item(void)
         // snake_length = SNAKE_MAX_LENGTH;
     // }
 
-    bonus_growth = 5;
+    bonus_growth = BONUS_GROWTH;
     // for (i = 0; i < 8; i++)
     // {
         // if (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY)
