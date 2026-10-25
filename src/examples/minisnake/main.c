@@ -3,7 +3,8 @@
 /* Game constants */
 #define SNAKE_MAX_LENGTH (((XSize)-2)*((YSize)-2)/2)
 #define INITIAL_SNAKE_LENGTH 3
-#define TILE_SNAKE_BODY _TILE_2
+
+
 #define TILE_FOOD       _TILE_3
 
 #define TILE_BORDER     _TILE_26
@@ -15,6 +16,9 @@
 #define TILE_HEAD_RIGHT _TILE_4
 #define TILE_HEAD_DOWN  _TILE_5
 #define TILE_HEAD_LEFT  _TILE_6
+
+#define TILE_SNAKE_BODY _TILE_2
+
 #define TILE_TAIL_UP    _TILE_7
 #define TILE_TAIL_RIGHT _TILE_8
 #define TILE_TAIL_DOWN  _TILE_9
@@ -28,10 +32,10 @@
 #define BONUS_TILE_2    _TILE_13
 #define BONUS_TILE_3    _TILE_14
 #define BONUS_COLOR_0   _XL_RED
-#define BONUS_COLOR_1   _XL_CYAN
-#define BONUS_COLOR_2   _XL_GREEN
-#define BONUS_COLOR_3   _XL_MAGENTA
-#define BONUS_POINTS    10
+#define BONUS_COLOR_1   _XL_RED
+#define BONUS_COLOR_2   _XL_RED
+#define BONUS_COLOR_3   _XL_RED
+
 #define SPECIAL_STREAK_TARGET 3
 
 #define SCORE_X 6
@@ -54,8 +58,11 @@
 
 /* Special item points and count */
 #define SPECIAL_ITEM_POINTS 5
-#define SPECIAL_ITEM_INCREACE_POINTS 1
-#define MAX_SPECIAL_COUNT 15
+
+#define BONUS_POINTS    10
+
+// #define SPECIAL_ITEM_INCREACE_POINTS 1
+// #define MAX_SPECIAL_COUNT 7
 
 /*
  * Non-classic modes start with one apple.
@@ -165,7 +172,7 @@ uint16_t special_timer;
 uint16_t special_respawn_timer;
 
 /* deluxe count */
-uint8_t special_count;
+// uint8_t special_count;
 
 /* Bonus item state (2x2 block) */
 uint8_t special_streak;
@@ -866,7 +873,7 @@ void init_game(void)
     special_y = 0;
     special_timer = 0;
     special_respawn_timer = 0;
-    special_count = 0;
+    // special_count = 0;
     special_streak = 0;
 
     bonus_active = 0;
@@ -967,11 +974,11 @@ void move_snake(void)
     {
         special_active = 0;
         _XL_DELETE(special_x, special_y);
-        increase_score(SPECIAL_ITEM_POINTS + SPECIAL_ITEM_INCREACE_POINTS * special_count);
-        if (special_count < MAX_SPECIAL_COUNT)
-        {
-            ++special_count;
-        }
+        increase_score(SPECIAL_ITEM_POINTS);
+        // if (special_count < MAX_SPECIAL_COUNT)
+        // {
+            // ++special_count;
+        // }
         _XL_PING_SOUND();
         special_respawn_timer = DELUXE_RESPAWN_INTERVAL;
 
