@@ -1,23 +1,44 @@
 #include "cross_lib.h"
 
-#if YSize<=16
-    #define BOARD_SIZE 6
-#elif YSize<=20
-    #define BOARD_SIZE 7
+// #if YSize<=16
+    // #define BOARD_SIZE 7
+// #elif YSize<=21
+    // #define BOARD_SIZE 9
+// #elif YSize<=23
+    // #define BOARD_SIZE 10
+// #elif YSize<=25
+    // #define BOARD_SIZE 11
+// #else
+    // #define BOARD_SIZE 12
+// #endif
+
+#if XSize>=YSize
+    #if YSize>=19
+        #define BOARD_SIZE ((YSize-1)/2)
+        #define Y_BOARD_OFFSET 1
+    #else
+        #define BOARD_SIZE ((YSize)/2)
+        #define Y_BOARD_OFFSET 0
+    #endif
 #else
-    #define BOARD_SIZE 9
+    #if XSize>=19
+        #define BOARD_SIZE ((XSize-1)/2)
+        #define Y_BOARD_OFFSET 1
+    #else
+        #define BOARD_SIZE ((XSize)/2)
+        #define Y_BOARD_OFFSET 0
+    #endif
 #endif
+
 #define EMPTY 0
 #define PLAYER 1
 #define AI 2
 
-#if YSize<=20
-    #define Y_BOARD_OFFSET 0
-#elif YSize<=25
-    #define Y_BOARD_OFFSET 1
-#else
-    #define Y_BOARD_OFFSET 2
-#endif
+// #if YSize<=20
+    // #define Y_BOARD_OFFSET 0
+// #elif YSize<=25
+    // #define Y_BOARD_OFFSET 1
+// #endif
 
 /* Empty board cell: 4 distinct tiles */
 #define T_EMPTY_1  _TILE_12
@@ -45,6 +66,9 @@
 #define T_SELECT_2  _TILE_9
 #define T_SELECT_3  _TILE_10
 #define T_SELECT_4  _TILE_11
+
+#define PRINT_X 8
+
 
 #define BETA 1
 
@@ -470,7 +494,7 @@ void show_game_over(void)
         show_win_line();
     }
     _XL_SET_TEXT_COLOR(_XL_CYAN);
-    _XL_PRINT(0, YSize - 1, "                ");
+    // _XL_PRINT(0, YSize - 1, "                ");
     if (winner == PLAYER) {
         _XL_SET_TEXT_COLOR(_XL_YELLOW);
         _XL_PRINT(2, YSize - 1, "YOU WIN");
@@ -490,6 +514,7 @@ void show_game_over(void)
     _XL_SLEEP(1);
     // _XL_WAIT_FOR_INPUT();
 }
+
 
 int main(void)
 {
@@ -517,7 +542,7 @@ int main(void)
         _XL_PRINT((XSize - 12) / 2, 9, "3  HARD");
         _XL_SLEEP(1);
         _XL_SET_TEXT_COLOR(_XL_YELLOW);
-        _XL_PRINT(5, 13, "FIRE TO START");
+        _XL_PRINT(XSize/2-6, 13, "FIRE TO START");
         #if defined(BETA)
             _XL_PRINT(XSize-1-4,YSize-1,"BETA");
         #endif
@@ -562,8 +587,8 @@ int main(void)
         init_board();
         draw_full_board();
         _XL_SET_TEXT_COLOR(_XL_WHITE);
-        _XL_PRINT(2, YSize - 1, "           ");
-        _XL_PRINT(2, YSize - 1, "YOUR TURN");
+        // _XL_PRINT(PRINT_X, 0, "         ");
+        _XL_PRINT(PRINT_X, 0, "YOUR TURN");
         _XL_PING_SOUND();
 
         /* --- Game Loop --- */
@@ -621,7 +646,7 @@ int main(void)
                         }
                         current_turn = AI;
                         _XL_SET_TEXT_COLOR(_XL_MAGENTA);
-                        _XL_PRINT(2, YSize - 1, "AI THINKING");
+                        _XL_PRINT(PRINT_X, 0, "THINKING ");
                         break;
                     }
                 }
@@ -651,17 +676,20 @@ int main(void)
                     } else {
                         current_turn = PLAYER;
                         _XL_SET_TEXT_COLOR(_XL_WHITE);
-                        _XL_PRINT(2, YSize - 1, "           ");
-                        _XL_PRINT(2, YSize - 1, "YOUR TURN");
+                        
+                        // _XL_PRINT(PRINT_X, 0, "         ");
+                        _XL_PRINT(PRINT_X, 0, "YOUR TURN");
                     }
                 }
             }
+        _XL_SLOW_DOWN(_XL_SLOW_DOWN_FACTOR);
         }
 
         /* --- Game Over Screen --- */
         show_game_over();
-        _XL_SET_TEXT_COLOR(_XL_CYAN);
-        _XL_PRINT(2, YSize - 1, "PRESS FIRE");
+        // _XL_SET_TEXT_COLOR(_XL_CYAN);
+        // _XL_PRINT(PRINT_X, 0, "         ");
+        // _XL_PRINT(2, 0, "PRESS FIRE");
         _XL_WAIT_FOR_INPUT();
     }
 
