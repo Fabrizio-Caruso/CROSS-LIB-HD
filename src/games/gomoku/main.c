@@ -69,7 +69,6 @@
 
 #define PRINT_X 8
 
-
 #define BETA 1
 
 uint8_t board[BOARD_SIZE][BOARD_SIZE];
@@ -520,6 +519,7 @@ int main(void)
 {
     uint8_t input;
     uint8_t sel_level;
+    uint8_t i;
 
     _XL_INIT_GRAPHICS();
     _XL_INIT_INPUT();
@@ -533,7 +533,7 @@ int main(void)
         /* --- Level Select Screen --- */
         sel_level = 1;
         _XL_CLEAR_SCREEN();
-        _XL_SET_TEXT_COLOR(_XL_CYAN);
+        _XL_SET_TEXT_COLOR(_XL_GREEN);
         _XL_PRINT((XSize - 12) / 2, 2, "GOMOKU");
         _XL_SET_TEXT_COLOR(_XL_WHITE);
         _XL_PRINT((XSize - 16) / 2 + 2, 5, "SELECT LEVEL");
@@ -546,6 +546,28 @@ int main(void)
         #if defined(BETA)
             _XL_PRINT(XSize-1-4,YSize-1,"BETA");
         #endif
+        
+        for(i=0;i<XSize/2-1;++i)
+        {
+            if(i&1)
+            {
+                draw_cell_player(0,i,_XL_CYAN);
+                draw_cell_player(XSize/2-1  ,i,_XL_WHITE);
+
+            }
+            else
+            {
+                draw_cell_player(0,i,_XL_WHITE);
+                draw_cell_player(XSize/2-1,i,_XL_CYAN);
+            }
+            // draw_cell_player(XSize/2,i,i&1 == 0 ? _XL_CYAN : _XL_WHITE);
+
+            // draw_cell_opponent(0, i+1, _XL_WHITE);
+            
+            // draw_cell_opponent(XSize/2-1, i, _XL_WHITE);
+            // draw_cell_player(XSize/2-1,i+1,_XL_CYAN);
+        }
+        
         while (1) {
             input = _XL_INPUT();
             _XL_DRAW((XSize - 12) / 2 - 1, 6 + sel_level, T_ARROW, _XL_RED);
