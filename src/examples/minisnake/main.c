@@ -61,7 +61,7 @@
 
 #define BONUS_POINTS    10
 
-#define BONUS_GROWTH 5
+#define BONUS_GROWTH 0
 // #define SPECIAL_ITEM_INCREACE_POINTS 1
 // #define MAX_SPECIAL_COUNT 7
 
@@ -75,7 +75,8 @@
 #define DELUXE_STEP_LIMIT ((XSize) + (YSize))
 
 /* Deluxe special item: ticks until it reappears after vanishing. */
-#define DELUXE_RESPAWN_INTERVAL 100
+#define DELUXE_RESPAWN_INTERVAL 10
+//100
 //160
 
 #define INSANITY_WALLS ((XSize/3) + (YSize/3))
@@ -181,7 +182,7 @@ uint8_t bonus_active;
 uint8_t bonus_x;
 uint8_t bonus_y;
 
-uint8_t bonus_growth;
+// uint8_t bonus_growth;
 
 /* Function declarations */
 void init_game(void);
@@ -829,7 +830,7 @@ static void collect_bonus_item(void)
         // snake_length = SNAKE_MAX_LENGTH;
     // }
 
-    bonus_growth = BONUS_GROWTH;
+    // bonus_growth = BONUS_GROWTH;
     // for (i = 0; i < 8; i++)
     // {
         // if (game_mode == MODE_CLASSIC || game_mode == MODE_FRENZY || game_mode == MODE_INSANITY)
@@ -844,17 +845,17 @@ static void collect_bonus_item(void)
 }
 
 
-static void handle_bonus_growth(void)
-{
-    if(bonus_growth)
-    {
-        if (snake_length <(uint8_t)SNAKE_MAX_LENGTH)
-        {
-            ++snake_length;
-        }
-        --bonus_growth;
-    }
-}
+// static void handle_bonus_growth(void)
+// {
+    // if(bonus_growth)
+    // {
+        // if (snake_length <(uint8_t)SNAKE_MAX_LENGTH)
+        // {
+            // ++snake_length;
+        // }
+        // --bonus_growth;
+    // }
+// }
 
 void init_game(void)
 {
@@ -881,7 +882,7 @@ void init_game(void)
     bonus_x = 0;
     bonus_y = 0;
     
-    bonus_growth = 0;
+    // bonus_growth = 0;
 
     for (i = 0; i < snake_length; i++)
     {
@@ -1000,6 +1001,7 @@ void move_snake(void)
     if (bonus_active && is_bonus_item(new_head_x, new_head_y))
     {
         collect_bonus_item();
+        snake_length++;
     }
 
     for (i = snake_length - 1; i > 0; i--)
@@ -1335,7 +1337,6 @@ int main(void)
 
         while (!game_over)
         {
-            handle_bonus_growth();
             ++hunger;
             if (hunger == starving_threshold)
             {
@@ -1372,6 +1373,7 @@ int main(void)
             old_length = snake_length;
 
             move_snake();
+            // handle_bonus_growth();
 
             #if !defined(_XL_NO_COLOR)
             if (special_active)
