@@ -165,7 +165,7 @@ void spawn_item(void)
 void fire_bullet(void)
 {
     uint8_t slot;
-    uint8_t bx;
+    // uint8_t bx;
 
     if (ammo == 0) return;
     slot = find_bullet_slot();
@@ -175,7 +175,7 @@ void fire_bullet(void)
     bullets[slot].active = 1;
     bullets[slot].x       = player_x;
     bullets[slot].y       = PLAYER_Y - 1;
-    bx = player_x;
+    // bx = player_x;
     _XL_SHOOT_SOUND();
 }
 
@@ -218,7 +218,6 @@ void draw_hud(void)
 void update_drops(void)
 {
     uint8_t i;
-    uint8_t j;
     uint8_t moved;
 
     for (i = 0; i < MAX_DROPS; i++) {
