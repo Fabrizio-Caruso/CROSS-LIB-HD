@@ -752,15 +752,12 @@ def display_test_results(option_config, test_name, results):
 
 
 def global_test_result(results):
-    # print(str(results))
     # sys.exit(0)
     for test in results.keys():
         if results[test]!="OK":
             return "KO"
     return "OK"
 
-# def global_components_result(make_result, native_compilers_result, cross_compilers_result, libraries_result, interpreters_result):
-    
 
 
 def test_standard_cases(option_config, target = "stdio"):
@@ -769,12 +766,12 @@ def test_standard_cases(option_config, target = "stdio"):
     
     global_components_test_result = "OK" if display_components_result(option_config, make_result, native_compilers_result, cross_compilers_result, libraries_result, interpreters_result) else "KO"
     
-    global_unit_tests_result = "OK" if global_test_result(unit_tests_result) else "KO"
+    global_unit_tests_result = global_test_result(unit_tests_result)
     if output_result:
-        global_output_test_result = "OK" if global_test_result(output_result) else "KO"
+        global_output_test_result = global_test_result(output_result)
     else:
         global_output_test_result = None
-    self_total_success = "OK" if global_test_result(success_map) else "KO"
+    self_total_success = global_test_result(success_map)
     
     
     display_test_results(option_config, "UNITARY", unit_tests_result)
@@ -792,6 +789,8 @@ def _test_compilation(option_config):
     compilers_check = test_compilers(option_config)
     result_map = {}
     success, built_binaries, expected_binaries = test_targets(option_config,["", "native"])
+    
+    success = "OK" if success else "KO"
     result_map["native"] = (success, built_binaries, expected_binaries)
     for compiler in compilers_check.keys():
         if compilers_check[compiler]:
@@ -801,6 +800,8 @@ def _test_compilation(option_config):
         success, built_binaries, expected_binaries = test_targets(option_config,["", "z88dk_alt"])
         result_map["z88dk_alt"] = success, built_binaries, expected_binaries
     clean(option_config, [])
+    
+    print("_test_compilation : " + str(result_map)) 
     return result_map
 
 
@@ -841,6 +842,13 @@ def test_compilation(option_config):
     display_compilation_result(option_config, result_map)
     return result_map
 
+def extract_global_compilation_result(compilation_result):
+    for test in compilation_result.keys():
+        if not compilation_result[test][0]:
+            return "KO"
+    return "OK"
+
+
 # These tests include
 # - Some more dependencies (emulators, cross-compilers, native compilers, roms, make)
 # - Tests in "test_standard_cases" with forced terminal target
@@ -851,6 +859,7 @@ def test_everything(option_config, params): # TODO: Do something with params
     print("-------------------------------------------------")
     # make_result, native_compilers_result, cross_compilers_result, libraries_result, interpreters_result, unit_tests_result, output_result, success_map = _test_standard_cases(option_config, params)
 
+    #
     compilation_result = _test_compilation(option_config)
     
     # global_components_test_result = "OK" if display_components_result(option_config, make_result, native_compilers_result, cross_compilers_result, libraries_result, interpreters_result) else "KO"
@@ -872,14 +881,14 @@ def test_everything(option_config, params): # TODO: Do something with params
     
     global_components_test_result = "OK" if display_components_result(option_config, make_result, native_compilers_result, cross_compilers_result, libraries_result, interpreters_result) else "KO"
     
-    global_unit_tests_result = "OK" if global_test_result(unit_tests_result) else "KO"
+    global_unit_tests_result = global_test_result(unit_tests_result)
     if output_result:
-        global_output_test_result = "OK" if global_test_result(output_result) else "KO"
+        global_output_test_result = global_test_result(output_result)
     else:
         global_output_test_result = None
-    self_total_success = "OK" if global_test_result(success_map) else "KO"
+    self_total_success = global_test_result(success_map)
     
-    global_compilation_result = "OK" if global_test_result(compilation_result) else "KO"
+    global_compilation_result = extract_global_compilation_result(compilation_result)
 
     
     display_test_results(option_config, "UNITARY", unit_tests_result)
